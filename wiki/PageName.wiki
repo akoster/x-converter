@@ -1,0 +1,12 @@
+#summary X-converter : a crossfunctional converter
+
+= Introduction =
+
+X-converter is a Java project intended for teaching purposes.
+
+
+= Details =
+
+Initially there are just some test classes:
+  * AbstractTest
+  * EnumTest
