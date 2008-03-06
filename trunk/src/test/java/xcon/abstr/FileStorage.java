@@ -7,10 +7,14 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Implementation of Storage class based on object serialization.
+ * 
+ * @author Adriaan Koster
+ */
 public class FileStorage extends Storage {
 
     private static final String STORAGE_DIR = "storage/";
@@ -69,7 +73,8 @@ public class FileStorage extends Storage {
                 + value + ", capacity reached");
         }
     }
-
+    
+    @Override
     public Set<String> getKeys() {
 
         String[] names = storageDir.list(new FilenameFilter() {
