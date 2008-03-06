@@ -11,7 +11,7 @@ Initially there are just some test classes:
   * AbstractTest
   * EnumTest
 
-The project will evolve as defined in the Workstack
+The project will evolve as defined in the WorkStack
 
 = Code conventions =
 
