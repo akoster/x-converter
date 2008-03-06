@@ -4,4 +4,4 @@
 
 Read about dependency injection (also called 'inversion of control'). Notable frameworks for this in Java are Spring and Google Guice. Bonus: resolve issue 3.
 
-Resolve issue 4: Expand StorageTest so that the user can input commands
+Resolve issue 4: Expand !StorageTest so that the user can input commands
