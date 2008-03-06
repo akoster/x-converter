@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Implementation of Storage class based on object serialization.
+ * Implementation of the Storage class which is based on object serialization.
  * 
  * @author Adriaan Koster
  */
