@@ -2,13 +2,6 @@
 
 = Week 11 =
 
-Read about dependency injection (also called 'inversion of control'). Notable frameworks for this in Java are Spring and Google Guice. Bonus: add Guice to the project to inject the Storage implementations into StorageTest.
+Read about dependency injection (also called 'inversion of control'). Notable frameworks for this in Java are Spring and Google Guice. Bonus: resolve issue 3.
 
-Expand the xcon.pilot.storage.StorageTest so that the user can input commands:
-  * read <key> : the application prints the value for that key
-  * store <key> <value> : the application stores the given value under the given key
-  * dump : the application prints all current keys and values
-<key> is a String without whitespace
-<value> is a String
-
-Hint: use java.util.Scanner
+Resolve issue 4: Expand StorageTest so that the user can input commands
