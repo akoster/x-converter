@@ -1,6 +1,6 @@
-package xcon.abstr;
+package xcon.pilot.storage;
 
-public class AbstractTest {
+public class AbstractPilot {
 
     private Storage storage;
 
@@ -10,9 +10,9 @@ public class AbstractTest {
     }
 
     public void doTest() {
-        
+
         System.out.println("Contents before: " + storage.dumpContents());
-        
+
         storage.setCapacity(6);
         storage.store("1", "Adriaan");
         storage.store("2", "Mohamed");
@@ -26,16 +26,16 @@ public class AbstractTest {
     }
 
     public static void main(String[] args) {
-        
+
         System.out.println("Testing file storage implementation");
-        AbstractTest testObject = new AbstractTest();        
+        AbstractPilot testObject = new AbstractPilot();
         // manual 'injection'
-        testObject.setStorage(new FileStorage());        
+        testObject.setStorage(new FileStorage());
         testObject.doTest();
-        
-        System.out.println("Testing HashMap storage implementation");      
+
+        System.out.println("Testing HashMap storage implementation");
         // manual 'injection'
-        testObject.setStorage(new HashMapStorage());        
+        testObject.setStorage(new HashMapStorage());
         testObject.doTest();
     }
 }

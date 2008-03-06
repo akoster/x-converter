@@ -1,7 +1,7 @@
-package xcon.enums;
+package xcon.pilot.enums;
 
 
-public class EnumTest {
+public class EnumPilot {
 
     private static MyEnum doStuff(int value) {
         return MyEnum.getInstance(value);
@@ -9,7 +9,7 @@ public class EnumTest {
 
     public static void main(String[] args) {
                 
-        MyEnum bla = EnumTest.doStuff(1);      
+        MyEnum bla = EnumPilot.doStuff(1);      
         System.out.println(bla + " value=" + bla.getValue());
     }
 }
