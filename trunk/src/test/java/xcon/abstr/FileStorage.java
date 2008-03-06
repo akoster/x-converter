@@ -2,6 +2,7 @@ package xcon.abstr;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -17,92 +18,92 @@ import java.util.Set;
  */
 public class FileStorage extends Storage {
 
-    private static final String STORAGE_DIR = "storage/";
-    private static final String EXTENSION = ".ser";
-    private File storageDir;
+	private static final String STORAGE_DIR = "storage/";
+	private static final String EXTENSION = ".ser";
+	private File storageDir;
 
-    public FileStorage() {
-        storageDir = new File(STORAGE_DIR);
-        storageDir.mkdirs();
+	public FileStorage() {
+		storageDir = new File(STORAGE_DIR);
+		storageDir.mkdirs();
 
-    }
+	}
 
-    @Override
-    public Object read(String key) {
+	@Override
+	public Object read(String key) {
 
-        Object value = null;
+		Object value = null;
 
-        File file = new File(storageDir, key + EXTENSION);
-        FileInputStream fis = null;
-        ObjectInputStream in = null;
-        try {
-            fis = new FileInputStream(file);
-            in = new ObjectInputStream(fis);
-            value = (Object) in.readObject();
-            in.close();
-        }
-        catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        return value;
-    }
+		File file = new File(storageDir, key + EXTENSION);
+		if (file.exists()) {
+			FileInputStream fis = null;
+			ObjectInputStream in = null;
+			try {
+				fis = new FileInputStream(file);
+				in = new ObjectInputStream(fis);
+				value = (Object) in.readObject();
+				in.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} catch (ClassNotFoundException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return value;
+	}
 
-    @Override
-    public void store(String key, Object value) {
+	@Override
+	public void store(String key, Object value) {
 
-        if (getKeys().size() < getCapacity()) {
+		Object oldValue = read(key);
 
-            File file = new File(storageDir, key + EXTENSION);
-            FileOutputStream fos = null;
-            ObjectOutputStream out = null;
-            try {
-                fos = new FileOutputStream(file);
-                out = new ObjectOutputStream(fos);
-                out.writeObject(value);
-                out.close();
-            }
-            catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        else {
-            System.err.println("FileStorage: Could not store " + key + "="
-                + value + ", capacity reached");
-        }
-    }
-    
-    @Override
-    public Set<String> getKeys() {
+		if (getKeys().size() < getCapacity() || oldValue != null) {
 
-        String[] names = storageDir.list(new FilenameFilter() {
+			File file = new File(storageDir, key + EXTENSION);
+			FileOutputStream fos = null;
+			ObjectOutputStream out = null;
+			try {
+				fos = new FileOutputStream(file);
+				out = new ObjectOutputStream(fos);
+				out.writeObject(value);
+				out.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		} else {
+			System.err.println("FileStorage: Could not store " + key + "="
+					+ value + ", capacity reached");
+		}
+	}
 
-            public boolean accept(File dir, String name) {
-                return name.endsWith(EXTENSION);
-            }
+	@Override
+	public Set<String> getKeys() {
 
-        });
-        Set<String> keys = new HashSet<String>();
-        for (String name : names) {
+		String[] names = storageDir.list(new FilenameFilter() {
 
-            String key = name.replace(EXTENSION, "");
-            keys.add(key);
-        }
-        return keys;
-    }
+			public boolean accept(File dir, String name) {
+				return name.endsWith(EXTENSION);
+			}
 
-    @Override
-    public String dumpContents() {
+		});
+		Set<String> keys = new HashSet<String>();
+		for (String name : names) {
 
-        StringBuffer buffer = new StringBuffer();
-        for (String key : getKeys()) {
+			String key = name.replace(EXTENSION, "");
+			keys.add(key);
+		}
+		return keys;
+	}
 
-            Object value = read(key);
-            buffer.append(key).append("=").append(value).append(" ");
-        }
-        return buffer.toString();
-    }
+	@Override
+	public String dumpContents() {
+
+		StringBuffer buffer = new StringBuffer();
+		for (String key : getKeys()) {
+
+			Object value = read(key);
+			buffer.append(key).append("=").append(value).append(" ");
+		}
+		return buffer.toString();
+	}
 
 }
