@@ -11,6 +11,8 @@ Initially there are just some test classes:
   * AbstractTest
   * EnumTest
 
+The project will evolve as defined in the Workstack
+
 = Code conventions =
 
 Please use the Eclipse code formatter and code templates found in the _doc_ directory.
