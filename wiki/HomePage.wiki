@@ -5,8 +5,12 @@
 X-converter is a Java project intended for teaching purposes.
 
 
-= Details =
+= Test classes =
 
 Initially there are just some test classes:
   * AbstractTest
   * EnumTest
+
+= Code conventions =
+
+Please use the Eclipse code formatter and code templates found in the _doc_ directory.
