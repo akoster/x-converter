@@ -1,6 +1,6 @@
 package xcon.pilot.storage;
 
-public class AbstractPilot {
+public class StorageTest {
 
     private Storage storage;
 
@@ -28,7 +28,7 @@ public class AbstractPilot {
     public static void main(String[] args) {
 
         System.out.println("Testing file storage implementation");
-        AbstractPilot testObject = new AbstractPilot();
+        StorageTest testObject = new StorageTest();
         // manual 'injection'
         testObject.setStorage(new FileStorage());
         testObject.doTest();
