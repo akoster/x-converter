@@ -4,12 +4,9 @@
 
 X-converter is a Java project intended for teaching purposes.
 
+= Process =
 
-= Pilot classes =
-
-Initially there are just some pilot classes:
-  * AbstractPilot
-  * EnumPilot
+Initially there are just some PilotClasses.
 
 The project will evolve by implementation of items on the WorkStack
 
