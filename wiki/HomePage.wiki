@@ -5,13 +5,13 @@
 X-converter is a Java project intended for teaching purposes.
 
 
-= Test classes =
+= Pilot classes =
 
-Initially there are just some test classes:
-  * AbstractTest
-  * EnumTest
+Initially there are just some pilot classes:
+  * AbstractPilot
+  * EnumPilot
 
-The project will evolve as defined in the WorkStack
+The project will evolve by implementation of items on the WorkStack
 
 = Code conventions =
 
