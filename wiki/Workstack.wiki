@@ -1,0 +1,15 @@
+#summary Assignments for the project
+
+= Week 11 =
+
+Read about dependency injection (also called 'inversion of control). Notable frameworks for this in Java are Spring and Guice. How could DI be used in the AbstractTest class? Added bonus: add Guice to the project to inject the Storage implementations into AbstractTest.
+
+Expand the xcon.abstr.AbstractTest so that the user can input commands:
+  * read <key> : the application prints the value for that key
+  * store <key> <value> : the application stores the given value under the given key
+  * dump : the application prints all current keys and values
+<key> is a String without whitespace
+<value> is a String
+
+Hint: use java.util.Scanner
+
