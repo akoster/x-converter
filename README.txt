@@ -9,7 +9,6 @@ methods.
 
 Note: another use of abstract classes is to encapsulate the lifecycle of a 
 complex subsystem. Lifecycle methods which are left abstract must be implemented
-by actual implementations of this complex subsystem. Other lifecycle methods can
-be implemented in the abstract class, and are optional for subclasses to 
-override. An example of a similar situation is in: 
-  javax.servlet.http.HttpServlet.
+by concrete subclasses. Other lifecycle methods can be implemented in the 
+abstract class, and are optional for subclasses to override. An example 
+of a similar situation is in: javax.servlet.http.HttpServlet.
