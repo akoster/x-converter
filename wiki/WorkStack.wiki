@@ -1,5 +1,14 @@
 #summary Assignments for the project
 
+= Week 12 =
+
+Add 'clear' and 'delete' commands to StorageTest (first expand Storage with two abstract methods for this).
+
+Read about Google Guice (look at an online example of how this works)
+
+Add maven2 to the project (create a pom.xml and create the correct project structure)
+Add Log4j, Junit4 and Google guice dependencies to the pom.
+
 = Week 11 =
 
 Read about dependency injection (also called 'inversion of control'). Notable frameworks for this in Java are Spring and Google Guice. Bonus: resolve issue 3.
