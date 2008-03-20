@@ -2,7 +2,6 @@ package xcon.pilot.storage;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -25,7 +24,6 @@ public class FileStorage extends Storage {
 	public FileStorage() {
 		storageDir = new File(STORAGE_DIR);
 		storageDir.mkdirs();
-
 	}
 
 	@Override
@@ -54,9 +52,9 @@ public class FileStorage extends Storage {
 	@Override
 	public void store(String key, Object value) {
 
-		Object oldValue = read(key);
+		boolean keyExists = getKeys().contains(key);
 
-		if (getKeys().size() < getCapacity() || oldValue != null) {
+		if (getKeys().size() < getCapacity() || keyExists) {
 
 			File file = new File(storageDir, key + EXTENSION);
 			FileOutputStream fos = null;
@@ -83,12 +81,11 @@ public class FileStorage extends Storage {
 			public boolean accept(File dir, String name) {
 				return name.endsWith(EXTENSION);
 			}
-
 		});
 		Set<String> keys = new HashSet<String>();
 		for (String name : names) {
 
-			String key = name.replace(EXTENSION, "");
+			String key = name.replace(EXTENSION, "");			
 			keys.add(key);
 		}
 		return keys;
@@ -96,7 +93,6 @@ public class FileStorage extends Storage {
 
 	@Override
 	public String dumpContents() {
-
 		StringBuffer buffer = new StringBuffer();
 		for (String key : getKeys()) {
 
