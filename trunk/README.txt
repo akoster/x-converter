@@ -12,3 +12,8 @@ complex subsystem. Lifecycle methods which are left abstract must be implemented
 by concrete subclasses. Other lifecycle methods can be implemented in the 
 abstract class, and are optional for subclasses to override. An example 
 of a similar situation is in: javax.servlet.http.HttpServlet.
+
+to install mysql driver
+http://dev.mysql.com/downloads/connector/j/5.1.html
+mvn install:install-file -DgroupId=mysql -DartifactId=mysql -Dversion=5.1.6 
+-Dpackaging=jar -DgeneratePom=true -Dfile=mysql-connector-java-5.1.6-bin.jar
