@@ -4,8 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
+import org.apache.log4j.Logger;
+import xcon.config.GuiceModule;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
 
 public class StorageTest {
+
+    private static final Logger LOG = Logger.getLogger(StorageTest.class);
 
     private enum Command {
 
@@ -14,7 +20,8 @@ public class StorageTest {
         DUMP("dump"),
         QUIT("quit"),
         HELP("help"),
-        CAP("cap");
+        CAP("cap"),
+        IMPL("impl");
 
         public String name;
 
@@ -30,9 +37,11 @@ public class StorageTest {
 
     private Storage storage;
 
-    // dependency injection, for example with Spring of Google Guice
+    // dependency injection
     @Inject
     public void setStorage(Storage storage) {
+        System.out.println("Using Storage implementation: "
+            + storage.getClass().getName());
         this.storage = storage;
     }
 
@@ -65,6 +74,9 @@ public class StorageTest {
             if (Command.CAP.is(command)) {
                 handleCap(s);
             }
+            if (Command.IMPL.is(command)) {
+                handleImpl(s);
+            }
         }
         while (!Command.QUIT.is(command));
 
@@ -77,6 +89,7 @@ public class StorageTest {
         System.out.println("read <key>: reads the value for the key");
         System.out.println("store <key <value> : stores the value under the key");
         System.out.println("dump: dumps the contents of the storage");
+        System.out.println("impl <implementation>: change the storage implementation");
         System.out.println("quit: exits the application");
         System.out.println("help: shows this help sheet");
 
@@ -106,6 +119,7 @@ public class StorageTest {
             System.out.println("Syntax: store <key> <value>");
         }
     }
+
     private void handleCap(Scanner s) {
         if (s.hasNext()) {
             int capacity = Integer.parseInt(s.next());
@@ -117,21 +131,31 @@ public class StorageTest {
         }
     }
 
+    private void handleImpl(Scanner s) {
+        if (s.hasNext()) {
+            String impl = s.next();
+            if ("file".equals(impl)) {
+                setStorage(new FileStorage());
+            }
+            else if ("map".equals(impl)) {
+                setStorage(new HashMapStorage());
+            }
+            else {
+                System.out.println("impl: possible implementations 'file', 'map'");
+            }
+        }
+        else {
+            System.out.println("Syntax: impl <file|map>");
+        }
+    }
+
     public static void main(String[] args) {
 
         System.out.println("Testing file storage implementation");
-        StorageTest testObject = new StorageTest();
-//       testObject.setStorage(new FileStorage());
+        StorageTest testObject =
+            Guice.createInjector(new GuiceModule()).getInstance(
+                    StorageTest.class);
         testObject.run();
-
-        // manual 'injection'
-        // testObject.setStorage(new FileStorage());
-        // testObject.doTest();
-
-        // System.out.println("Testing HashMap storage implementation");
-        // manual 'injection'
-        // testObject.setStorage(new HashMapStorage());
-        // testObject.doTest();
     }
 
     public String readCommand() {
