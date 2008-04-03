@@ -10,6 +10,3 @@ Object serialization: http://java.sun.com/developer/technicalArticles/Programmin
 
 Reading from commandline: 
 http://www.devdaily.com/java/edu/pj/pj010005/pj010005.shtml
-
-
-mvn install:install-file -DgroupId=mysql -DartifactId=mysql -Dversion=3.0.14 -Dpackaging=jar -DgeneratePom=true -Dfile=lib\mysql-connector-java-3.0.14-production-bin.jar 
