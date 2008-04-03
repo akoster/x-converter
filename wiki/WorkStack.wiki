@@ -1,5 +1,17 @@
 #summary Assignments for the project
 
+= Week 13 = 
+
+Add 'clear' and 'delete' commands to StorageTest (first expand Storage with two abstract methods for this).
+
+Add log4j.properties
+
+Apply the 'command pattern':
+Create an interface called 'Command' with two methods:
+  public void execute(Scanner s);
+  public boolean is(String command);
+For each command (set, read, store, etc) create an implementation of this Command interface. When a user enters a command, the corresponding Command implementation should be instantiated, and the execute method should be called on it.
+
 = Week 12 =
 
 Add 'clear' and 'delete' commands to StorageTest (first expand Storage with two abstract methods for this).
