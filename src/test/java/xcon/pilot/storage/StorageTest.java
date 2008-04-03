@@ -31,6 +31,7 @@ public class StorageTest {
     private Storage storage;
 
     // dependency injection, for example with Spring of Google Guice
+    @Inject
     public void setStorage(Storage storage) {
         this.storage = storage;
     }
@@ -120,7 +121,7 @@ public class StorageTest {
 
         System.out.println("Testing file storage implementation");
         StorageTest testObject = new StorageTest();
-        testObject.setStorage(new FileStorage());
+//       testObject.setStorage(new FileStorage());
         testObject.run();
 
         // manual 'injection'
