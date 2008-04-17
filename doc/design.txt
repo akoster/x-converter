@@ -1,0 +1,24 @@
+X-Converter design plan
+-----------------------
+
+Converter 
+
+From units (select)
+From value (text)
+To units (select)
+To value (text)
+Convert (button)
+
+Fahrenheit - Celcius - Kelvin
+Kilometers - Miles -  Meters - Feet - Inches
+color codes RGB, CMYK, ... - colors
+
+Currency conversion
+Euro - Dollar - Yen
+Get the current rates from an online webservice or webpage 
+--
+
+Applet
+
+Webservice
+
