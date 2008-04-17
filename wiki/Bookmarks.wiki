@@ -10,3 +10,6 @@ Object serialization: http://java.sun.com/developer/technicalArticles/Programmin
 
 Reading from commandline: 
 http://www.devdaily.com/java/edu/pj/pj010005/pj010005.shtml
+
+Command pattern:
+http://en.wikipedia.org/wiki/Command_pattern
