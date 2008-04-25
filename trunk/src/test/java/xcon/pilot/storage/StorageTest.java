@@ -6,12 +6,13 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 import org.apache.log4j.Logger;
 import xcon.config.GuiceModule;
-import com.google.inject.Guice;
-import com.google.inject.Inject;
+//import com.google.inject.Guice;
+//import com.google.inject.Inject;
 
 public class StorageTest {
-
-    private static final Logger LOG = Logger.getLogger(StorageTest.class);
+	
+	HelpClass helpClass = new HelpClass(); 
+	private static final Logger LOG = Logger.getLogger(StorageTest.class);
 
     private enum Command {
 
@@ -38,7 +39,7 @@ public class StorageTest {
     private Storage storage;
 
     // dependency injection
-    @Inject
+   // @Inject
     public void setStorage(Storage storage) {
         System.out.println("Using Storage implementation: "
             + storage.getClass().getName());
@@ -47,7 +48,7 @@ public class StorageTest {
 
     public void run() {
 
-        handleHelp();
+        helpClass.run(""); 
 
         Scanner s;
         String command = null;
@@ -63,13 +64,16 @@ public class StorageTest {
                 handleRead(s);
             }
             if (Command.STORE.is(command)) {
-                handleStore(s);
+                StartInterface storeClass = new StoreClass(); 
+            	storeClass.run(command);
+                
             }
             if (Command.DUMP.is(command)) {
                 System.out.println(storage.dumpContents());
             }
             if (Command.HELP.is(command)) {
-                handleHelp();
+               HelpClass helpClass = new HelpClass(); 
+               helpClass.run(""); 
             }
             if (Command.CAP.is(command)) {
                 handleCap(s);
@@ -83,7 +87,7 @@ public class StorageTest {
         System.out.println("Bye...");
     }
 
-    private void handleHelp() {
+/*    private void handleHelp() {
         System.out.println("Commands:");
         System.out.println("set <key>: setCapacity");
         System.out.println("read <key>: reads the value for the key");
@@ -93,7 +97,7 @@ public class StorageTest {
         System.out.println("quit: exits the application");
         System.out.println("help: shows this help sheet");
 
-    }
+    }*/
 
     private void handleRead(Scanner s) {
         if (s.hasNext()) {
@@ -152,9 +156,10 @@ public class StorageTest {
     public static void main(String[] args) {
 
         System.out.println("Testing file storage implementation");
-        StorageTest testObject =
-            Guice.createInjector(new GuiceModule()).getInstance(
-                    StorageTest.class);
+        StorageTest testObject = new StorageTest(); 
+        testObject.setStorage(new FileStorage()); 
+          /*  Guice.createInjector(new GuiceModule()).getInstance(
+                    StorageTest.class);*/
         testObject.run();
     }
 

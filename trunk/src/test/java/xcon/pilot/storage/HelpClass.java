@@ -5,12 +5,7 @@ import org.apache.log4j.Logger;
 public class HelpClass implements StartInterface{
 
 	 private static final Logger LOG = Logger.getLogger(HelpClass.class);
-
-	public void run() {
-	
-		handleHelp();
-		
-	}
+	 
 	
 	
 	private void handleHelp() {
@@ -24,5 +19,10 @@ public class HelpClass implements StartInterface{
     System.out.println("help: shows this help sheet");
 
 }
+
+
+	public void run(String command) {
+		handleHelp();
+	}
 
 }
