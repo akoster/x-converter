@@ -1,9 +1,9 @@
 package xcon.pilot.storage;
 
 import java.util.Set;
-import com.google.inject.ImplementedBy;
+//import com.google.inject.ImplementedBy;
 
-@ImplementedBy(FileStorage.class)
+//@ImplementedBy(FileStorage.class)
 public abstract class Storage {
 
     private static final int DEFAULT_CAPACITY = 10;
