@@ -5,6 +5,9 @@
 Read about the 'bridge pattern'. Look up Gang of Four (GoF) software design patterns.
 Think about using this pattern to abstract both the commands and the storage implementations from the DataStore application.
 
+See doc/design.txt
+Create a rough design for the converter application so that we can do conversions using converter plugins.
+
 = Week 13 = 
 
 Add 'clear' and 'delete' commands to StorageTest (first expand Storage with two abstract methods for this).
