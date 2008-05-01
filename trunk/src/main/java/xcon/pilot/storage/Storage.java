@@ -1,9 +1,10 @@
 package xcon.pilot.storage;
 
 import java.util.Set;
-//import com.google.inject.ImplementedBy;
 
-//@ImplementedBy(FileStorage.class)
+// import com.google.inject.ImplementedBy;
+
+// @ImplementedBy(FileStorage.class)
 public abstract class Storage {
 
     private static final int DEFAULT_CAPACITY = 10;
@@ -24,4 +25,19 @@ public abstract class Storage {
     public abstract Set<String> getKeys();
 
     public abstract String dumpContents();
+
+    public abstract void delete(String key);
+    
+    public void clearValues() {
+        for (String key : getKeys()) {
+            store(key, "");
+        }
+    }
+
+    public void clearAll() {
+
+        for (String key : getKeys()) {
+            delete(key);
+        }
+    }
 }

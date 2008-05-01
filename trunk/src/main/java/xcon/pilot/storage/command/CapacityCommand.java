@@ -1,22 +1,21 @@
-package xcon.pilot.storage;
+package xcon.pilot.storage.command;
 
 import java.util.Scanner;
+import xcon.pilot.storage.Command;
+import xcon.pilot.storage.Storage;
 
-public class CapacityClass implements Command {
+public class CapacityCommand implements Command {
 
     Storage storage;
 
-    public CapacityClass(Storage storage) {
+    public CapacityCommand(Storage storage) {
         this.storage = storage;
     }
 
-    public CapacityClass() {
-        
+    public void execute(Scanner s) {
+        handleCap(s);
     }
 
-    public void execute(Scanner s) {
-        handleCap (s); 
-    }
     private void handleCap(Scanner s) {
         if (s.hasNext()) {
             int capacity = Integer.parseInt(s.next());
@@ -24,8 +23,13 @@ public class CapacityClass implements Command {
             System.out.println("Capacity =" + capacity);
         }
         else {
-            System.out.println("Syntax: cap <capacity>");
+            System.out.println("syntax: " + showHelp());
         }
+    }
+
+    @Override
+    public String showHelp() {
+        return "<key> - sets the storage capacity";
     }
 
 }
