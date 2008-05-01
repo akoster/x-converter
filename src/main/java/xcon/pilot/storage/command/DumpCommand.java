@@ -16,7 +16,6 @@ public class DumpCommand implements Command {
         System.out.println(storage.dumpContents());
     }
 
-    @Override
     public String showHelp() {
         return "dumps the contents of the storage";
     }

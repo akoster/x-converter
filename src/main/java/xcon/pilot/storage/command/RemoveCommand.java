@@ -30,7 +30,6 @@ public class RemoveCommand implements Command {
         }
     }
 
-    @Override
     public String showHelp() {
         return "<key> - removes the value for the given key";
     }

@@ -36,7 +36,6 @@ public class ClearCommand implements Command {
         }
     }
 
-    @Override
     public String showHelp() {
         return "<all|values> all=removes all data, values=removes all values";
     }
