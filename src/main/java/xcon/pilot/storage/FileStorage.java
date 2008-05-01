@@ -93,6 +93,7 @@ public class FileStorage extends Storage {
 
 	@Override
 	public String dumpContents() {
+        System.out.println("in file storage dump"); 
 		StringBuffer buffer = new StringBuffer();
 		for (String key : getKeys()) {
 
