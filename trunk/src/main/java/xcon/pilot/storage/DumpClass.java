@@ -1,12 +1,20 @@
 package xcon.pilot.storage;
 
-public class DumpClass implements StartInterface{
+import java.util.Scanner;
 
-	public void run(String command) {
-		// TODO Auto-generated method stub
-		
-	}
+public class DumpClass implements Command {
 
+    Storage storage;
+    public DumpClass(Storage storage) {
+      this.storage = storage ; 
+    }
+    public DumpClass() {
+        
+    }
 
+    public void execute(Scanner s) {
+        System.out.println("dump class ");
+        System.out.println(storage.dumpContents());
+    }
 
 }
