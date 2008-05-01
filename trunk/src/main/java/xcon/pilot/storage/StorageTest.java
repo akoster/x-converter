@@ -36,6 +36,8 @@ public class StorageTest {
         DumpClass dump = new DumpClass(storage);
         StoreClass store = new StoreClass(storage);
         ReadClass read = new ReadClass(storage);
+        RemoveClass remove = new RemoveClass(storage); 
+        ClearClass clear = new ClearClass(storage); 
 
         map.put("help", help);
         map.put("cap", capacity);
@@ -43,6 +45,9 @@ public class StorageTest {
         map.put("dump", dump);
         map.put("store", store);
         map.put("read", read);
+        map.put("clear", clear); 
+        map.put("remove", remove);
+        
 
     }
 
