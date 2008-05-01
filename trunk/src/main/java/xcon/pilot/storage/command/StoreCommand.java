@@ -32,7 +32,6 @@ public class StoreCommand implements Command {
         }
     }
 
-    @Override
     public String showHelp() {
         return "<key> <value> - stores the value under the key";
     }

@@ -27,7 +27,6 @@ public class CapacityCommand implements Command {
         }
     }
 
-    @Override
     public String showHelp() {
         return "<key> - sets the storage capacity";
     }
