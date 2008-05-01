@@ -1,14 +1,19 @@
-package xcon.pilot.storage;
+package xcon.pilot.storage.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import xcon.pilot.storage.Storage;
 
 public class HashMapStorage extends Storage {
 
     private Map<String, Object> data;
 
     public HashMapStorage() {
+        init();
+    }
+
+    private void init() {
         this.data = new HashMap<String, Object>();
     }
 
@@ -45,4 +50,9 @@ public class HashMapStorage extends Storage {
         return buffer.toString();
     }
 
+    public void delete(String key) {
+
+        data.remove(key);
+        System.out.println("Deleted: " + key);
+    }
 }

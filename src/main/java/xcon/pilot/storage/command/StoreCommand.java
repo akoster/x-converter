@@ -1,24 +1,22 @@
-package xcon.pilot.storage;
+package xcon.pilot.storage.command;
 
 import java.util.Scanner;
+import xcon.pilot.storage.Command;
+import xcon.pilot.storage.Storage;
 
-public class StoreClass implements Command {
+public class StoreCommand implements Command {
 
     Storage storage;
 
-    public StoreClass(Storage storage) {
+    public StoreCommand(Storage storage) {
         this.storage = storage;
-
-    }
-
-    public StoreClass() {
 
     }
 
     public void execute(Scanner s) {
         handleStore(s);
     }
-    
+
     private void handleStore(Scanner s) {
         if (s.hasNext()) {
             String key = s.next();
@@ -30,7 +28,12 @@ public class StoreClass implements Command {
             System.out.println("Stored: " + key + "=" + value);
         }
         else {
-            System.out.println("Syntax: store <key> <value>");
+            System.out.println("syntax: " + showHelp());
         }
+    }
+
+    @Override
+    public String showHelp() {
+        return "<key> <value> - stores the value under the key";
     }
 }
