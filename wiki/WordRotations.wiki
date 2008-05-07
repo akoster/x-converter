@@ -54,3 +54,9 @@ A concept I came up with is called *Rotodromes*: words that read the same when r
 lowercase examples: pod, anyhue, opuanuendo
 
 Write a Java program which generates rotodromes.
+
+----
+
+See also: 
+  * http://www.anagrammer.com/
+  * http://www.rinkworks.com/words/palindromes.shtml
