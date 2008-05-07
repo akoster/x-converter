@@ -19,11 +19,12 @@ Note that this mapping works in two directions, i.e. letters on the right also c
 self-mapping: o,x
 
 examples:
+{{{
 hexapod, yaxedop
 unwaxed, numexap
 anyhow, euhyom
 daemon, peawou
-
+}}}
 upper case character mappings, character rotation 90 clockwise:
 {{{
 E	M
@@ -33,16 +34,17 @@ N	Z
 U	C
 W	E
 Z	N
-}}
+}}}
 This mapping only works from left to right.
 
 self-mapping: X, O
 
 examples:
+{{{
 WHINE, EIHZM
 ZINE, NHZM
 NEW, ZME
-
+}}}
 Write a Java program that generates rotonyms
 
 ----
