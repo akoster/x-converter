@@ -2,8 +2,7 @@
 
 = Week 20 =
 
-  1. Create an application which rotates each character in an input String 180 
-     degrees (see WordRotations)
+  1. Create an application which rotates each character in an input String 180 degrees (see WordRotations)
   2. The same for 90 degrees clockwise
   3. download a dictionary of english words somewhere
   4. Extend the application so that it can find all the rotonyms in the dictionary
