@@ -2,17 +2,9 @@ package xcon.pilot.storage.command;
 
 import java.util.Scanner;
 import xcon.pilot.storage.Command;
-import xcon.pilot.storage.Storage;
 
-public class ReadCommand implements Command {
-
-    Storage storage;
-
-    public ReadCommand(Storage storage) {
-        this.storage = storage;
-
-    }
-
+public class ReadCommand extends Command {
+  
     public void execute(Scanner s) {
         handleRead(s);
     }

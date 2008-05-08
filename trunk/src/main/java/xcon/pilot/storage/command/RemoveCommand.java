@@ -1,17 +1,9 @@
 package xcon.pilot.storage.command;
 
-import java.io.File;
 import java.util.Scanner;
 import xcon.pilot.storage.Command;
-import xcon.pilot.storage.Storage;
 
-public class RemoveCommand implements Command {
-
-    Storage storage;
-
-    public RemoveCommand(Storage storage) {
-        this.storage = storage;
-    }
+public class RemoveCommand extends Command {
 
     public void execute(Scanner s) {
         handleRemove(s);

@@ -2,15 +2,8 @@ package xcon.pilot.storage.command;
 
 import java.util.Scanner;
 import xcon.pilot.storage.Command;
-import xcon.pilot.storage.Storage;
 
-public class ClearCommand implements Command {
-
-    Storage storage;
-
-    public ClearCommand(Storage storage) {
-        this.storage = storage;
-    }
+public class ClearCommand extends Command {
 
     public void execute(Scanner s) {
         handle(s);

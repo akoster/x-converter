@@ -27,11 +27,12 @@ public class HashMapStorage extends Storage {
 
         if (getKeys().size() < getCapacity()) {
             data.put(key, value);
+            System.out.println("Stored: " + key + "=" + value);
         }
         else {
             System.err.println("HashMapStorage: Could not store " + key + "="
                 + value + ", capacity reached");
-        }
+        }       
     }
 
     public Set<String> getKeys() {

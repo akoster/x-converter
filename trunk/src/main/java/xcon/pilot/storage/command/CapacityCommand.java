@@ -2,15 +2,8 @@ package xcon.pilot.storage.command;
 
 import java.util.Scanner;
 import xcon.pilot.storage.Command;
-import xcon.pilot.storage.Storage;
 
-public class CapacityCommand implements Command {
-
-    Storage storage;
-
-    public CapacityCommand(Storage storage) {
-        this.storage = storage;
-    }
+public class CapacityCommand extends Command {
 
     public void execute(Scanner s) {
         handleCap(s);

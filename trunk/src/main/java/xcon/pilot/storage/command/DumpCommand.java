@@ -2,14 +2,8 @@ package xcon.pilot.storage.command;
 
 import java.util.Scanner;
 import xcon.pilot.storage.Command;
-import xcon.pilot.storage.Storage;
 
-public class DumpCommand implements Command {
-
-    Storage storage;
-    public DumpCommand(Storage storage) {
-      this.storage = storage ; 
-    }
+public class DumpCommand extends Command {
 
     public void execute(Scanner s) {
         System.out.println("dump class ");

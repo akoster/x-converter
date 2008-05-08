@@ -2,9 +2,17 @@ package xcon.pilot.storage;
 
 import java.util.Scanner;
 
-public interface Command {
+public abstract class Command {
 
-    public void execute(Scanner s);
-    
-    public String showHelp();
+    protected static Storage storage;
+
+    public Command() {}
+
+    public static void setStorage(Storage storage) {
+        Command.storage = storage;
+    }
+
+    public abstract void execute(Scanner s);
+
+    public abstract String showHelp();
 }
