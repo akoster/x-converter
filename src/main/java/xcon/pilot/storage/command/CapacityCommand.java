@@ -2,6 +2,7 @@ package xcon.pilot.storage.command;
 
 import java.util.Scanner;
 import xcon.pilot.storage.Command;
+import xcon.pilot.storage.Storage;
 
 public class CapacityCommand extends Command {
 
@@ -12,7 +13,7 @@ public class CapacityCommand extends Command {
     private void handleCap(Scanner s) {
         if (s.hasNext()) {
             int capacity = Integer.parseInt(s.next());
-            storage.setCapacity(capacity);
+            Storage.getImplementation().setCapacity(capacity);
             System.out.println("Capacity =" + capacity);
         }
         else {

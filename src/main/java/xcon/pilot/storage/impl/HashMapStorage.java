@@ -23,19 +23,21 @@ public class HashMapStorage extends Storage {
     }
 
     @Override
-    public void store(String key, Object value) {
+    public boolean store(String key, Object value) {
 
-        if (getKeys().size() < getCapacity()) {
+        boolean enoughCapacity =
+            getDataKeys().size() < getCapacity() || getDataKeys().contains(key);
+        if (enoughCapacity) {
             data.put(key, value);
-            System.out.println("Stored: " + key + "=" + value);
         }
         else {
             System.err.println("HashMapStorage: Could not store " + key + "="
                 + value + ", capacity reached");
-        }       
+        }
+        return enoughCapacity;
     }
 
-    public Set<String> getKeys() {
+    public Set<String> getDataKeys() {
         return data.keySet();
     }
 
@@ -43,7 +45,7 @@ public class HashMapStorage extends Storage {
     public String dumpContents() {
 
         StringBuffer buffer = new StringBuffer();
-        for (String key : getKeys()) {
+        for (String key : getDataKeys()) {
 
             Object value = read(key);
             buffer.append(key).append("=").append(value).append(" ");
@@ -54,6 +56,5 @@ public class HashMapStorage extends Storage {
     public void delete(String key) {
 
         data.remove(key);
-        System.out.println("Deleted: " + key);
     }
 }

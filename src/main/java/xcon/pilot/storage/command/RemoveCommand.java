@@ -2,6 +2,7 @@ package xcon.pilot.storage.command;
 
 import java.util.Scanner;
 import xcon.pilot.storage.Command;
+import xcon.pilot.storage.Storage;
 
 public class RemoveCommand extends Command {
 
@@ -14,7 +15,8 @@ public class RemoveCommand extends Command {
         if (s.hasNext()) {
 
             String key = s.next();
-            storage.delete(key);
+            Storage.getImplementation().delete(key);
+            System.out.println("Deleted: " + key);
         }
 
         else {
