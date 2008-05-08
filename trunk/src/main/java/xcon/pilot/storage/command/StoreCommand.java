@@ -2,21 +2,34 @@ package xcon.pilot.storage.command;
 
 import java.util.Scanner;
 import xcon.pilot.storage.Command;
+import xcon.pilot.storage.Storage;
 
 public class StoreCommand extends Command {
-    
+
     public void execute(Scanner s) {
         handleStore(s);
     }
 
     private void handleStore(Scanner s) {
-        
-        if (s.hasNext()) {
-            String key = s.next();
-            String value = s.nextLine();
-            storage.store(key, value);
-        }
-        else {
+
+        handling: {
+            if (s.hasNext()) {
+                String key = s.next();
+                if (s.hasNext()) {
+
+                    String value = s.nextLine();
+                    if (value != null) {
+
+                        value = value.trim();
+                        boolean success =
+                            Storage.getImplementation().store(key, value);
+                        if (success) {
+                            System.out.println("Stored: " + key + "=" + value);
+                        }
+                        break handling;
+                    }
+                }
+            }
             System.out.println("syntax: " + showHelp());
         }
     }

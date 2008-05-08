@@ -9,13 +9,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import org.apache.log4j.Logger;
-import xcon.config.GuiceModule;
-import xcon.pilot.storage.impl.FileStorage;
-import xcon.pilot.storage.impl.HashMapStorage;
-import xcon.pilot.storage.impl.NullStorage;
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
 
 public class DataStore {
 
@@ -23,55 +16,19 @@ public class DataStore {
 
     Map<String, Command> commandMap;
 
+    private static final String CMD_QUIT = "quit";
+    private static final String CMD_HELP = "help";
+    private static final String CMD_IMPL = "impl";
+
     public static void main(String[] args) {
 
         System.out.println("DataStore application");
         DataStore testObject = new DataStore();
-        Injector injector = Guice.createInjector(new GuiceModule());
-        injector.injectMembers(testObject);
         testObject.run();
     }
 
-    public void run() {
-
-        Scanner s;
-        String cmd = null;
-        boolean quit = false;
-        do {
-            String commandLine = readCommandLine();
-            s = new Scanner(commandLine);
-            if (s.hasNext()) {
-                cmd = s.next();
-            }
-            // 'special' commands
-            if ("quit".equalsIgnoreCase(cmd)) {
-                quit = handleQuit();
-            }
-            else if ("help".equalsIgnoreCase(cmd)) {
-                displayHelpSheet();
-            }
-            else if ("impl".equalsIgnoreCase(cmd)) {
-                handleImpl(s);
-            }
-            else {
-                Command command = getCommand(cmd);
-                if (command == null) {
-                    System.out.println("Type 'help' for a help sheet");
-                }
-                else {
-                    command.execute(s);
-                }
-            }
-        }
-        while (!quit);
-        System.out.println("bye");
-    }
-
-    private Command getCommand(String key) {
-        if (commandMap == null) {
-            init();
-        }
-        return commandMap.get(key);
+    public DataStore() {
+        init();
     }
 
     private void init() {
@@ -93,7 +50,42 @@ public class DataStore {
             }
         }
     }
-    
+
+    public void run() {
+
+        Scanner s;
+        String cmd = null;
+        boolean quit = false;
+        do {
+            String commandLine = readCommandLine();
+            s = new Scanner(commandLine);
+            if (s.hasNext()) {
+                cmd = s.next();
+            }
+            // 'special' commands
+            if (CMD_QUIT.equalsIgnoreCase(cmd)) {
+                quit = handleQuit();
+            }
+            else if (CMD_HELP.equalsIgnoreCase(cmd)) {
+                handleHelp();
+            }
+            else if (CMD_IMPL.equalsIgnoreCase(cmd)) {
+                handleImpl(s);
+            }
+            else {
+                Command command = commandMap.get(cmd);
+                if (command == null) {
+                    showHelpHelp();
+                }
+                else {
+                    command.execute(s);
+                }
+            }
+        }
+        while (!quit);
+        System.out.println("bye");
+    }
+
     public String readCommandLine() {
 
         // open up standard input
@@ -111,13 +103,20 @@ public class DataStore {
         return command;
     }
 
-    private void displayHelpSheet() {
+    private void handleHelp() {
 
         System.out.println("Help sheet");
         for (String cmd : commandMap.keySet()) {
             Command command = commandMap.get(cmd);
             System.out.println(cmd + ": " + command.showHelp());
         }
+        showHelpImpl();
+        showHelpHelp();
+        showHelpQuit();
+    }
+
+    private void showHelpHelp() {
+        System.out.println("help: displays a help sheet");
     }
 
     private boolean handleQuit() {
@@ -134,34 +133,23 @@ public class DataStore {
         return false;
     }
 
+    private void showHelpQuit() {
+        System.out.println("quit: exits the application");
+    }
+
     private void handleImpl(Scanner s) {
 
-        handling: {
-            if (s.hasNext()) {
-                String impl = s.next();
-                if ("file".equals(impl)) {
-                    this.setStorage(new FileStorage());
-                    break handling;
-                }
-                else if ("map".equals(impl)) {
-                    this.setStorage(new HashMapStorage());
-                    break handling;
-                }
-                else if ("null".equals(impl)) {
-                    this.setStorage(new NullStorage());
-                    break handling;
-                }
-            }
-            System.out.println("syntax: <file|map|null> - sets the implementation");
+        if (s.hasNext()) {
+            String impl = s.next();
+            Storage.setImplementation(impl);
+        }
+        else {
+            showHelpImpl();
         }
     }
 
-    // dependency injection
-    @Inject
-    public void setStorage(Storage storage) {
-
-        System.out.println("Using Storage implementation: "
-            + storage.getClass().getName());
-        Command.setStorage(storage);
+    private void showHelpImpl() {
+        System.out.println("impl: " + Storage.getImplKeys()
+            + " - sets the Storage implementation");
     }
 }

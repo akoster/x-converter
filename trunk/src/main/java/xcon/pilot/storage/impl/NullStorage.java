@@ -18,7 +18,7 @@ public class NullStorage extends Storage {
     }
 
     @Override
-    public Set<String> getKeys() {
+    public Set<String> getDataKeys() {
         System.out.println("NullStorage getKeys");
         return new HashSet<String>();
     }
@@ -30,8 +30,9 @@ public class NullStorage extends Storage {
     }
 
     @Override
-    public void store(String key, Object value) {
+    public boolean store(String key, Object value) {
         System.out.println("NullStorage store");
+        return true;
     }
 
 }

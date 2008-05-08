@@ -52,11 +52,12 @@ public class FileStorage extends Storage {
     }
 
     @Override
-    public void store(String key, Object value) {
+    public boolean store(String key, Object value) {
 
-        boolean keyExists = getKeys().contains(key);
+        boolean enoughCapacity =
+            getDataKeys().size() < getCapacity() || getDataKeys().contains(key);
 
-        if (getKeys().size() < getCapacity() || keyExists) {
+        if (enoughCapacity) {
 
             File file = new File(storageDir, key + EXTENSION);
             FileOutputStream fos = null;
@@ -66,7 +67,6 @@ public class FileStorage extends Storage {
                 out = new ObjectOutputStream(fos);
                 out.writeObject(value);
                 out.close();
-                System.out.println("Stored: " + key + "=" + value);
             }
             catch (IOException ex) {
                 ex.printStackTrace();
@@ -76,11 +76,11 @@ public class FileStorage extends Storage {
             System.err.println("FileStorage: Could not store " + key + "="
                 + value + ", capacity reached");
         }
-        
+        return enoughCapacity;
     }
 
     @Override
-    public Set<String> getKeys() {
+    public Set<String> getDataKeys() {
 
         String[] names = storageDir.list(new FilenameFilter() {
 
@@ -101,7 +101,7 @@ public class FileStorage extends Storage {
     public String dumpContents() {
 
         StringBuffer buffer = new StringBuffer();
-        for (String key : getKeys()) {
+        for (String key : getDataKeys()) {
 
             Object value = read(key);
             buffer.append(key).append("=").append(value).append(" ");
@@ -111,6 +111,7 @@ public class FileStorage extends Storage {
 
     @Override
     public void delete(String key) {
+
         File file = new File(storageDir, key + EXTENSION);
         if (!file.canWrite()) {
             System.out.println("Delete: write protected: " + file);
@@ -124,7 +125,5 @@ public class FileStorage extends Storage {
                 System.out.println("Deletion failed");
             }
         }
-
-        System.out.println("Deleted: " + file);
     }
 }

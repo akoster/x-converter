@@ -2,6 +2,7 @@ package xcon.pilot.storage.command;
 
 import java.util.Scanner;
 import xcon.pilot.storage.Command;
+import xcon.pilot.storage.Storage;
 
 public class ClearCommand extends Command {
 
@@ -11,20 +12,21 @@ public class ClearCommand extends Command {
 
     private void handle(Scanner s) {
 
-        if (s.hasNext()) {
+        handling: {
+            if (s.hasNext()) {
 
-            String type = s.next();
-            if ("values".equals(type)) {
-                storage.clearValues();
+                String type = s.next();
+                if ("values".equals(type)) {
+                    Storage.getImplementation().clearValues();
+                    System.out.println("Cleared values");
+                    break handling;
+                }
+                else if ("all".equals(type)) {
+                    Storage.getImplementation().clearAll();
+                    System.out.println("Cleared all");
+                    break handling;
+                }
             }
-            else if ("all".equals(type)) {
-                storage.clearAll();
-            }
-            else {
-                System.out.println("syntax: " + showHelp());
-            }
-        }
-        else {
             System.out.println("syntax: " + showHelp());
         }
     }
