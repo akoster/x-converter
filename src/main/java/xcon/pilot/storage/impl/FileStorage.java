@@ -66,6 +66,7 @@ public class FileStorage extends Storage {
                 out = new ObjectOutputStream(fos);
                 out.writeObject(value);
                 out.close();
+                System.out.println("Stored: " + key + "=" + value);
             }
             catch (IOException ex) {
                 ex.printStackTrace();
@@ -75,6 +76,7 @@ public class FileStorage extends Storage {
             System.err.println("FileStorage: Could not store " + key + "="
                 + value + ", capacity reached");
         }
+        
     }
 
     @Override
