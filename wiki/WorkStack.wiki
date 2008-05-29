@@ -1,5 +1,19 @@
 #summary Assignments for the project
 
+= Week 23 =
+
+  Web crawler
+  # we are going to write a web crawler, which accesses a web pages using UrlConnection
+  # the crawler starts with an empty work queue
+  # an inital URL (command line argument) is added to the queue
+  # read the content from the URL (the content is an HTML page)
+  # find the hyperlinks (http://...) in the page and add them to the work queue
+  # keep handling work from the queue until a certain limit is reached or there is
+    no more work on the queue
+  # limit can be: elapsed time or number of handled pages
+
+  for this week start with reading content from a URL using Java
+
 = Week 20 =
 
   # Create an application which rotates each character in an input String 180 degrees (see WordRotations)
