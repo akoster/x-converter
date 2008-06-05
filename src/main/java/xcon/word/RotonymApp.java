@@ -80,7 +80,6 @@ public class RotonymApp extends JFrame implements ActionListener {
         submitButton.addActionListener(this);
     }
 
-    @Override
     public void actionPerformed(ActionEvent event) {
 
         String output;
