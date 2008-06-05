@@ -1,5 +1,25 @@
 #summary Assignments for the project
 
+= Week 24 =
+
+  Now we can read content, try to find the URL's in the page.
+  Hints:
+  # assuming this is an HTML page, URL's will be preceded by href= (case insensitive)
+  # consider presence/absence of surrounding quotes or whitespace
+  # consider relative URL's
+  # find the end of the URL by scanning for:
+    # tab: \t
+    # newline: \n
+    # carriage return: \r
+    # quote: " or '
+    # tag closur: >
+    # hash: # (marks the start of an anchor)
+
+  Examples:
+  # <A Href="mypic.gif">showme</a>
+  # <a HREF = 'http://www.mysite.net/breaker.html#introduction' >intro</a>
+  # <A href=www.google.com>google's site</A>
+
 = Week 23 =
 
   Web crawler
