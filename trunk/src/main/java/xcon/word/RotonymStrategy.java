@@ -7,13 +7,11 @@ package xcon.word;
 public abstract class RotonymStrategy {
 
     /**
-     * Determines if the given character is allowed by this strategy
+     * Determines the rotonym character
      * @param ch
      * @return
      */
-    public abstract boolean isAllowed(char ch);
-
-    public abstract char returnChar(char ch);
+    public abstract char returnChar(char ch) throws RotonymException;
 
     /**
      * Converts the given word to its rotonym according to the concrete Strategy
@@ -25,22 +23,16 @@ public abstract class RotonymStrategy {
     public String determineRotonym(String word) throws RotonymException {
 
         String result;
-
         char ch;
-        char r_ch;
-        boolean rotonymWord = false;
+        boolean rotonymWord = true;
         StringBuffer bufferWord = new StringBuffer();
         for (int i = 0; i < word.length(); i++) {
 
-            System.out.println("Char " + i + " is " + word.charAt(i));
-            ch = word.charAt(i);
-            if (this.isAllowed(ch)) {
-                r_ch = this.returnChar(ch);
-                System.out.println(r_ch);
-                bufferWord.append(r_ch);
-                rotonymWord = true;
+            try {
+                ch = this.returnChar(word.charAt(i));
+                bufferWord.append(ch);
             }
-            else {
+            catch (RotonymException e) {
                 rotonymWord = false;
                 break;
             }

@@ -1,5 +1,11 @@
 package xcon.word;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
 /**
  * Searches a dictionary for words of which the rotonym also occurs in the
  * dictionary
@@ -16,9 +22,8 @@ package xcon.word;
  *   90 = xwords.palindrome.Rotonym90
  * 
  * bepaal de rotonym strategie
- * bepaal het bestand die je wilt scannen 
- * scan het bestand
- * lees woord voor woord in
+ * woordenboek helemaal inlezen in een Map<String, Boolean>
+ * woord voor woord over de keyset van de Map itereren
  * bepaal voor elk woord of het een rotonym is
  * ja:
  *   zoek in het woordenboek naar deze rotonym
@@ -39,5 +44,108 @@ package xcon.word;
  * </pre>
  */
 public class RotonymFinder {
+
+    private Map<String, Boolean> words;
+    private RotonymStrategy strategy;
+
+    public RotonymFinder(String fileName, String cmd) {
+
+        strategy = determineStrategy(cmd);
+        if (strategy == null) {
+            System.err.println("wrong command");
+            return;
+        }
+
+        words = determineWords(fileName);
+        if (words == null) {
+            System.err.println("could not read file");
+            return;
+        }
+    }
+
+    private Map<String, Boolean> determineWords(String fileName) {
+        Map<String, Boolean> words = new HashMap<String, Boolean>();
+        Scanner input = null;
+        try {
+            input = new Scanner(new File(fileName));
+        }
+        catch (FileNotFoundException e) {
+            words = null;
+        }
+
+        while (input.hasNext()) {
+            String word = input.next();
+            if (word.length() > 1) {
+                words.put(word.toLowerCase(), true);
+            }
+        }
+        return words;
+    }
+
+    private RotonymStrategy determineStrategy(String cmd) {
+        RotonymStrategy strategy = null;
+        if ("180".equals(cmd)) {
+            System.out.println("the rotonyms 180 ");
+            strategy = new Rotonym180();
+
+        }
+        else if ("90".equals(cmd)) {
+            strategy = new Rotonym90();
+            System.out.println("the rotonyms 90 ");
+        }
+        return strategy;
+    }
+
+    public static void main(String[] args) {
+
+        // args = null
+        // args = new String[] {};
+        if (args == null || args.length < 2) {
+            printUsage();
+            return;
+        }
+
+        String fileName = args[0];
+        String strategy = args[1];
+
+        RotonymFinder finder = new RotonymFinder(fileName, strategy);
+        finder.run();
+        System.out.println("Done.");
+    }
+
+    /**
+     * <pre>
+     * woord voor woord over de keyset van de Map itereren
+     * bepaal voor elk woord of het een rotonym is
+     * ja:
+     *   zoek in het woordenboek naar deze rotonym
+     *   gevonden?
+     *   ja: uitprinten
+     *   nee: ga verder
+     * nee:
+     *   ga verder met volgende woorden
+     *   </pre>
+     */
+    private void run() {
+        for (String word : words.keySet()) {
+            try {
+                String rotonym = strategy.determineRotonym(word);
+                // word is een rotonym
+                if (words.get(rotonym.toLowerCase()) != null) {
+                    System.out.println(word + " <-> " + rotonym);
+                }
+            }
+            catch (RotonymException e) {
+                // word is geen rotonym
+                continue;
+            }
+        }
+    }
+
+    private static void printUsage() {
+        System.err.println("verkeerde argumenten");
+        System.err.println("java xwords.palindrome.RotonymFinder dictionary.txt 180");
+
+    }
 
 }
