@@ -40,15 +40,13 @@ public class Rotonym180 extends RotonymStrategy {
         charMap.put('u', 'n');
     }
 
-    @Override
-    public boolean isAllowed(char teken) {
-        return charMap.containsKey(teken);
-    }
+    public char returnChar(char ch) throws RotonymException {
 
-    @Override
-    public char returnChar(char ch) {
-        
-        return charMap.get(ch);
+        Character rotonymChar = charMap.get(Character.toLowerCase(ch));
+        if (rotonymChar == null) {
+            throw new RotonymException("Character " + ch
+                + " is not a rotonym character");
+        }
+        return rotonymChar;
     }
-
 }
