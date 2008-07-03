@@ -12,7 +12,7 @@
     # newline: \n
     # carriage return: \r
     # quote: " or '
-    # tag closur: >
+    # tag closure: >
     # hash: # (marks the start of an anchor)
 
   Examples:
