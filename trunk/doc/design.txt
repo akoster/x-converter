@@ -1,24 +1,35 @@
-X-Converter design plan
------------------------
+ATM application 
+----------------
+The ATM application represents an automated transaction machine which allows a
+user to access a bank account. The user must first authenticate. An 
+authenticated user can inquire the account balance, withdraw cash or deposit 
+cash.
 
-Converter 
+Atm
+* Executes financial transactions:
+ * BalanceInquiry
+ * Withdrawal
+ * Deposit
 
-From units (select)
-From value (text)
-To units (select)
-To value (text)
-Convert (button)
+BankDatabase
+* Authenticates the user for access to a specific account
+* Retrieves an account balance
+* Credits a deposit amount to an account
+* Debits a withdrawal amount from an account
 
-Fahrenheit - Celcius - Kelvin
-Kilometers - Miles -  Meters - Feet - Inches
-color codes RGB, CMYK, ... - colors
+Account
+* Retrieves an account's balance
+* Credits a deposit amount to an account
+* Debits a withdrawal amount from an account
 
-Currency conversion
-Euro - Dollar - Yen
-Get the current rates from an online webservice or webpage 
---
+Screen
+* Displays a message to the user
 
-Applet
+Keypad
+* Retrieves numeric input from the user
 
-Webservice
+CashDispenser
+* Dispenses cash withdrawals
 
+DepositSlot
+* Accepts cash deposits
