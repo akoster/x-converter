@@ -6,7 +6,7 @@ public class RontonymFinderTest extends TestCase {
 
     public void testMain1() {
         try {
-            RotonymFinder.main(null);
+            RotonymFinderApp.main(null);
         }
         catch (Throwable t) {
             fail("Exception thrown" + t);
@@ -15,7 +15,7 @@ public class RontonymFinderTest extends TestCase {
 
     public void testMain2() {
         try {
-            RotonymFinder.main(new String[] {});
+            RotonymFinderApp.main(new String[] {});
         }
         catch (Throwable t) {
             fail("Exception thrown" + t);
@@ -24,7 +24,7 @@ public class RontonymFinderTest extends TestCase {
 
     public void testMain3() {
         try {
-            RotonymFinder.main(new String[] {
+            RotonymFinderApp.main(new String[] {
                 "english.txt"
             });
         }
@@ -35,7 +35,7 @@ public class RontonymFinderTest extends TestCase {
 
     public void testMain4() {
         try {
-            RotonymFinder.main(new String[] {
+            RotonymFinderApp.main(new String[] {
                     "english.txt", "180"
             });
         }
@@ -46,7 +46,7 @@ public class RontonymFinderTest extends TestCase {
 
     public void testMain5() {
         try {
-            RotonymFinder.main(new String[] {
+            RotonymFinderApp.main(new String[] {
                     "english.txt", "180", "90", "bla"
             });
         }
@@ -57,7 +57,7 @@ public class RontonymFinderTest extends TestCase {
 
     public void testMain6() {
         try {
-            RotonymFinder.main(new String[] {
+            RotonymFinderApp.main(new String[] {
                     "english.txt", null, "180", "90"
             });
         }
