@@ -6,11 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import org.apache.log4j.Logger;
 import xcon.atm.swing.event.AtmEventHandler;
 import xcon.atm.swing.event.BankUpdateCompletedEvent;
 
 public class BankDatabase {
 
+    private static final Logger LOG = Logger.getLogger(BankDatabase.class); 
     private Connection conn;
     private AtmEventHandler atmEventHandler;
 
@@ -52,7 +54,7 @@ public class BankDatabase {
             }
 
             else {
-                System.out.println("wrong pin code");
+                LOG.debug("wrong pin code");
             }
         }
         catch (SQLException e) {

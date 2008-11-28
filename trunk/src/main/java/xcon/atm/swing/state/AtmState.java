@@ -20,6 +20,10 @@ public abstract class AtmState implements AtmEventHandler {
         setStatusMessage();
     }
 
+    public void toEndState() {
+        atm.getSession().state = atm.getEndState();
+    }
+    
     public void toStateFailure() {
         atm.getSession().state = nextStateOnFailure;
         setStatusMessage();

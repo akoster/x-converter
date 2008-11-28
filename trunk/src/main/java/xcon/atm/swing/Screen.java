@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.apache.log4j.Logger;
 import xcon.atm.swing.event.AtmEventHandler;
 import xcon.atm.swing.event.ScreenAmountChoiceEvent;
 import xcon.atm.swing.event.ScreenEvent;
@@ -17,6 +18,8 @@ import xcon.atm.swing.event.ScreenOtherEvent;
 
 public class Screen extends JPanel implements ActionListener {
 
+    private static final Logger LOG = Logger.getLogger(Screen.class);
+    
     private static final String MONEY_PANEL = "moneyPanel";
     private JPanel moneyChoicePanel;
     protected JButton[] moneyChoiceButtons;
@@ -64,14 +67,14 @@ public class Screen extends JPanel implements ActionListener {
     }
 
     public void showInfoPanel() {
-        System.out.println("showInfoPanel");
+        LOG.debug("showInfoPanel");
         CardLayout layout = (CardLayout) this.getLayout();
         layout.show(this, INFO_PANEL);
         isShowingInfoPanel = true;
     }
 
     public void showMoneyPanel() {
-        System.out.println("showMoneyPanel");
+        LOG.debug("showMoneyPanel");
         CardLayout layout = (CardLayout) this.getLayout();
         layout.show(this, MONEY_PANEL);
         isShowingInfoPanel = false;
@@ -108,7 +111,7 @@ public class Screen extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent event) {
 
-        System.out.println("actionPerformed");
+        LOG.debug("actionPerformed");
         Object source = event.getSource();
         ScreenEvent screenEvent = null;
 

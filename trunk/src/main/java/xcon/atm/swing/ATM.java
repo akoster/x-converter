@@ -3,6 +3,7 @@ package xcon.atm.swing;
 import java.awt.GridLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import org.apache.log4j.Logger;
 import xcon.atm.swing.event.AtmEvent;
 import xcon.atm.swing.event.AtmEventHandler;
 import xcon.atm.swing.event.KeyPadStopEvent;
@@ -16,6 +17,7 @@ import xcon.atm.swing.state.WithdrawalState;
 
 public class ATM extends JFrame implements AtmEventHandler {
 
+    private static final Logger LOG = Logger.getLogger(ATM.class); 
     private static final long serialVersionUID = 1L;
 
     // frontend
@@ -114,7 +116,7 @@ public class ATM extends JFrame implements AtmEventHandler {
     
     public void initSession() {
         
-        AtmSession session = new AtmSession();
+        session = new AtmSession();
         session.amount = "";
         session.passwordHideString = "";
         session.password = "";
@@ -126,7 +128,7 @@ public class ATM extends JFrame implements AtmEventHandler {
     @Override
     public void handleAtmEvent(AtmEvent atmEvent) {
 
-        System.out.println("received atmEvent");
+        LOG.debug("received atmEvent" + atmEvent);
         
         if (atmEvent instanceof KeyPadStopEvent
             && !session.state.equals(workflowStart))
@@ -158,6 +160,10 @@ public class ATM extends JFrame implements AtmEventHandler {
 
     public AtmSession getSession() {
         return session;
+    }
+    
+    public EndState getEndState() {
+        return endState;
     }
 
 }

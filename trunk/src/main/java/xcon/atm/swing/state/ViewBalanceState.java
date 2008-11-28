@@ -1,20 +1,24 @@
 package xcon.atm.swing.state;
 
+import org.apache.log4j.Logger;
 import xcon.atm.swing.ATM;
 import xcon.atm.swing.event.AtmEvent;
 import xcon.atm.swing.event.KeyPadOkEvent;
 
 public class ViewBalanceState extends AtmState {
 
+    private static final Logger LOG = Logger.getLogger(ViewBalanceState.class);
+    
     public ViewBalanceState(ATM atm) {
         super(atm);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
     public String getStatusMessage() {
 
-        return "your balance is <br>";
+        double balance =
+            atm.getBankDatabase().balanceInquiry(atm.getSession().account);
+        return "your balance is <br>" + balance;
     }
 
     @Override
