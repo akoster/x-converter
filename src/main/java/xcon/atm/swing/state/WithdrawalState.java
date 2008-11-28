@@ -1,17 +1,19 @@
 package xcon.atm.swing.state;
 
+import org.apache.log4j.Logger;
 import xcon.atm.swing.ATM;
 import xcon.atm.swing.AtmSession;
 import xcon.atm.swing.Screen;
 import xcon.atm.swing.event.AtmEvent;
 import xcon.atm.swing.event.BankUpdateCompletedEvent;
+import xcon.atm.swing.event.CardSlotEvent;
 import xcon.atm.swing.event.KeyPadNumberEvent;
 import xcon.atm.swing.event.KeyPadOkEvent;
 import xcon.atm.swing.event.ScreenAmountChoiceEvent;
 import xcon.atm.swing.event.ScreenOtherEvent;
 
 public class WithdrawalState extends AtmState {
-
+    private static final Logger LOG = Logger.getLogger(WithdrawalState.class);
     public WithdrawalState(ATM atm) {
         super(atm);
     }
@@ -45,7 +47,7 @@ public class WithdrawalState extends AtmState {
                 session.amount = session.amount + kpnEvent.getNumber();
                 screen.setMessage(session.state.getStatusMessage());
                 screen.addLine(session.amount);
-                System.out.println("amount" + session.amount);
+                LOG.debug("amount" + session.amount);
             }
         }
         else if (atmEvent instanceof ScreenAmountChoiceEvent) {
@@ -58,7 +60,7 @@ public class WithdrawalState extends AtmState {
         }
         else if (atmEvent instanceof ScreenOtherEvent) {
 
-            System.out.println("ScreenOtherEvent");
+            LOG.debug("ScreenOtherEvent");
             screen.showInfoPanel();
         }
         else if (atmEvent instanceof BankUpdateCompletedEvent) {
@@ -67,13 +69,13 @@ public class WithdrawalState extends AtmState {
                 atm.getBankDatabase().balanceInquiry(atm.getSession().account);
             screen.addLine("the balance is " + balance);
             screen.addLine("please take your card");
-            toStateSuccess();
+            toEndState();
         }
     }
 
     public void requestWithdrawal(int amount) {
 
-        System.out.println("amount" + amount);
+        LOG.debug("amount" + amount);
         Screen screen = atm.getScreen();
         AtmSession session = atm.getSession();
         {
@@ -84,7 +86,7 @@ public class WithdrawalState extends AtmState {
             }
             else if ((amount < session.account.getBalance())) {
 
-                System.out.println("your have enough money");
+                LOG.debug("your have enough money");
                 screen.setMessage("please wait while <br> processing your withdrawal..");
                 atm.getBankDatabase().updateBalance(-amount, session.account);
             }
@@ -92,7 +94,7 @@ public class WithdrawalState extends AtmState {
                 screen.setMessage("You do not have <br> sufficient money please <br>"
                     + "take your card");
                 session.amount = "";
-                toStateFailure();
+                toEndState();
             }
         }
     }

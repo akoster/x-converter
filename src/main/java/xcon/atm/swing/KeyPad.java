@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import org.apache.log4j.Logger;
 import xcon.atm.swing.event.AtmEventHandler;
 import xcon.atm.swing.event.KeyPadEvent;
 import xcon.atm.swing.event.KeyPadNumberEvent;
@@ -16,7 +17,7 @@ import xcon.atm.swing.event.KeyPadStopEvent;
  * @author loudiyimo
  */
 public class KeyPad extends JPanel implements ActionListener {
-
+    private static final Logger LOG = Logger.getLogger(KeyPad.class);
     private static final long serialVersionUID = 1L;
     private static final String BUTTON_TEXT_STOP = "stop";
     private static final String BUTTON_TEXT_OK = "ok";
@@ -81,7 +82,7 @@ public class KeyPad extends JPanel implements ActionListener {
         }
 
         if (kpEvent == null) {
-            System.out.print("Unrecognized source: " + source);
+            LOG.debug("Unrecognized source: " + source);
         }
         else {
             atmEventHandler.handleAtmEvent(kpEvent);

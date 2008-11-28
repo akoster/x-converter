@@ -1,11 +1,15 @@
 package xcon.pilot.storage.command;
 
 import java.util.Scanner;
+import org.apache.log4j.Logger;
+import xcon.atm.swing.SlotPanel;
 import xcon.pilot.storage.Command;
 import xcon.pilot.storage.Storage;
 
 public class CapacityCommand extends Command {
 
+    private static final Logger LOG = Logger.getLogger(CapacityCommand.class);
+    
     public void execute(Scanner s) {
         handleCap(s);
     }

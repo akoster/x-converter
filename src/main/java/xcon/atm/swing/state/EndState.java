@@ -20,6 +20,7 @@ public class EndState extends AtmState {
 
         if (atmEvent instanceof CardSlotEvent) {
 
+            atm.getSlotPanel().setCardSlotStatus(true);
             atm.initSession();
             toStateSuccess();
         }

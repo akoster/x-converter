@@ -1,12 +1,14 @@
 package xcon.atm.swing.state;
 
+import org.apache.log4j.Logger;
 import xcon.atm.swing.ATM;
 import xcon.atm.swing.event.AtmEvent;
 import xcon.atm.swing.event.KeyPadNumberEvent;
 import xcon.atm.swing.event.KeyPadOkEvent;
 
 public class AuthenticateState extends AtmState {
-
+    private static final Logger LOG = Logger.getLogger(AuthenticateState.class);
+    
     public AuthenticateState(ATM atm) {
         super(atm);
     }
@@ -30,13 +32,13 @@ public class AuthenticateState extends AtmState {
     private void enterPassword(KeyPadNumberEvent kpnEvent) {
 
         // check event type
-        System.out.println("in authenticate status ");
+        LOG.debug("in authenticate status ");
 
         // handle event
         if (atm.getSession().password.length() < 4) {
 
             atm.getSession().password += kpnEvent.getNumber();
-            System.out.println("password " + atm.getSession().password);
+            LOG.debug("password " + atm.getSession().password);
             atm.getSession().passwordHideString =
                 atm.getSession().passwordHideString + "*";
 
@@ -67,7 +69,7 @@ public class AuthenticateState extends AtmState {
                             "you entered three <br> "
                                 + "times the wrong password <br>"
                                 + "please take your card");
-                    toStateFailure();
+                    toEndState();
                 }
                 else {
                     atm.getScreen().setMessage(
@@ -79,17 +81,17 @@ public class AuthenticateState extends AtmState {
 
     public boolean authenticate(int pinNumber) {
 
-        System.out.println("authenticating the pin number");
+        LOG.debug("authenticating the pin number");
         atm.getBankDatabase().getConnection();
 
         atm.getSession().account = atm.getBankDatabase().findAccount(pinNumber);
         if (atm.getSession().account != null) {
 
-            System.out.println("account is found");
+            LOG.debug("account is found");
             return true;
         }
         else {
-            System.out.println("wrong pincode");
+            LOG.debug("wrong pincode");
             return false;
         }
     }

@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.apache.log4j.Logger;
 import xcon.atm.swing.event.AtmEventHandler;
 import xcon.atm.swing.event.CardSlotEvent;
 import xcon.atm.swing.event.MoneySlotEvent;
@@ -14,6 +15,9 @@ import xcon.atm.swing.event.SlotPanelEvent;
 
 public class SlotPanel extends JPanel implements ActionListener {
 
+    private static final Logger LOG = Logger.getLogger(SlotPanel.class);
+
+    
     private static final Color SLOT_OPEN_COLOR = Color.BLUE;
     private static final Color SLOT_CLOSED_COLOR = Color.RED;
     private static final long serialVersionUID = 1L;
@@ -43,13 +47,13 @@ public class SlotPanel extends JPanel implements ActionListener {
         
         SlotPanelEvent slotPanelEvent = null ; 
         if (event.getActionCommand().equals("moneySlotButton")) {
-            System.out.println("moneySlotButton");
+            LOG.debug("moneySlotButton");
             slotPanelEvent = new MoneySlotEvent(false);
             
         }
 
         if (event.getActionCommand().equals("cardSlotButton")) {
-            System.out.println("cardSlotButton");
+            LOG.debug("cardSlotButton");
             slotPanelEvent = new CardSlotEvent(true);
         }
         atmEventHandler.handleAtmEvent(slotPanelEvent);
