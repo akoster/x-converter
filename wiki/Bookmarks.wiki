@@ -28,3 +28,6 @@ http://www.anagrammer.com/
 
 Palindromes:
 http://www.rinkworks.com/words/palindromes.shtml 
+
+Unit testing
+http://martinfowler.com/articles/mocksArentStubs.html#TheDifferenceBetweenMocksAndStubs
