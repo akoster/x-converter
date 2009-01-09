@@ -10,16 +10,16 @@ Zie http://en.wikipedia.org/wiki/Eight_queens_puzzle
 * * * * 
    |____________________________________
    |               \         \          \	       
-Q * * *             * Q * *   * * Q *   * * * Q  
-* * * *	            * * * *   * * * *   * * * *  
-* * * *	            * * * *   * * * *   * * * *  
-* * * *	            * * * *   * * * *   * * * *  
+Q * * *             * Q * *   1 1 Q 1   * * * Q  
+* * * *	            * * * *   0 1 1 1   * * * *  
+* * * *	            * * * *   1 0 1 0   * * * *  
+* * * *	            * * * *   0 0 1 0   * * * *  
    |    \	       |
    |   	 \	       |
-Q * * *	  Q * * *   * Q * *   * * Q * 	* * * Q  * * * Q
-* * Q *	  * * * Q   * * * Q   Q * * *	Q * * *	 * Q * *
-* * * *	  * * * *   * * * *   * * * *	* * * *	 * * * *
-* * * *	  * * * *   * * * *   * * * *	* * * *	 * * * *
+Q * * *	  Q * * *   * Q * *   2 2 Q 1 	* * * Q  * * * Q
+* * Q *	  * * * Q   * * * Q   Q 2 2 2	Q * * *	 * Q * *
+* * * *	  * * * *   * * * *   2 1 1 0	* * * *	 * * * *
+* * * *	  * * * *   * * * *   1 0 2 0	* * * *	 * * * *
    |	     |	       |
    |	     |	       |
    X      Q * * *   * Q * *   * * Q *   * * * Q  X
@@ -28,7 +28,7 @@ Q * * *	  Q * * *   * Q * *   * * Q * 	* * * Q  * * * Q
           * * * *   * * * *   * * * *	* * * *	 
 		       |
 		       |
-	      X     * Q * *   * * Q *	   X
+	  X     * Q * *   * * Q *	   X
 		    * * * Q   Q * * *
 		    Q * * *   * * * Q
 		    * * Q *   * Q * *
@@ -39,7 +39,7 @@ Q * * *	  Q * * *   * Q * *   * * Q * 	* * * Q  * * * Q
   b) hoe zou het anders kunnen, zodat je niet bij elke nieuwe queen het hele bord hoeft 
      af te zoeken naar aanvallende queens....?
      HINT: een oplossing zit in de implementatie van setQueen....
-- we koninginnen rij voor rij neer
+- we zetten koninginnen rij voor rij neer
 - als we doodlopen gaan we terug omhoog (backtracken)
 
 
