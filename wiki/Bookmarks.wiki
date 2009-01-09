@@ -31,3 +31,6 @@ http://www.rinkworks.com/words/palindromes.shtml
 
 Unit testing
 http://martinfowler.com/articles/mocksArentStubs.html#TheDifferenceBetweenMocksAndStubs
+
+N-Queens
+http://en.wikipedia.org/wiki/Eight_queens_puzzle
