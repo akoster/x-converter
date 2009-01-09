@@ -9,7 +9,7 @@ public class AtmApplication {
      */
     public static void main(String[] args) {
         ATM application = new ATM();
-        application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        application.init();
     }
 
 }

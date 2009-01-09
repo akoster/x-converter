@@ -15,7 +15,7 @@ public class ScreenTest {
 
     @Test
     public void testScreen() {
-        Screen instance = new Screen();
+        Screen instance = new SwingScreen();
         assertNotNull(instance);
     }
 
@@ -24,7 +24,7 @@ public class ScreenTest {
      * unit testing as opposed to the state-centric (classical) approach. There
      * are frameworks for this, for example EasyMock or JMock
      */
-    public class TestScreen extends Screen {
+    public class TestScreen extends SwingScreen {
 
         public void clickButton(int index) {
             moneyChoiceButtons[index].doClick();
@@ -64,7 +64,7 @@ public class ScreenTest {
 
     @Test
     public void testShowInfoPanel() {
-        Screen instance = new Screen();
+        Screen instance = new SwingScreen();
         instance.showInfoPanel();
         assertTrue(instance.isShowingInfoPanel());
     }
