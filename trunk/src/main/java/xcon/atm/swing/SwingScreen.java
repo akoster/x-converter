@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
@@ -16,9 +17,9 @@ import xcon.atm.swing.event.ScreenAmountChoiceEvent;
 import xcon.atm.swing.event.ScreenEvent;
 import xcon.atm.swing.event.ScreenOtherEvent;
 
-public class Screen extends JPanel implements ActionListener {
+public class SwingScreen extends JPanel implements ActionListener, Screen {
 
-    private static final Logger LOG = Logger.getLogger(Screen.class);
+    private static final Logger LOG = Logger.getLogger(SwingScreen.class);
     
     private static final String MONEY_PANEL = "moneyPanel";
     private JPanel moneyChoicePanel;
@@ -33,7 +34,12 @@ public class Screen extends JPanel implements ActionListener {
 
     private List<AtmEventHandler> handlers;
 
-    public Screen() {
+    /* @see xcon.atm.swing.IScreen#getJComponent() */
+    public JComponent getJComponent() {
+        return (JComponent) this;
+    }
+    
+    public SwingScreen() {
 
         handlers = new ArrayList<AtmEventHandler>();
 
@@ -66,6 +72,7 @@ public class Screen extends JPanel implements ActionListener {
         add(moneyChoicePanel, MONEY_PANEL);
     }
 
+    /* @see xcon.atm.swing.IScreen#showInfoPanel() */
     public void showInfoPanel() {
         LOG.debug("showInfoPanel");
         CardLayout layout = (CardLayout) this.getLayout();
@@ -73,6 +80,7 @@ public class Screen extends JPanel implements ActionListener {
         isShowingInfoPanel = true;
     }
 
+    /* @see xcon.atm.swing.IScreen#showMoneyPanel() */
     public void showMoneyPanel() {
         LOG.debug("showMoneyPanel");
         CardLayout layout = (CardLayout) this.getLayout();
@@ -80,6 +88,7 @@ public class Screen extends JPanel implements ActionListener {
         isShowingInfoPanel = false;
     }
 
+    /* @see xcon.atm.swing.IScreen#isShowingInfoPanel() */
     public boolean isShowingInfoPanel() {
         return isShowingInfoPanel;
     }
@@ -131,26 +140,17 @@ public class Screen extends JPanel implements ActionListener {
         }
     }
 
-    public JLabel getInfoLabel() {
-        return infoLabel;
-    }
-
-    public void setInfoLabel(JLabel infoLabel) {
-        this.infoLabel = infoLabel;
-    }
-
-    public String getMessage() {
-        return infoLabel.getText();
-    }
-
+    /* @see xcon.atm.swing.IScreen#setMessage(java.lang.String) */
     public void setMessage(String message) {
         infoLabel.setText("<html>" + message);
     }
 
+    /* @see xcon.atm.swing.IScreen#addLine(java.lang.String) */
     public void addLine(String message) {
         infoLabel.setText(infoLabel.getText() + "<br>" + message);
     }
 
+    /* @see xcon.atm.swing.IScreen#addEventHandler(xcon.atm.swing.event.AtmEventHandler) */
     public void addEventHandler(AtmEventHandler handler) {
         this.handlers.add(handler);
     }

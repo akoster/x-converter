@@ -17,7 +17,7 @@ import xcon.atm.swing.state.WithdrawalState;
 
 public class ATM extends JFrame implements AtmEventHandler {
 
-    private static final Logger LOG = Logger.getLogger(ATM.class); 
+    private static final Logger LOG = Logger.getLogger(ATM.class);
     private static final long serialVersionUID = 1L;
 
     // frontend
@@ -32,36 +32,50 @@ public class ATM extends JFrame implements AtmEventHandler {
 
     private AtmState workflowStart;
     private EndState endState;
+    
+    public void init() {
+        initDevices();
+        initGUI();
+        initializeWorkflow();
+        initializeState();
+    }
 
-    public ATM() {
-
+    public void initGUI() {
         JPanel atmPanel = new JPanel();
+        atmPanel.setLayout(new GridLayout(3, 1));
+        atmPanel.add(screen.getJComponent());
+        atmPanel.add(keyPad);
+        atmPanel.add(slotPanel);
+        add(atmPanel);
+        setVisible(true);
+        setSize(200, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
 
+    public void initDevices() {
         // example of Observer pattern
         // Screen is the observed
-        screen = new Screen();
+        if (screen == null) {
+            screen = new SwingScreen();
+        }
         // ATM is the Observer of Screen
         screen.addEventHandler(this);
         screen.addEventHandler(new ScreenLogger());
 
-        keyPad = new KeyPad();
+        if (keyPad == null) {
+            keyPad = new KeyPad();
+        }
         keyPad.addEventHandler(this);
 
-        slotPanel = new SlotPanel();
+        if (slotPanel == null) {
+            slotPanel = new SlotPanel();
+        }
         slotPanel.addEventHandler(this);
-        bankDatabase = new BankDatabase();
+
+        if (bankDatabase == null) {
+            bankDatabase = new BankDatabase();
+        }
         bankDatabase.addEventHandler(this);
-        atmPanel.setLayout(new GridLayout(3, 1));
-        atmPanel.add(screen);
-        atmPanel.add(keyPad);
-        atmPanel.add(slotPanel);
-
-        add(atmPanel);
-        setVisible(true);
-        setSize(200, 400);
-
-        initializeWorkflow();
-        initializeAtm();
     }
 
     // : start
@@ -78,7 +92,7 @@ public class ATM extends JFrame implements AtmEventHandler {
     // show_balance
     // system shows balance
     // click ok
-    private void initializeWorkflow() {
+    public void initializeWorkflow() {
 
         workflowStart = new StartState(this);
         AuthenticateState authenticate = new AuthenticateState(this);
@@ -97,25 +111,25 @@ public class ATM extends JFrame implements AtmEventHandler {
         choices.setNextStateTwo(withdrawal);
         choices.setNextStateThree(deposit);
         viewBalance.setNextStateOnSuccess(choices);
-        withdrawal.setNextStateOnSuccess(endState); 
+        withdrawal.setNextStateOnSuccess(endState);
         withdrawal.setNextStateOnFailure(endState);
         deposit.setNextStateOnSuccess(endState);
         endState.setNextStateOnSuccess(workflowStart);
     }
 
-    private void initializeAtm() {
+    public void initializeState() {
 
         initSession();
-        
+
         slotPanel.setCardSlotStatus(true);
         slotPanel.setMoneySlotStatus(false);
 
         screen.showInfoPanel();
         screen.setMessage(session.state.getStatusMessage());
     }
-    
+
     public void initSession() {
-        
+
         session = new AtmSession();
         session.amount = "";
         session.passwordHideString = "";
@@ -125,16 +139,15 @@ public class ATM extends JFrame implements AtmEventHandler {
         session.state = workflowStart;
     }
 
-    @Override
     public void handleAtmEvent(AtmEvent atmEvent) {
 
         LOG.debug("received atmEvent" + atmEvent);
-        
+
         if (atmEvent instanceof KeyPadStopEvent
             && !session.state.equals(workflowStart))
         {
             session.state = endState;
-            screen.setMessage(session.state.getStatusMessage());                      
+            screen.setMessage(session.state.getStatusMessage());
             screen.showInfoPanel();
         }
 
@@ -161,9 +174,25 @@ public class ATM extends JFrame implements AtmEventHandler {
     public AtmSession getSession() {
         return session;
     }
-    
+
     public EndState getEndState() {
         return endState;
+    }
+
+    public void setScreen(Screen screen) {
+        this.screen = screen;
+    }
+
+    public void setKeyPad(KeyPad keyPad) {
+        this.keyPad = keyPad;
+    }
+
+    public void setSlotPanel(SlotPanel slotPanel) {
+        this.slotPanel = slotPanel;
+    }
+
+    public void setBankDatabase(BankDatabase bankDatabase) {
+        this.bankDatabase = bankDatabase;
     }
 
 }

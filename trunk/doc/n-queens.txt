@@ -1,0 +1,66 @@
+n-queens probleem
+
+Constraint satisfaction solving probleem
+
+Zie http://en.wikipedia.org/wiki/Eight_queens_puzzle
+
+* * * * 
+* * * * 
+* * * * 
+* * * * 
+   |____________________________________
+   |               \         \          \	       
+Q * * *             * Q * *   * * Q *   * * * Q  
+* * * *	            * * * *   * * * *   * * * *  
+* * * *	            * * * *   * * * *   * * * *  
+* * * *	            * * * *   * * * *   * * * *  
+   |    \	       |
+   |   	 \	       |
+Q * * *	  Q * * *   * Q * *   * * Q * 	* * * Q  * * * Q
+* * Q *	  * * * Q   * * * Q   Q * * *	Q * * *	 * Q * *
+* * * *	  * * * *   * * * *   * * * *	* * * *	 * * * *
+* * * *	  * * * *   * * * *   * * * *	* * * *	 * * * *
+   |	     |	       |
+   |	     |	       |
+   X      Q * * *   * Q * *   * * Q *   * * * Q  X
+          * * * Q   * * * Q   Q * * *	Q * * *	 
+          * Q * *   Q * * *   * * * Q	* * Q *	 
+          * * * *   * * * *   * * * *	* * * *	 
+		       |
+		       |
+	      X     * Q * *   * * Q *	   X
+		    * * * Q   Q * * *
+		    Q * * *   * * * Q
+		    * * Q *   * Q * *
+
+
+- elke koningin wordt geldig neergezet
+  a) rijen, kolommen en diagonalen checken voor elke zet
+  b) hoe zou het anders kunnen, zodat je niet bij elke nieuwe queen het hele bord hoeft 
+     af te zoeken naar aanvallende queens....?
+     HINT: een oplossing zit in de implementatie van setQueen....
+- we koninginnen rij voor rij neer
+- als we doodlopen gaan we terug omhoog (backtracken)
+
+
+4-queens
+1 + 16 * 15 * 14 * 13 = 43681
+
+8-queens
+1 + 64 * 63 * 62 * 61 * 60 * 59 * 58 * 57 = 178462987637760
+
+16-queens
+1 + 256! / 239! = 5,0e+40
+
+
+
+
+
+
+
+						       
+
+ 
+
+
+ 

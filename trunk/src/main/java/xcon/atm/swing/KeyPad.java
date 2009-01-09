@@ -17,6 +17,7 @@ import xcon.atm.swing.event.KeyPadStopEvent;
  * @author loudiyimo
  */
 public class KeyPad extends JPanel implements ActionListener {
+
     private static final Logger LOG = Logger.getLogger(KeyPad.class);
     private static final long serialVersionUID = 1L;
     private static final String BUTTON_TEXT_STOP = "stop";
