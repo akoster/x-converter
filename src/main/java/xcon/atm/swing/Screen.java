@@ -3,7 +3,7 @@ package xcon.atm.swing;
 import javax.swing.JComponent;
 import xcon.atm.swing.event.AtmEventHandler;
 
-public interface Screen2 {
+public interface Screen {
 
     public abstract JComponent getJComponent();
 
