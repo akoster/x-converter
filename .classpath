@@ -1,14 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="M2_REPO/com/google/code/guice/guice/1.0/guice-1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/4.0/junit-4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.5/mockito-all-1.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/mysql/mysql/5.1.6/mysql-5.1.6.jar"/>
-	<classpathentry kind="lib" path="src/main/resource"/>
-	<classpathentry kind="lib" path="C:/workspace/Java_oefenen/xcon/lib/mockito-all6.jar"/>
-	<classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/code/guice/guice/1.0/guice-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.0/junit-4.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13.jar"/>
+  <classpathentry kind="var" path="M2_REPO/mockito/mockito-all/6.0/mockito-all-6.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.5/mockito-all-1.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/mysql/mysql/5.1.6/mysql-5.1.6.jar"/>
 </classpath>
