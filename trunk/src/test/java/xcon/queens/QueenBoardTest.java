@@ -13,9 +13,8 @@ public class QueenBoardTest {
 
     @Before
     public void setUp() throws Exception {
-        queenSolver = new QueenBoard();
+        queenSolver = new QueenBoard(4);
         queenSolver.init();
-        queenSolver.showBoard();
     }
 
     @Test
@@ -27,7 +26,6 @@ public class QueenBoardTest {
         Assert.assertTrue(result);
         // add a queen
         queenSolver.setQueen(1, 1);
-        queenSolver.showBoard();
         // test same row
         result = queenSolver.isQueenAllowed(1, 2);
         Assert.assertFalse(result);
@@ -66,6 +64,27 @@ public class QueenBoardTest {
         // a queen on an empty field is still allowed
         try {
             queenSolver.setQueen(3, 1);
+        }
+        catch (Exception e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testRemoveQueen() {
+        try {
+            queenSolver.removeQueen(1, 2);
+            Assert.fail();
+        }
+        catch (Exception e) {
+            // expected
+            LOG.debug("expected Exception", e);
+        }
+
+        queenSolver.setQueen(2, 3);
+
+        try {
+            queenSolver.removeQueen(2, 3);
         }
         catch (Exception e) {
             Assert.fail();
