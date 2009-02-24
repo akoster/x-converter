@@ -5,8 +5,11 @@ import org.apache.log4j.Logger;
 public class QueenBoard {
 
     private static final Logger LOG = Logger.getLogger(QueenBoard.class);
-    private int[][] board;
-    private static final int SIZE = 4;
+    private final int[][] board;
+    private final int size;
+    private int isCount = 0;
+    private int setCount = 0;
+    private int removeCount = 0;
 
     // 0 is een leeg veld
     // >0 is een aangevallen veld, de waarde geeft aan hoe vaak het veld
@@ -14,40 +17,52 @@ public class QueenBoard {
     private static final int FIELD_QUEEN = -1;
     private static final int FIELD_EMPTY = 0;
 
-    public QueenBoard() {
-        board = new int[SIZE][SIZE];
+    public QueenBoard(int size) {
+
+        this.size = size;
+        board = new int[size][size];
+        init();
     }
 
     public void init() {
-        System.out.println(" in init methode");
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 board[i][j] = FIELD_EMPTY;
             }
         }
     }
 
+    public int getSize() {
+        return size;
+    }
+
     public boolean isQueenAllowed(int row, int column) {
 
         // je hoeft alleen maar te kijken of het veld FIELD_EMPTY is!
+        isCount++;
+        for (int k = 0; k < size; k++) {
 
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                if (board[i][j] == FIELD_QUEEN) {
-                    if (column == j) {
-                        LOG.warn("not allowed");
-                        return false;
-                    }
-                    if (row == i) {
-                        LOG.warn("not allowed");
-                        return false;
-                    }
-                    if ((row - i) == (column - j)) {
-                        return false;
-                    }
-                    if (((row - i) + (column - j) == 0)) {
-                        return false;
-                    }
+            // controleer rij
+            if (board[row][k] == FIELD_QUEEN) {
+                return false;
+            }
+            // controleer kolom
+            if (board[k][column] == FIELD_QUEEN) {
+                return false;
+            }
+            // controleer LB-RO diag
+            int i = row - column + k;
+            if (i >= 0 && i < size) {
+                if (board[i][k] == FIELD_QUEEN) {
+                    return false;
+                }
+            }
+            // controleer LO-RB diag
+            i = row + column - k;
+            if (i >= 0 && i < size) {
+                if (board[i][k] == FIELD_QUEEN) {
+                    return false;
                 }
             }
         }
@@ -56,8 +71,11 @@ public class QueenBoard {
     }
 
     public void setQueen(int row, int column) throws IllegalArgumentException {
+        
         LOG.debug("row=" + row + " column=" + column);
-        // als fieldwaarde == FIELD_QUEEN dan exceptie want er staat al een queen
+        // als fieldwaarde == FIELD_QUEEN dan exceptie want er staat al een
+        // queen
+        setCount++;
         if (board[row][column] == FIELD_QUEEN) {
             throw new IllegalArgumentException("Field already occupied");
         }
@@ -72,22 +90,148 @@ public class QueenBoard {
         // en wordt de queen geplaatst
     }
 
-    public void removeQueen(int row) throws IllegalArgumentException {
-        // gooit een exceptie als er geen queen op deze rij staat
-        //
-        // verwijdert de queen, en vermindert de aangevallen velden met 1        
+    public void removeQueen(int row, int column)
+            throws IllegalArgumentException
+    {
+        LOG.debug("row=" + row + " column=" + column);
+        // als fieldwaarde == FIELD_EMPTY dan exceptie want veld al leeg
+        removeCount++;
+        if (board[row][column] == FIELD_EMPTY) {
+            throw new IllegalArgumentException("Field already empty");
+        }
+        else {
+            board[row][column] = FIELD_EMPTY;
+        }
+        // verwijdert de queen, en vermindert de aangevallen velden met 1
     }
-    
-    public void showBoard() {
-        System.out.println("showingBoard");
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
 
-                System.out.print(board[i][j]);
+    /**
+     * <pre> 
+     * .... 
+     * .... 
+     * ---- 
+     * Q... row=0, col=0 
+     * .+.. k=0, 1, 2, 3 
+     * ..+. 
+     * ...+ 
+     * ---- i=0  1  2  3          row - (column - k)
+     * .... 
+     * ....
+     * </pre>
+     */
+
+    public boolean setQueen2(int row, int column)
+            throws IllegalArgumentException
+    {
+        setCount++;
+        if (!isQueenAllowed2(row, column)) {
+            // throw new IllegalArgumentException("Queen not allowed");
+            return false;
+        }
+        updateBoard(row, column, 1);
+        board[row][column] = FIELD_QUEEN;
+        return true;
+    }
+
+    private void updateBoard(int row, int column, int diff) {
+
+        LOG.debug("row=" + row + " column=" + column);
+        // als fieldwaarde == FIELD_QUEEN dan exceptie want er staat al een
+        // queen
+
+        for (int k = 0; k < size; k++) {
+
+            // hoog rij op
+            board[row][k] += diff;
+            // hoog kolom op
+            board[k][column] += diff;
+            // hoog LB-RO diag op
+            int i = row - column + k;
+            if (i >= 0 && i < size) {
+                board[i][k] += diff;
+            }
+            // hoog LO-RB diag op
+            i = row + column - k;
+            if (i >= 0 && i < size) {
+                board[i][k] += diff;
+            }
+        }
+    }
+
+    public boolean isQueenAllowed2(int row, int column) {
+
+        // je hoeft alleen maar te kijken of het veld FIELD_EMPTY is!
+        isCount++;
+        return board[row][column] == 0;
+    }
+
+    public void removeQueen2(int row, int column) {
+        
+        removeCount++;
+        updateBoard(row, column, -1);
+        // note that we assume a Queen is never attacked
+        // this is enforced by a check in setQueen
+        board[row][column] = FIELD_EMPTY;
+    }
+
+    public void showBoard() {
+        System.out.println("==========================================");
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+
+                String field;
+                if (board[i][j] == FIELD_QUEEN) {
+                    field = "Q";
+                }
+                else {
+                    field = ".";
+                }
+                System.out.print(field);
                 System.out.print(" ");
             }
             System.out.println();
         }
+    }
+
+    public void showBoard2() {
+        
+        System.out.println("==========================================");
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+
+                String field;
+                if (board[i][j] == FIELD_QUEEN) {
+                    field = "Q";
+                }
+                else {
+                    field = ".";
+                }
+                System.out.print(field);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+    }
+
+    public int getIsCount() {
+        return isCount;
+    }
+
+    public int getSetCount() {
+        return setCount;
+    }
+
+    public int getRemoveCount() {
+        return removeCount;
+    }
+
+    public int getColumn(int i) {
+        for (int j = 0; j < size; j++) {
+            if (board[i][j] == FIELD_QUEEN) {
+                return j;
+            }
+        }
+        return 0;// XXX: throw Exception
     }
 
 }
