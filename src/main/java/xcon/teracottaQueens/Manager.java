@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 public class Manager {
@@ -23,15 +24,17 @@ public class Manager {
     // -
 
     public QueenWork queenWork = new QueenWork();
-    private static final int DEFAULT_BOARD_SIZE = 13;
-    int total = 0;
+    private static final int DEFAULT_BOARD_SIZE = 14;
+    int totalSolutionCount = 0;
+    int progressStatus;
     JFrame theFrame;
-    Map<String, JProgressBar> progressHashmap ;
-
+    Map<String, JProgressBar> progressHashmap;
+    JProgressBar totalProgressBar = new JProgressBar();
+    private static int boardSize;
 
     public static void main(String[] args) throws InterruptedException {
 
-        int boardSize = DEFAULT_BOARD_SIZE;
+        boardSize = DEFAULT_BOARD_SIZE;
         if (args.length >= 1) {
             boardSize = Integer.parseInt(args[0]);
 
@@ -42,35 +45,43 @@ public class Manager {
     private void run(int boardSize) throws InterruptedException {
 
         System.out.println("Solving n-queens for board size " + boardSize);
+        progressHashmap = new HashMap<String, JProgressBar>();
         theFrame = new JFrame();
         theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container contentPane = theFrame.getContentPane();
-        progressHashmap = new HashMap<String,JProgressBar >();
-        theFrame.setSize(400, 400);
-        theFrame.setVisible(true);
-        
+
+        JPanel totalProgressPanel = new JPanel();
+        totalProgressPanel.setLayout(new BorderLayout());
+        totalProgressPanel.add(new JLabel("total progress"), BorderLayout.NORTH);
+        totalProgressPanel.add(totalProgressBar, BorderLayout.CENTER);
+        contentPane.add(totalProgressPanel, BorderLayout.NORTH);
+
+        JPanel individualProgressPanel = new JPanel();
+        individualProgressPanel.setLayout(new GridLayout(boardSize, 3));
+
         // put tasks in queue
         for (int firstColumn = 0; firstColumn < boardSize; firstColumn++) {
             QueenTask queenTask = new QueenTask(firstColumn, boardSize);
             queenWork.tasks.put(queenTask);
 
-            JProgressBar progressBar = new JProgressBar(0, 100);
-            progressBar.setValue(0);
-            progressBar.setStringPainted(true);
+            JProgressBar indivedualProgressBar = new JProgressBar(0, 100);
+            indivedualProgressBar.setValue(0);
+            indivedualProgressBar.setStringPainted(true);
             JLabel statistics = new JLabel("column" + firstColumn);
             statistics.setVisible(true);
-            String key = "column"+firstColumn ; 
-            progressHashmap.put(key, progressBar); 
-            contentPane.setLayout(new GridLayout(boardSize,2)); 
-            contentPane.add(statistics);
-            contentPane.add(progressBar);
+            String key = "column" + firstColumn;
+            progressHashmap.put(key, indivedualProgressBar);
+
+            individualProgressPanel.add(statistics);
+            individualProgressPanel.add(new JLabel(""));
+            individualProgressPanel.add(indivedualProgressBar);
+
         }
+        contentPane.add(individualProgressPanel, BorderLayout.CENTER);
+        theFrame.setSize(400, 400);
+        theFrame.setVisible(true);
         // collect all the results
         int i = 0;
-        int[] progress = new int[boardSize];
-        // JProgressbar[] progress = new JProgressbar[boardSize];
-        // for (n=0; n<boardSize; n++)
-        // progress[n] = new JProgressbar();
         while (i < boardSize) {
 
             // haal de queenResult uit de queue
@@ -85,29 +96,44 @@ public class Manager {
             if (result.type == QueenResult.Type.RESULT) {
 
                 i++;
-                total = total + result.value;
-                //progress[result.firstQueenColumn] = 100;
-                String key = "column"+result.firstQueenColumn ; 
+                totalSolutionCount = totalSolutionCount + result.value;
+
+                String key = "column" + result.firstQueenColumn;
                 JProgressBar progressBar = progressHashmap.get(key);
                 progressBar.setValue(100);
                 contentPane.repaint();
-                // progressBars[result.firstQueenColumn].setValue(100);
                 System.out.println("result:" + i + " worker:"
                     + result.firstQueenColumn + " #solutions=" + result.value);
             }
             else {
-                String key = "column"+result.firstQueenColumn ;
+
+                totalProgressBar.setValue(countTotalProgress());
+
+                String key = "column" + result.firstQueenColumn;
                 JProgressBar progressBar = progressHashmap.get(key);
                 progressBar.setValue(result.value);
                 contentPane.repaint();
-                //progress[result.firstQueenColumn] = result.value;
-                // progressBars[result.firstQueenColumn].setValue(result.value);
-                //System.out.println("progress: " + Arrays.toString(progress));
             }
-
+            
         }
-       // System.out.println("progress: " + Arrays.toString(progress));
-        //System.out.println("total solutions:" + total);
+        totalProgressBar.setValue(100);
 
+        System.out.println("total solutions:" + totalSolutionCount);
+        
+        Thread.sleep(5000);
+        
+        System.exit(0);
+
+    }
+
+    private int countTotalProgress() {
+        
+        int totalProgress = 0;
+        for (JProgressBar progressBar : progressHashmap.values()) {
+            totalProgress += progressBar.getValue();
+            
+        }
+        System.out.println("totalProgress:" +totalProgress);
+        return totalProgress / boardSize;
     }
 }
