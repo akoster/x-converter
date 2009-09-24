@@ -20,33 +20,33 @@ import java.util.Map;
 // self-mapping: o,x
 public class Rotonym180 extends RotonymStrategy {
 
-    Map<Character, Character> charMap;
+	Map<Character, Character> charMap;
 
-    public Rotonym180() {
-        charMap = new HashMap<Character, Character>();
-        charMap.put('d', 'p');
-        charMap.put('a', 'e');
-        charMap.put('b', 'q');
-        charMap.put('h', 'y');
-        charMap.put('m', 'w');
-        charMap.put('n', 'u');
-        charMap.put('o', 'o');
-        charMap.put('x', 'x');
-        charMap.put('p', 'd');
-        charMap.put('e', 'a');
-        charMap.put('q', 'b');
-        charMap.put('y', 'h');
-        charMap.put('w', 'm');
-        charMap.put('u', 'n');
-    }
+	public Rotonym180() {
+		charMap = new HashMap<Character, Character>();
+		charMap.put('d', 'p');
+		charMap.put('a', 'e');
+		charMap.put('b', 'q');
+		charMap.put('h', 'y');
+		charMap.put('m', 'w');
+		charMap.put('n', 'u');
+		charMap.put('o', 'o');
+		charMap.put('x', 'x');
+		charMap.put('p', 'd');
+		charMap.put('e', 'a');
+		charMap.put('q', 'b');
+		charMap.put('y', 'h');
+		charMap.put('w', 'm');
+		charMap.put('u', 'n');
+	}
 
-    public char returnChar(char ch) throws RotonymException {
+	public char returnChar(char ch) throws RotonymException {
 
-        Character rotonymChar = charMap.get(Character.toLowerCase(ch));
-        if (rotonymChar == null) {
-            throw new RotonymException("Character " + ch
-                + " is not a rotonym character");
-        }
-        return rotonymChar;
-    }
+		Character rotonymChar = charMap.get(Character.toLowerCase(ch));
+		if (rotonymChar == null) {
+			throw new RotonymException("Character " + ch
+					+ " is not a rotonym character");
+		}
+		return rotonymChar;
+	}
 }
