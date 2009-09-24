@@ -3,6 +3,7 @@ package xcon.word;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -32,88 +33,84 @@ import javax.swing.JTextField;
 // -> ja: woord en rotonym uitvoeren
 public class RotonymSwingApp extends JFrame implements ActionListener {
 
-    private JRadioButton rotonym180;
-    private JRadioButton rotonym90;
-    private JTextField textfield;
-    private JLabel label;
-    private JButton submitButton;
-    private ButtonGroup strategySelect;
+	private JRadioButton rotonym180;
+	private JRadioButton rotonym90;
+	private JTextField textfield;
+	private JLabel label;
+	private JButton submitButton;
+	private ButtonGroup strategySelect;
 
-    public static void main(String args[]) {
-        RotonymSwingApp rotonymClass = new RotonymSwingApp();
-    }
+	public static void main(String args[]) {
+		RotonymSwingApp rotonymClass = new RotonymSwingApp();
+	}
 
-    public RotonymSwingApp() {
+	public RotonymSwingApp() {
 
-        super("Rotonym application");
+		super("Rotonym application");
 
-        setLayout(new BorderLayout());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLayout(new BorderLayout());
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setSize(400, 200);
-        setVisible(true);
+		setSize(400, 200);
+		setVisible(true);
 
-        JPanel north = new JPanel();
-        JPanel center = new JPanel();
-        JPanel south = new JPanel();
-        add(north, BorderLayout.NORTH);
-        add(center, BorderLayout.CENTER);
-        add(south, BorderLayout.SOUTH);
+		JPanel north = new JPanel();
+		JPanel center = new JPanel();
+		JPanel south = new JPanel();
+		add(north, BorderLayout.NORTH);
+		add(center, BorderLayout.CENTER);
+		add(south, BorderLayout.SOUTH);
 
-        strategySelect = new ButtonGroup();
-        rotonym180 = new JRadioButton("180", true);
-        rotonym90 = new JRadioButton("90", true);
-        strategySelect.add(rotonym180);
-        strategySelect.add(rotonym90);
-        north.add(rotonym180);
-        north.add(rotonym90);
+		strategySelect = new ButtonGroup();
+		rotonym180 = new JRadioButton("180", true);
+		rotonym90 = new JRadioButton("90", true);
+		strategySelect.add(rotonym180);
+		strategySelect.add(rotonym90);
+		north.add(rotonym180);
+		north.add(rotonym90);
 
-        textfield = new JTextField("", 20);
-        center.add(textfield);
+		textfield = new JTextField("", 20);
+		center.add(textfield);
 
-        submitButton = new JButton("Submit");
-        center.add(submitButton);
+		submitButton = new JButton("Submit");
+		center.add(submitButton);
 
-        label = new JLabel();
-        south.add(label);
+		label = new JLabel();
+		south.add(label);
 
-        submitButton.addActionListener(this);
-    }
+		submitButton.addActionListener(this);
+	}
 
-    public void actionPerformed(ActionEvent event) {
+	public void actionPerformed(ActionEvent event) {
 
-        String output;
-        RotonymStrategy strategy = null;
-        String word = textfield.getText();
-        if (rotonym180.isSelected()) {
-            strategy = new Rotonym180();
-        }
-        else if (rotonym90.isSelected()) {
-            strategy = new Rotonym90();
-            word = word.toUpperCase();
-            textfield.setText(word);
-        }
+		String output;
+		RotonymStrategy strategy = null;
+		String word = textfield.getText();
+		if (rotonym180.isSelected()) {
+			strategy = new Rotonym180();
+		} else if (rotonym90.isSelected()) {
+			strategy = new Rotonym90();
+			word = word.toUpperCase();
+			textfield.setText(word);
+		}
 
-        if (strategy == null) {
-            output = "Strategy unknown";
-        }
-        else {
-            output = "Using strategy " + strategy + ": ";
-        }
+		if (strategy == null) {
+			output = "Strategy unknown";
+		} else {
+			output = "Using strategy " + strategy + ": ";
+		}
 
-        try {
-            output +=
-                "Het rotonym van " + word + " is: "
-                    + strategy.determineRotonym(word);
-        }
-        catch (RotonymException e) {
-            output += word + " is geen rotonym";
-        }
-        printMessage(output);
-    }
+		try {
+			output += "Het rotonym van " + word + " is: "
+					+ strategy.determineRotonym(word);
+		} catch (RotonymException e) {
+			output += word + " is geen rotonym";
+		}
+		printMessage(output);
+	}
 
-    private void printMessage(String msg) {
-        System.out.println(msg);
-        label.setText(msg);
-    }
+	private void printMessage(String msg) {
+		System.out.println(msg);
+		label.setText(msg);
+	}
 }

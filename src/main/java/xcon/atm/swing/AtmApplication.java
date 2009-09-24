@@ -1,6 +1,5 @@
 package xcon.atm.swing;
 
-import javax.swing.JFrame;
 
 public class AtmApplication {
 
