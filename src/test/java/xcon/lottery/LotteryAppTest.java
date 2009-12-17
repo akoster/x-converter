@@ -12,9 +12,21 @@ public class LotteryAppTest {
 	@Test
 	public void testLotteryApp() {
 
-			new Lottery(new String[] {
+		Lottery lottery = new Lottery(new String[] { "Jut+Jul", "Tut+Hola",
+				"Mies", "Teun", "Gijs" }, Lottery.OUTPUTLEVEL_VERBOSE, false);
+		lottery.draw();
+		lottery.handleOutput();
+	}
+
+	@Test
+	public void testLotteryAppEmail() {
+
+		Lottery lottery = new Lottery(new String[] {
 				"Jut=jut@blunderboy.nl+Jul=jul@blunderboy.nl",
-				"Tut=tut@blunderboy.nl+Hola=hola@blunderboy.nl" }).draw();
+				"Tut=tut@blunderboy.nl+Hola=hola@blunderboy.nl" },
+				Lottery.OUTPUTLEVEL_VERBOSE, true);
+		lottery.draw();
+		lottery.handleOutput();
 	}
 
 	@Test
@@ -31,7 +43,8 @@ public class LotteryAppTest {
 
 			String[] args = new String[size];
 			Arrays.fill(args, "node");
-			List<Node> result = new Lottery(args).draw();
+			List<Node> result = new Lottery(args, Lottery.OUTPUTLEVEL_SILENT,
+					false).draw();
 
 			Node start = result.remove(0);
 			int cycleSize = 1;

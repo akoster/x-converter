@@ -1,5 +1,6 @@
 package xcon.lottery;
 
+import java.awt.Frame;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -44,16 +45,17 @@ import javax.mail.internet.MimeMessage;
 //
 public class Lottery {
 
-	private static final int LEVEL_VERBOSE = 0;
-	private static final int LEVEL_NORMAL = 1;
-//	private static final int LEVEL_SILENT = 2;
-	private static final int LEVEL = LEVEL_VERBOSE;
-	private static final boolean ENABLE_SHUFFLE = false;
+	public static final int OUTPUTLEVEL_VERBOSE = 0;
+	public static final int OUTPUTLEVEL_NORMAL = 1;
+	public static final int OUTPUTLEVEL_SILENT = 2;
+
+	private static final boolean ENABLE_SHUFFLE = true;
 	private static final boolean ENABLE_FILE = false;
-	private static final boolean ENABLE_EMAIL = false;
 	private static final String EMAIL_TEMPLATE = "Dear {0},\nYou have drawn {1}.\n";
 	private static final String EMAIL_FROM_ADDRESS = "noreply@blunderboy.nl";
 
+	private int outputLevel;
+	private boolean sendEmail;
 	private List<Node> nodes;
 	private String[] args;
 
@@ -70,6 +72,13 @@ public class Lottery {
 	}
 
 	public Lottery(String[] args) {
+		this(args, OUTPUTLEVEL_NORMAL, false);
+	}
+
+	public Lottery(String[] args, int outputLevel, boolean sendEmail) {
+
+		this.outputLevel = outputLevel;
+		this.sendEmail = sendEmail;
 
 		if (args == null || args.length == 0) {
 
@@ -78,7 +87,7 @@ public class Lottery {
 							+ "as commandline arguments");
 		}
 
-		print("Creating new lottery", LEVEL_NORMAL);
+		print("Creating new lottery", OUTPUTLEVEL_VERBOSE);
 		this.args = args;
 		nodes = new ArrayList<Node>();
 	}
@@ -97,7 +106,7 @@ public class Lottery {
 
 		connectNodes();
 
-		print("Connected: ", LEVEL_VERBOSE);
+		print("Connected: ", OUTPUTLEVEL_VERBOSE);
 		printNodes(nodes);
 
 		return nodes;
@@ -121,7 +130,7 @@ public class Lottery {
 			}
 		}
 
-		print("Shuffled: ", LEVEL_VERBOSE);
+		print("Shuffled: ", OUTPUTLEVEL_VERBOSE);
 		printNodes(nodes);
 	}
 
@@ -139,7 +148,7 @@ public class Lottery {
 			node.notNeighbors = nodeGroup;
 			msg += String.valueOf(node);
 		}
-		print(msg,  LEVEL_VERBOSE);
+		print(msg, OUTPUTLEVEL_VERBOSE);
 
 		return nodeGroup;
 	}
@@ -154,63 +163,65 @@ public class Lottery {
 		}
 		return participant;
 	}
-//	private void fixViolations() {
-//
-//		// fix exclusive neighbors
-//		boolean violationsFound;
-//		int iterations = 0;
-//		do {
-//			violationsFound = false;
-//			for (int currentIndex = 0; currentIndex < nodes.size(); currentIndex++) {
-//
-//				Node current = nodes.get(currentIndex);
-//				Node next = getNextNode(currentIndex);
-//
-//				// check if the current and next nodes are in violation
-//				if (current.notNeighbors.contains(next)) {
-//
-//					violationsFound = true;
-//					fixViolation(current);
-//
-//					print("Fix " + current.name + " </> " + next.name + " : ", LEVEL_VERBOSE);
-//					printNodes(nodes);
-//				}
-//			}
-//			iterations++;
-//
-//		} while (violationsFound && iterations < 10);
-//
-//		if (violationsFound) {
-//			print("Not all violations could be fixed. "
-//					+ "The constraints are probably unsolvable.", LEVEL_NORMAL);
-//		}
-//	}
-//
-//	private Node getNextNode(int currentIndex) {
-//
-//		// get the next node
-//		int nextIndex = currentIndex + 1;
-//		if (nextIndex >= nodes.size()) {
-//			nextIndex = 0;
-//		}
-//		Node next = nodes.get(nextIndex);
-//		return next;
-//	}
-//
-//	private void fixViolation(Node current) {
-//
-//		// put current node before a valid next node
-//		for (int i = 0; i < nodes.size(); i++) {
-//
-//			Node node = nodes.get(i);
-//			if (!current.notNeighbors.contains(node)) {
-//
-//				nodes.remove(current);
-//				nodes.add(i, current);
-//				break;
-//			}
-//		}
-//	}
+
+	// private void fixViolations() {
+	//
+	// // fix exclusive neighbors
+	// boolean violationsFound;
+	// int iterations = 0;
+	// do {
+	// violationsFound = false;
+	// for (int currentIndex = 0; currentIndex < nodes.size(); currentIndex++) {
+	//
+	// Node current = nodes.get(currentIndex);
+	// Node next = getNextNode(currentIndex);
+	//
+	// // check if the current and next nodes are in violation
+	// if (current.notNeighbors.contains(next)) {
+	//
+	// violationsFound = true;
+	// fixViolation(current);
+	//
+	// print("Fix " + current.name + " </> " + next.name + " : ",
+	// LEVEL_VERBOSE);
+	// printNodes(nodes);
+	// }
+	// }
+	// iterations++;
+	//
+	// } while (violationsFound && iterations < 10);
+	//
+	// if (violationsFound) {
+	// print("Not all violations could be fixed. "
+	// + "The constraints are probably unsolvable.", LEVEL_NORMAL);
+	// }
+	// }
+	//
+	// private Node getNextNode(int currentIndex) {
+	//
+	// // get the next node
+	// int nextIndex = currentIndex + 1;
+	// if (nextIndex >= nodes.size()) {
+	// nextIndex = 0;
+	// }
+	// Node next = nodes.get(nextIndex);
+	// return next;
+	// }
+	//
+	// private void fixViolation(Node current) {
+	//
+	// // put current node before a valid next node
+	// for (int i = 0; i < nodes.size(); i++) {
+	//
+	// Node node = nodes.get(i);
+	// if (!current.notNeighbors.contains(node)) {
+	//
+	// nodes.remove(current);
+	// nodes.add(i, current);
+	// break;
+	// }
+	// }
+	// }
 
 	private void connectNodes() {
 
@@ -234,7 +245,7 @@ public class Lottery {
 
 			print("start=" + start + " next=" + next + " coinFlip=" + coinFlip
 					+ " notStart=" + notStart + " notLastNode=" + notLastNode
-					+ " -> closeCycle=" + closeCycle, LEVEL_VERBOSE);
+					+ " -> closeCycle=" + closeCycle, OUTPUTLEVEL_VERBOSE);
 			if (closeCycle) {
 
 				// close cycle
@@ -257,15 +268,15 @@ public class Lottery {
 	public static void main(String[] args) {
 
 		Lottery lottery = new Lottery(args);
-		List<Node> solution = lottery.draw();
-		handleOutput(solution);
+		lottery.draw();
+		lottery.handleOutput();
 	}
 
-	private static void handleOutput(List<Node> nodes) {
+	public void handleOutput() {
 
 		printNodes(nodes);
 
-		if (ENABLE_EMAIL) {
+		if (sendEmail) {
 			sendEmail(nodes);
 		}
 		if (ENABLE_FILE) {
@@ -273,16 +284,16 @@ public class Lottery {
 		}
 	}
 
-	private static void printNodes(List<Node> nodes) {
+	private void printNodes(List<Node> nodes) {
 
 		String msg = "";
 		for (Node node : nodes) {
 			msg += node.toString() + " ";
 		}
-		print(msg, LEVEL_VERBOSE);
+		print(msg, OUTPUTLEVEL_VERBOSE);
 	}
 
-	private static void writeFiles(List<Node> nodes) {
+	private void writeFiles(List<Node> nodes) {
 
 		File dir = new File("lottery_" + System.currentTimeMillis());
 		dir.mkdirs();
@@ -295,7 +306,7 @@ public class Lottery {
 		}
 	}
 
-	private static void writeToFile(File dir, String name, String contents) {
+	private void writeToFile(File dir, String name, String contents) {
 
 		try {
 			File file = new File(dir, name + ".txt");
@@ -306,40 +317,33 @@ public class Lottery {
 				output.close();
 			}
 		} catch (IOException e) {
-			print("Cannot write file " + e, LEVEL_NORMAL);
+			print("Cannot write file " + e, OUTPUTLEVEL_NORMAL);
 			e.printStackTrace();
 		}
 	}
 
-	private static void sendEmail(List<Node> nodes) {
+	private void sendEmail(List<Node> nodes) {
 
 		Session session;
-		try {
-			String hostname = readStringFromCommandLine("hostname?");
-
-			Properties props = System.getProperties();
-			props.put("mail.smtp.host", hostname);
-
-			session = Session.getInstance(props, new Authenticator() {
-				@Override
-				protected PasswordAuthentication getPasswordAuthentication() {
-					try {
-						return new PasswordAuthentication(
-								readStringFromCommandLine("user?"),
-								readStringFromCommandLine("password?"));
-					} catch (IOException e) {
-						System.err.println("Cannot send email " + e);
-						e.printStackTrace();
-						return null;
-					}
-				}
-			});
-		} catch (IOException e) {
-
-			System.err.println("Cannot send email " + e);
-			e.printStackTrace();
+		MyLogin myLogin = new MyLogin(new Frame(""));
+		if (!myLogin.id) {
+			System.err.println("Email authentication cancelled by user");
 			return;
 		}
+
+		String hostname = myLogin.hostname.getText();
+		final String userName = myLogin.username.getText();
+		final String passWord = myLogin.password.getText();
+
+		Properties props = System.getProperties();
+		props.put("mail.smtp.host", hostname);
+
+		session = Session.getInstance(props, new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(userName, passWord);
+			}
+		});
 
 		MessageFormat form = new MessageFormat(EMAIL_TEMPLATE);
 
@@ -357,11 +361,11 @@ public class Lottery {
 				message.setSubject("Lottery");
 				message.setText(body);
 
-				print("Sending mail to " + last.email, LEVEL_VERBOSE);
+				print("Sending mail to " + last.email, OUTPUTLEVEL_VERBOSE);
 				Transport.send(message);
 
 			} catch (MessagingException e) {
-				print("Cannot send email " + e, LEVEL_NORMAL);
+				print("Cannot send email " + e, OUTPUTLEVEL_NORMAL);
 				e.printStackTrace();
 			}
 
@@ -369,15 +373,14 @@ public class Lottery {
 		}
 	}
 
-	private static String readStringFromCommandLine(String prompt)
-			throws IOException {
+	private String readStringFromCommandLine(String prompt) throws IOException {
 
 		System.out.println(prompt);
 		return new BufferedReader(new InputStreamReader(System.in)).readLine();
 	}
 
-	private static void print(String msg, int level) {
-		if (level >= LEVEL) {
+	private void print(String msg, int level) {
+		if (level >= outputLevel) {
 			System.out.println(msg);
 		}
 	}
