@@ -2,7 +2,7 @@ package xcon.queens;
 
 public class QueenSolverApplication {
 
-    private static final int BOARD_SIZE = 10;
+    private static final int BOARD_SIZE = 14;
     private static final int THREAD_POOL_SIZE = 2;
     private static final long serialVersionUID = 1L;
 

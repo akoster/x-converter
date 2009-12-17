@@ -7,7 +7,9 @@ package xcon.word;
  */
 public class RotonymException extends Exception {
 
-    public RotonymException() {
+	private static final long serialVersionUID = 1L;
+
+	public RotonymException() {
         super();
         // TODO Auto-generated constructor stub
     }

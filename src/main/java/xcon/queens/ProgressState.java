@@ -2,16 +2,15 @@ package xcon.queens;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
-import org.apache.log4j.Logger;
 
 public class ProgressState implements Runnable {
 
-    private static final Logger LOG = Logger.getLogger(ProgressState.class);
+//    private static final Logger LOG = Logger.getLogger(ProgressState.class);
 
     private List<SolutionFinder> solutionFinderList;
     private JFrame theFrame;
