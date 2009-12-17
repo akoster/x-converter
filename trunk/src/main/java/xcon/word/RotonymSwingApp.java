@@ -33,6 +33,7 @@ import javax.swing.JTextField;
 // -> ja: woord en rotonym uitvoeren
 public class RotonymSwingApp extends JFrame implements ActionListener {
 
+	private static final long serialVersionUID = 1L;
 	private JRadioButton rotonym180;
 	private JRadioButton rotonym90;
 	private JTextField textfield;
@@ -41,7 +42,7 @@ public class RotonymSwingApp extends JFrame implements ActionListener {
 	private ButtonGroup strategySelect;
 
 	public static void main(String args[]) {
-		RotonymSwingApp rotonymClass = new RotonymSwingApp();
+		new RotonymSwingApp();
 	}
 
 	public RotonymSwingApp() {

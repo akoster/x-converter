@@ -99,8 +99,6 @@ public class RotonymFinderApp {
 
 	public static void main(String[] args) {
 
-		// args = null
-		// args = new String[] {};
 		if (args == null || args.length < 2) {
 			printUsage();
 			return;

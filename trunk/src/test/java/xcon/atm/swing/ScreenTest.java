@@ -1,15 +1,16 @@
 package xcon.atm.swing;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import org.junit.After;
-import org.junit.Before;
+
 import org.junit.Test;
-import xcon.atm.swing.event.AtmEvent;
-import xcon.atm.swing.event.AtmEventHandler;
-import xcon.atm.swing.event.ScreenAmountChoiceEvent;
+
+import xcon.atm.Screen;
+import xcon.atm.SwingScreen;
+import xcon.atm.event.AtmEvent;
+import xcon.atm.event.AtmEventHandler;
+import xcon.atm.event.ScreenAmountChoiceEvent;
 
 public class ScreenTest {
 
@@ -26,7 +27,9 @@ public class ScreenTest {
      */
     public class TestScreen extends SwingScreen {
 
-        public void clickButton(int index) {
+		private static final long serialVersionUID = 1L;
+
+		public void clickButton(int index) {
             moneyChoiceButtons[index].doClick();
         }
     }
@@ -68,40 +71,4 @@ public class ScreenTest {
         instance.showInfoPanel();
         assertTrue(instance.isShowingInfoPanel());
     }
-
-    @Test
-    public void testShowMoneyPanel() {
-        fail("Not yet implemented");
-    }
-
-    @Test
-    public void testIsShowingInfoPanel() {
-        fail("Not yet implemented");
-    }
-
-    @Test
-    public void testGetInfoLabel() {
-        fail("Not yet implemented");
-    }
-
-    @Test
-    public void testSetInfoLabel() {
-        fail("Not yet implemented");
-    }
-
-    @Test
-    public void testGetMessage() {
-        fail("Not yet implemented");
-    }
-
-    @Test
-    public void testSetMessage() {
-        fail("Not yet implemented");
-    }
-
-    @Test
-    public void testAddLine() {
-        fail("Not yet implemented");
-    }
-
 }
