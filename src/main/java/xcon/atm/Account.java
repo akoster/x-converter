@@ -1,11 +1,13 @@
 package xcon.atm;
 
+/**
+ */
 public class Account {
 
     private long id;
     private long accountNumber;
     private double balance;
-    private String fullname;
+    private String fullname; 
 
     public long getAccountNumber() {
         return accountNumber;
