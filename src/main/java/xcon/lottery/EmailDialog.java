@@ -11,17 +11,23 @@ import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MyLogin extends Dialog implements ActionListener {
-	
-	private static final long serialVersionUID = 1L;
-	boolean id = false;
-	Button ok, can;
-	TextField hostname;
-	TextField username;
-	TextField password;
+/**
+ * A simple UI for obtaining the email host and credentials.
+ * 
+ * @author Adriaan
+ */
+public class EmailDialog extends Dialog implements ActionListener {
 
-	MyLogin(Frame frame) {
-		super(frame, "Welcome", true);
+	private static final long serialVersionUID = 1L;
+	private boolean dialogCompleted = false;
+	private Button ok, can;
+	private TextField hostname;
+	private TextField username;
+	private TextField password;
+
+	public EmailDialog() {
+
+		super(new Frame(""), "Email dialog", true);
 		setLayout(new FlowLayout());
 		hostname = new TextField(15);
 		username = new TextField(15);
@@ -39,32 +45,60 @@ public class MyLogin extends Dialog implements ActionListener {
 		setVisible(true);
 	}
 
-	void addOKCancelPanel() {
+	private void addOKCancelPanel() {
+
 		Panel p = new Panel();
 		p.setLayout(new FlowLayout());
 		createButtons(p);
 		add(p);
 	}
 
-	void createButtons(Panel p) {
+	private void createButtons(Panel p) {
+
 		p.add(ok = new Button("OK"));
 		ok.addActionListener(this);
 		p.add(can = new Button("Cancel"));
 		can.addActionListener(this);
 	}
 
-	void createFrame() {
+	private void createFrame() {
+
 		Dimension d = getToolkit().getScreenSize();
 		setLocation(d.width / 4, d.height / 3);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent ae) {
+
 		if (ae.getSource() == ok) {
-			id = true;
+
+			dialogCompleted = true;
 			setVisible(false);
 		} else if (ae.getSource() == can) {
-			id = false;
+
+			dialogCompleted = false;
 			setVisible(false);
 		}
+	}
+
+	public boolean isDialogCompleted() {
+		return dialogCompleted;
+	}
+
+	public String getUsername() {
+		return username.getText();
+	}
+
+	public String getHostname() {
+		return hostname.getText();
+	}
+
+	public String getPassword() {
+		return password.getText();
 	}
 }
