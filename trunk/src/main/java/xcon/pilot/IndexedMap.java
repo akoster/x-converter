@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A Map implementation which keeps track of the inserted keys in a List. This
+ * gives the client the opportunity to get a key from the map by its position.
+ * 
+ * @author Adriaan
+ */
 @SuppressWarnings("unchecked")
 public class IndexedMap extends HashMap {
 
