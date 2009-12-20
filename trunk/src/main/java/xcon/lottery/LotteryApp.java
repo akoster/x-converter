@@ -8,26 +8,27 @@ import java.util.List;
  * 
  * @author Adriaan
  */
-//input: een aantal namen van deelnemers
-//minimaal 2 deelnemers
-//namen mogen geen + of = bevatten
+// input: een aantal namen van deelnemers
+// minimaal 2 deelnemers
+// namen mogen geen + of = bevatten
 //
-//output: voor elke deelnemer de (random) naam van diegene voor wie een
-//kadootje moet worden gekocht
+// output: voor elke deelnemer de (random) naam van diegene voor wie een
+// kadootje moet worden gekocht
 //
-//constraints: niemand trekt zichzelf
+// constraints: niemand trekt zichzelf
 //
-//uitbreiding 1: als namen alsvolgt worden opgegeven: Annie+Willem+Jan dan
-//betekent dit dat die personen elkaar niet mogen trekken
+// uitbreiding 1: als namen alsvolgt worden opgegeven: Annie+Willem+Jan dan
+// betekent dit dat die personen elkaar niet mogen trekken
 //
-//uitbreiding 3: als input wordt naam=emailadres opgegeven, bijvoorbeeld:
-//Annie=annie@hotmail.com. De uitslag van de loting wordt aan de deelnemer
-//gemaild.
-//email adressen mogen geen + of = bevatten
+// uitbreiding 3: als input wordt naam=emailadres opgegeven, bijvoorbeeld:
+// Annie=annie@hotmail.com. De uitslag van de loting wordt aan de deelnemer
+// gemaild.
+// email adressen mogen geen + of = bevatten
 public class LotteryApp {
 
 	/**
 	 * Runs a lottery, sending email to the participants
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -36,8 +37,10 @@ public class LotteryApp {
 
 	/**
 	 * Runs a lottery
+	 * 
 	 * @param args
-	 * @param isDebugMode if true, no email is sent but the results are printed
+	 * @param isDebugMode
+	 *            if true, no email is sent but the results are printed
 	 */
 	public static void run(String[] args, boolean isDebugMode) {
 
@@ -49,17 +52,16 @@ public class LotteryApp {
 			Emailer.sendDrawByEmail(result);
 		}
 	}
-	
 
 	public static List<Person> extractPersons(String[] args) {
-		
+
 		if (args == null || args.length == 0) {
 
 			throw new IllegalArgumentException(
 					"Please provide the names of the participants "
 							+ "as commandline arguments");
 		}
-		
+
 		List<Person> persons = new ArrayList<Person>();
 		for (String arg : args) {
 
@@ -95,7 +97,7 @@ public class LotteryApp {
 		}
 		return person;
 	}
-	
+
 	private static void printNodes(List<Person> nodes) {
 
 		String msg = "";
