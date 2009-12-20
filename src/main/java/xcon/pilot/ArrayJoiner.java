@@ -13,7 +13,7 @@ public class ArrayJoiner {
 		String[] array2 = new String[] {"a", "b", "c"};
 		
 		
-		System.out.println(join(array1, array2).length);
+		System.out.println(Arrays.toString(join(array1, array2)));
 		
 	}
 

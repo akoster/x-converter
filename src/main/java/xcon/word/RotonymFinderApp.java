@@ -143,7 +143,7 @@ public class RotonymFinderApp {
 	private static void printUsage() {
 		System.err.println("verkeerde argumenten");
 		System.err
-				.println("gebruik: java xwords.palindrome.RotonymFinder dictionary.txt 180");
+				.println("gebruik: " + RotonymFinderApp.class + " dictionary.txt 180");
 
 	}
 

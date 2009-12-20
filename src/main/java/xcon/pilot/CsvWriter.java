@@ -9,6 +9,11 @@ import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Scanner;
 
+/**
+ * Application demonstrating the creating, and reading of a CSV file.
+ * 
+ * @author Adriaan
+ */
 public class CsvWriter {
 	public static void main(String args[]) throws IOException {
 		
