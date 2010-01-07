@@ -12,3 +12,5 @@ For example, to install the MySQL driver:
 
 mvn install:install-file -DgroupId=mysql -DartifactId=mysql -Dversion=5.1.6 
 -Dpackaging=jar -DgeneratePom=true -Dfile=mysql-connector-java-5.1.6-bin.jar
+
+.
