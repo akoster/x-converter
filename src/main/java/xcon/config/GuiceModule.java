@@ -1,7 +1,8 @@
 package xcon.config;
 
-import xcon.pilot.storage.Storage;
-import xcon.pilot.storage.impl.NullStorage;
+import xcon.datastore.Storage;
+import xcon.datastore.impl.NullStorage;
+
 import com.google.inject.AbstractModule;
 
 public class GuiceModule extends AbstractModule {

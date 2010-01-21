@@ -1,9 +1,10 @@
-package xcon.pilot.storage.impl;
+package xcon.datastore.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import xcon.pilot.storage.Storage;
+
+import xcon.datastore.Storage;
 
 public class HashMapStorage extends Storage {
 
