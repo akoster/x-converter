@@ -1,9 +1,9 @@
-package xcon.pilot.storage.command;
+package xcon.datastore.command;
 
 import java.util.Scanner;
 
-import xcon.pilot.storage.Command;
-import xcon.pilot.storage.Storage;
+import xcon.datastore.Command;
+import xcon.datastore.Storage;
 
 public class CapacityCommand extends Command {
 

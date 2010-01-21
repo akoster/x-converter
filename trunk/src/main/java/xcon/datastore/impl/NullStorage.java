@@ -1,8 +1,9 @@
-package xcon.pilot.storage.impl;
+package xcon.datastore.impl;
 
 import java.util.HashSet;
 import java.util.Set;
-import xcon.pilot.storage.Storage;
+
+import xcon.datastore.Storage;
 
 public class NullStorage extends Storage {
 

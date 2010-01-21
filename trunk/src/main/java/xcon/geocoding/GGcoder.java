@@ -157,7 +157,7 @@ public class GGcoder {
 		public void setLng(double lng) {
 			this.lng = lng;
 		}
-		
+
 		public String toString() {
 			return ToStringBuilder.reflectionToString(this);
 		}

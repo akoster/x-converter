@@ -1,4 +1,4 @@
-package xcon.pilot.storage.impl;
+package xcon.datastore.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +9,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.Set;
-import xcon.pilot.storage.Storage;
+
+import xcon.datastore.Storage;
 
 /**
  * Implementation of the Storage class which is based on object serialization.

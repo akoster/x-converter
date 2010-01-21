@@ -1,4 +1,4 @@
-package xcon.pilot.storage;
+package xcon.datastore;
 
 import java.io.BufferedReader;
 import java.io.IOException;
