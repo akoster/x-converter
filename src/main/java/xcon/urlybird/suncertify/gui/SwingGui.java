@@ -7,7 +7,13 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,149 +25,190 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import xcon.urlybird.suncertify.db.RecordDoesAllreadyExistException;
+import xcon.urlybird.suncertify.model.HotelRoom;
 
 public class SwingGui extends JFrame {
 
-	private static final long serialVersionUID = 5165L;
+    private static final long serialVersionUID = 5165L;
 
-	private Controller controller;
+    private Controller controller;
 
-	private JTable mainTable = new JTable();
+    private JTable mainTable = new JTable();
 
-	private JLabel commentLabel = new JLabel();
+    private JLabel commentLabel = new JLabel();
 
-	private JTextField nameSearchField = new JTextField(20);
-	private JTextField locationSearchField = new JTextField(20);
-	private JLabel nameLabel = new JLabel("name");
-	private JLabel locationLabel = new JLabel("location");
+    private JTextField nameSearchField = new JTextField(20);
+    private JTextField locationSearchField = new JTextField(20);
+    private JLabel nameLabel = new JLabel("name");
+    private JLabel locationLabel = new JLabel("location");
 
-	private TableModel tableData;
+    private TableModel tableData;
 
-	// private Logger LOG = Logger.getLogger("sampleproject.gui");
+    private Logger logger = Logger.getLogger("urlybirdApplication");
 
-	public SwingGui() {
-		super("Urly bird application");
-		this.setDefaultCloseOperation(SwingGui.EXIT_ON_CLOSE);
+    public SwingGui() {
 
-		controller = new Controller();
+        super("Urly bird application");
+        this.setDefaultCloseOperation(SwingGui.EXIT_ON_CLOSE);
+        createLogger();
+        
 
-		// Add the menu bar
-		JMenuBar menuBar = new JMenuBar();
-		JMenu fileMenu = new JMenu("File");
-		JMenuItem quitMenuItem = new JMenuItem("Quit");
-		quitMenuItem.addActionListener(new QuitApplication());
-		quitMenuItem.setMnemonic(KeyEvent.VK_Q);
-		fileMenu.add(quitMenuItem);
-		fileMenu.setMnemonic(KeyEvent.VK_F);
-		menuBar.add(fileMenu);
+        // initialize the Controller
+        controller = new Controller();
+        // initialize the TableModel
+        tableData = new TableModel();
+        // 1: search for all rooms
+        
+        List<HotelRoom> rooms = controller.search("", "");
+        
+        
+        // 2: add all rooms to table model
+        tableData.addHotelrooms(rooms);
+        this.mainTable.setModel(tableData);
 
-		this.setJMenuBar(menuBar);
+       //  initialize status bar so it shows up
+        commentLabel.setText(" ");
 
-		tableData = controller.getHotelRooms();
-		this.mainTable.setModel(tableData);
+        // Add the menu bar
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        JMenuItem quitMenuItem = new JMenuItem("Quit");
+        quitMenuItem.addActionListener(new QuitApplication());
+        quitMenuItem.setMnemonic(KeyEvent.VK_Q);
+        fileMenu.add(quitMenuItem);
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+        menuBar.add(fileMenu);
 
-		this.add(new HotelRoomScreen());
+        this.setJMenuBar(menuBar);
 
-		this.pack();
-		this.setSize(650, 300);
+        this.add(new HotelRoomScreen());
 
-		// Center on screen
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((d.getWidth() - this.getWidth()) / 2);
-		int y = (int) ((d.getHeight() - this.getHeight()) / 2);
-		this.setLocation(x, y);
-		this.setVisible(true);
-	}
+        this.pack();
+        this.setSize(750, 300);
 
-	private class HotelRoomScreen extends JPanel {
+        // Center on screen
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((d.getWidth() - this.getWidth()) / 2);
+        int y = (int) ((d.getHeight() - this.getHeight()) / 2);
+        this.setLocation(x, y);
+        this.setVisible(true);
+    }
 
-		private static final long serialVersionUID = 5165L;
+    private void createLogger() {
+        LogManager lm = LogManager.getLogManager();
+        FileHandler fh = null;
+        try {
+            fh = new FileHandler("urlyBird_log.txt");
+        }
+        catch (SecurityException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
-		public HotelRoomScreen() {
-			this.setLayout(new BorderLayout());
-			JScrollPane tableScroll = new JScrollPane(mainTable);
-			tableScroll.setSize(500, 250);
+       
 
-			this.add(tableScroll, BorderLayout.CENTER);
+        lm.addLogger(logger);
+        logger.setLevel(Level.INFO);
+        fh.setFormatter(new SimpleFormatter());
 
-			JButton searchButton = new JButton("Search");
-			searchButton.addActionListener(new SearchHotelRoom());
-			searchButton.setMnemonic(KeyEvent.VK_S);
-			JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			searchPanel.add(nameLabel);
-			searchPanel.add(nameSearchField);
-			searchPanel.add(locationLabel);
-			searchPanel.add(locationSearchField);
-			searchPanel.add(searchButton);
+        logger.addHandler(fh);
+    }
 
-			JButton BookButton = new JButton("book selected room");
+    private class HotelRoomScreen extends JPanel {
 
-			BookButton.addActionListener(new BookHotelRoom());
-			BookButton.setRequestFocusEnabled(false);
-			BookButton.setMnemonic(KeyEvent.VK_B);
-			JPanel bookingPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-			bookingPanel.add(BookButton);
+        private static final long serialVersionUID = 5165L;
 
-			JPanel commentPanel = new JPanel();
-			commentPanel.add(commentLabel);
+        public HotelRoomScreen() {
+            this.setLayout(new BorderLayout());
+            JScrollPane tableScroll = new JScrollPane(mainTable);
+            tableScroll.setSize(500, 250);
 
-			JPanel bottomPanel = new JPanel(new BorderLayout());
-			bottomPanel.add(searchPanel, BorderLayout.NORTH);
-			bottomPanel.add(bookingPanel, BorderLayout.EAST);
-			bottomPanel.add(commentLabel, BorderLayout.SOUTH);
-			this.add(bottomPanel, BorderLayout.SOUTH);
+            this.add(tableScroll, BorderLayout.CENTER);
 
-			mainTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-			mainTable.setToolTipText("Select a hotel record book a room.");
+            JButton searchButton = new JButton("Search");
+            searchButton.addActionListener(new SearchHotelRoom());
+            searchButton.setMnemonic(KeyEvent.VK_S);
+            JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            searchPanel.add(nameLabel);
+            searchPanel.add(nameSearchField);
+            searchPanel.add(locationLabel);
+            searchPanel.add(locationSearchField);
+            searchPanel.add(searchButton);
 
-			BookButton
-					.setToolTipText("book a room selected in the above table.");
-			nameSearchField
-					.setToolTipText("Enter the name of the hotel you want to find.");
-			locationSearchField
-					.setToolTipText("Enter the name of the hotel you want to find");
-			searchButton.setToolTipText("Submit the Hotelroom search.");
+            JButton BookButton = new JButton("book selected room");
 
-		}
-	}
+            BookButton.addActionListener(new BookHotelRoom());
+            BookButton.setRequestFocusEnabled(false);
+            BookButton.setMnemonic(KeyEvent.VK_B);
+            JPanel bookingPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            bookingPanel.add(BookButton);
 
-	private class BookHotelRoom implements ActionListener {
+            JPanel commentPanel = new JPanel();
+            commentPanel.add(commentLabel);
 
-		public void actionPerformed(ActionEvent ae) {
-			String id = "";
-			int index = mainTable.getSelectedRow();
-			if (index >= 0) {
-				id = (String) mainTable.getValueAt(index, 0);
-				System.out.println("id:" + id);
-				commentLabel.setText("book");
-				controller.bookRoom(Long.valueOf(id));
-			}
-		}
-	}
+            JPanel bottomPanel = new JPanel(new BorderLayout());
+            bottomPanel.add(searchPanel, BorderLayout.NORTH);
+            bottomPanel.add(bookingPanel, BorderLayout.EAST);
+            bottomPanel.add(commentLabel, BorderLayout.SOUTH);
+            this.add(bottomPanel, BorderLayout.SOUTH);
 
-	private class SearchHotelRoom implements ActionListener {
+            mainTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            mainTable.setToolTipText("Select a hotel record book a room.");
 
-		public void actionPerformed(ActionEvent ae) {
-			String searchHotelNameString = nameSearchField.getText();
-			String searchHotelLocationString = locationSearchField.getText();
-			System.out.println(" searchHotelNameString: "
-					+ searchHotelNameString + " searchHotelLocationString"
-					+ searchHotelLocationString);
-			commentLabel.setText("search");
+            BookButton.setToolTipText("book a room selected in the above table.");
+            nameSearchField.setToolTipText("Enter the name of the hotel you want to find.");
+            locationSearchField.setToolTipText("Enter the name of the hotel you want to find");
+            searchButton.setToolTipText("Submit the Hotelroom search.");
 
-		}
-	}
+        }
+    }
 
-	private class QuitApplication implements ActionListener {
+    private class BookHotelRoom implements ActionListener {
 
-		public void actionPerformed(ActionEvent ae) {
-			System.exit(0);
-		}
-	}
+        public void actionPerformed(ActionEvent ae) {
+            String id = "";
+            int index = mainTable.getSelectedRow();
+            try {
+                if (index >= 0) {
+                    id = (String) mainTable.getValueAt(index, 0);
+                    commentLabel.setText("book");
+                    HotelRoom hotelRoom = controller.bookRoom(Long.valueOf(id));
+                    tableData.setValueAt(
+                            hotelRoom.getOwner(),
+                            index,
+                            tableData.getTabelHeaderSize() - 1);
+                }
+            }
+            catch (RecordDoesAllreadyExistException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
 
-	public static void main(String[] args) {
-		new SwingGui();
-	}
+    private class SearchHotelRoom implements ActionListener {
+
+        public void actionPerformed(ActionEvent ae) {
+
+            tableData.clear();
+            String hotelName = nameSearchField.getText();
+            String hotelLocation = locationSearchField.getText();
+            commentLabel.setText("search");
+            List<HotelRoom> hotelRooms =
+                controller.search(hotelName, hotelLocation);
+            
+            tableData.addHotelrooms(hotelRooms);
+        }
+    }
+
+    private class QuitApplication implements ActionListener {
+
+        public void actionPerformed(ActionEvent ae) {
+            System.exit(0);
+        }
+    }
 
 }

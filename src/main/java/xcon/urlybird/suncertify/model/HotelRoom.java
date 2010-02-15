@@ -1,18 +1,97 @@
 package xcon.urlybird.suncertify.model;
 
+import java.io.Serializable;
+import java.util.logging.Logger;
 
 /**
  * @author loudiyimo
  */
-public class HotelRoom {
+public class HotelRoom implements Serializable {
 
-//    private static final transient Logger LOG =
-//        Logger.getLogger(HotelRoom.class.getName());
+    private static final long serialVersionUID = 5165L;
+
+    private static final transient Logger log =
+        Logger.getLogger(HotelRoom.class.getName());
+
+    static final int IS_VALID_OR_DELETED_RECORD_LENGTH = 2;
+
+    static final int NAME_LENGHT = 64;
+
+    static final int LOCATION_LENGHT = 64;
+
+    static final int SIZE_LENGHT = 4;
+
+    static final int IS_SMOKING_ALLOWED_LENGHT = 1;
+
+    static final int RATE_LENGHT = 8;
+
+    static final int DATE_LENGHT = 10;
+
+    static final int OWNER_LENGHT = 8;
+
+    public static int getIsValidOrDeletedRecordLength() {
+        return IS_VALID_OR_DELETED_RECORD_LENGTH;
+    }
+
+    public String getIsSmokingAllowed() {
+        return isSmokingAllowed;
+    }
+
+    public void setIsSmokingAllowed(String isSmokingAllowed) {
+        this.isSmokingAllowed = isSmokingAllowed;
+    }
+
+    public static Logger getLog() {
+        return log;
+    }
+
+    public static int getNameLenght() {
+        return NAME_LENGHT;
+    }
+
+    public static int getLocationLenght() {
+        return LOCATION_LENGHT;
+    }
+
+    public static int getSizeLenght() {
+        return SIZE_LENGHT;
+    }
+
+    public static int getIsSmokingAllowedLenght() {
+        return IS_SMOKING_ALLOWED_LENGHT;
+    }
+
+    public static int getRateLenght() {
+        return RATE_LENGHT;
+    }
+
+    public static int getDateLenght() {
+        return DATE_LENGHT;
+    }
+
+    public static int getOwnerLenght() {
+        return OWNER_LENGHT;
+    }
+
+    /**
+     * The size of a complete record in the database
+     */
+    private static final int RECORD_LENGTH =
+        IS_VALID_OR_DELETED_RECORD_LENGTH + NAME_LENGHT + LOCATION_LENGHT +
+
+        SIZE_LENGHT + IS_SMOKING_ALLOWED_LENGHT + RATE_LENGHT + DATE_LENGHT
+
+        + OWNER_LENGHT;
 
     private String id;
 
+    public String getIsValidOrDeletedRecord() {
+        return isValidOrDeletedRecord;
+    }
+
+    private String isValidOrDeletedRecord;
     /**
-     * The name of the hotel this vacancy record relates to
+     * The name of the hotel
      */
     private String name;
 
@@ -29,7 +108,7 @@ public class HotelRoom {
     /**
      * Flag indication if smoking is permitted
      */
-    private String smoking;
+    private String isSmokingAllowed;
 
     /**
      * Charge per night for the room.
@@ -60,17 +139,25 @@ public class HotelRoom {
 
     }
 
-    // TODO checkOrder
-    public HotelRoom(String[] fields) {
+    /*
+     * public HotelRoom(String[] fields) { this.id = fields[0]; this.name =
+     * fields[1]; this.location = fields[2]; this.maxOccupants = fields[3];
+     * this.isSmokingAllowed = fields[4]; this.rate = fields[5]; this.date =
+     * fields[6]; this.owner = fields[7]; }
+     */
 
+    public HotelRoom(long recNo, String[] fields) {
+
+        // this.id = String.valueOf(recNo);
         this.id = fields[0];
-        this.name = fields[1];
-        this.location = fields[2];
-        this.maxOccupants = fields[3];
-        this.smoking = fields[4];
-        this.rate = fields[5];
-        this.date = fields[6];
-        this.owner = fields[7];
+        this.isValidOrDeletedRecord = fields[1];
+        this.name = fields[2];
+        this.location = fields[3];
+        this.maxOccupants = fields[4];
+        this.isSmokingAllowed = fields[5];
+        this.rate = fields[6];
+        this.date = fields[7];
+        this.owner = fields[8];
     }
 
     /**
@@ -85,6 +172,7 @@ public class HotelRoom {
      * @param owner Holds
      */
     public HotelRoom(String id,
+                     String isValidOrDeletedRecord,
                      String name,
                      String location,
                      String maxOccupants,
@@ -95,10 +183,11 @@ public class HotelRoom {
     {
 
         this.id = id;
+        this.isValidOrDeletedRecord = isValidOrDeletedRecord;
         this.name = name;
         this.location = location;
         this.maxOccupants = maxOccupants;
-        this.smoking = smoking;
+        this.isSmokingAllowed = smoking;
         this.rate = rate;
         this.date = date;
         this.owner = owner;
@@ -107,9 +196,9 @@ public class HotelRoom {
     public String toString() {
 
         String retVal =
-            "[" + this.name + "; " + this.location + "; " + this.size + "; "
-                + this.maxOccupants + "; " + this.smoking + "; " + this.rate
-                + "; " + this.date + "; " + this.owner + "]";
+            "[" + this.name + "; " + this.location + "; " + this.maxOccupants
+                + "; " + this.isSmokingAllowed + "; " + this.rate + "; "
+                + this.date + "; " + this.owner + "]";
 
         return retVal;
     }
@@ -147,11 +236,11 @@ public class HotelRoom {
     }
 
     public String getSmoking() {
-        return smoking;
+        return isSmokingAllowed;
     }
 
     public void setSmoking(String smoking) {
-        this.smoking = smoking;
+        this.isSmokingAllowed = smoking;
     }
 
     public String getRate() {
@@ -188,9 +277,15 @@ public class HotelRoom {
 
     public String[] convertToArray() {
         return new String[] {
-                this.id, this.location, this.size, this.smoking, this.rate,
-                this.date, this.owner, this.maxOccupants
+                this.id, this.isValidOrDeletedRecord, this.name, this.location,
+                this.size, this.isSmokingAllowed, this.rate, this.date,
+                this.owner
+
         };
+    }
+
+    public static int getRecordLength() {
+        return RECORD_LENGTH;
     }
 
 }
