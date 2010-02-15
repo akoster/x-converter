@@ -1,4 +1,4 @@
-package xcon.teracottaQueens;
+package xcon.queens.terracotta;
 
 import java.util.concurrent.LinkedBlockingQueue;
 

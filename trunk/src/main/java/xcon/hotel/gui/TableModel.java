@@ -1,9 +1,10 @@
-package xcon.urlybird.suncertify.gui;
+package xcon.hotel.gui;
 
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.table.*;
-import xcon.urlybird.suncertify.model.HotelRoom;
+
+import xcon.hotel.model.HotelRoom;
 
 public class TableModel extends AbstractTableModel {
 

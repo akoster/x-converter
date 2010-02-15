@@ -1,4 +1,4 @@
-package xcon.urlybird.suncertify.db.local;
+package xcon.hotel.db.local;
 
 import java.io.EOFException;
 import java.io.FileNotFoundException;
@@ -12,11 +12,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import xcon.urlybird.suncertify.db.DBAccess;
-import xcon.urlybird.suncertify.db.DuplicateKeyException;
-import xcon.urlybird.suncertify.db.RecordNotFoundException;
-import xcon.urlybird.suncertify.db.SecurityException;
-import xcon.urlybird.suncertify.model.HotelRoom;
+
+import xcon.hotel.db.DBAccess;
+import xcon.hotel.db.DuplicateKeyException;
+import xcon.hotel.db.RecordNotFoundException;
+import xcon.hotel.db.SecurityException;
+import xcon.hotel.model.HotelRoom;
 
 /*
  * Dit moet de DBAccess implementatie worden die de file leest en schrijft

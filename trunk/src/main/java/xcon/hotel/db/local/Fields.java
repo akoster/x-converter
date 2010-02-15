@@ -1,4 +1,4 @@
-package xcon.urlybird.suncertify.db.local;
+package xcon.hotel.db.local;
 
 
 public interface Fields {

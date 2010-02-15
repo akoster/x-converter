@@ -1,4 +1,4 @@
-package xcon.urlybird.suncertify.db.utils;
+package xcon.hotel.db.util;
 
 
 import java.util.HashMap;

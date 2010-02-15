@@ -1,6 +1,6 @@
-package xcon.urlybird.suncertify;
+package xcon.hotel;
 
-import xcon.urlybird.suncertify.gui.SwingGui;
+import xcon.hotel.gui.SwingGui;
 
 
 
@@ -8,7 +8,7 @@ import xcon.urlybird.suncertify.gui.SwingGui;
  * @author mohamed loudiyi
  *
  */
-public class UrlyBirdApplication {
+public class HotelApplication {
 
 	
 	/**

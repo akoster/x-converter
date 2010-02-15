@@ -1,4 +1,4 @@
-package xcon.urlybird.suncertify.gui;
+package xcon.hotel.gui;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,14 +6,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-import xcon.urlybird.suncertify.db.DBAccess;
-import xcon.urlybird.suncertify.db.RecordDoesAllreadyExistException;
-import xcon.urlybird.suncertify.db.RecordNotFoundException;
-import xcon.urlybird.suncertify.db.SecurityException;
-import xcon.urlybird.suncertify.db.local.DbAccessFileImpl;
-import xcon.urlybird.suncertify.db.stub.DbAccessStub;
-import xcon.urlybird.suncertify.db.utils.Utils;
-import xcon.urlybird.suncertify.model.HotelRoom;
+
+import xcon.hotel.db.DBAccess;
+import xcon.hotel.db.RecordDoesAllreadyExistException;
+import xcon.hotel.db.RecordNotFoundException;
+import xcon.hotel.db.SecurityException;
+import xcon.hotel.db.local.DbAccessFileImpl;
+import xcon.hotel.db.stub.DbAccessStub;
+import xcon.hotel.db.util.Utils;
+import xcon.hotel.model.HotelRoom;
 
 public class Controller {
 

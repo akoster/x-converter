@@ -1,4 +1,4 @@
-package xcon.urlybird.suncertify.db;
+package xcon.hotel.db;
 
 public class RecordNotFoundException extends Exception {
 
