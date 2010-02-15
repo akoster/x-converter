@@ -6,25 +6,25 @@
 			<roots>
 				<root>
 					<field-name>
-						xcon.teracottaQueens.QueenWork.tasks
+						xcon.queens.teracotta.QueenWork.tasks
 					</field-name>
 				</root>
 				<root>
 					<field-name>
-						xcon.teracottaQueens.QueenWork.results
+						xcon.queens.teracotta.QueenWork.results
 					</field-name>
 				</root>
 			</roots>
 			<instrumented-classes>
 				<include>
 					<class-expression>
-						xcon.teracottaQueens.QueenTask
+						xcon.queens.teracotta.QueenTask
 					</class-expression>
 				</include>
 
 				<include>
 					<class-expression>
-						xcon.teracottaQueens.QueenResult
+						xcon.queens.teracotta.QueenResult
 					</class-expression>
 				</include>
 			</instrumented-classes>

@@ -1,4 +1,4 @@
-package xcon.teracottaQueens;
+package xcon.queens.terracotta;
 
 public class QueenResult {
 

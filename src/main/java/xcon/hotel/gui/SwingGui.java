@@ -1,4 +1,4 @@
-package xcon.urlybird.suncertify.gui;
+package xcon.hotel.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -25,8 +25,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import xcon.urlybird.suncertify.db.RecordDoesAllreadyExistException;
-import xcon.urlybird.suncertify.model.HotelRoom;
+
+import xcon.hotel.db.RecordDoesAllreadyExistException;
+import xcon.hotel.model.HotelRoom;
 
 public class SwingGui extends JFrame {
 

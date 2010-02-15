@@ -1,8 +1,8 @@
 package xcon.urlybird.suncertify;
 
-import xcon.urlybird.suncertify.db.RecordNotFoundException;
-import xcon.urlybird.suncertify.db.SecurityException;
-import xcon.urlybird.suncertify.db.stub.DbAccessStub;
+import xcon.hotel.db.RecordNotFoundException;
+import xcon.hotel.db.SecurityException;
+import xcon.hotel.db.stub.DbAccessStub;
 import junit.framework.TestCase;
 
 public class TestDbAccesStub extends TestCase {

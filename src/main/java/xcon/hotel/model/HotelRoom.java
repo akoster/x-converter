@@ -1,4 +1,4 @@
-package xcon.urlybird.suncertify.model;
+package xcon.hotel.model;
 
 import java.io.Serializable;
 import java.util.logging.Logger;

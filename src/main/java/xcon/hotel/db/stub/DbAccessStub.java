@@ -1,4 +1,4 @@
-package xcon.urlybird.suncertify.db.stub;
+package xcon.hotel.db.stub;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,10 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import xcon.urlybird.suncertify.db.DBAccess;
-import xcon.urlybird.suncertify.db.DuplicateKeyException;
-import xcon.urlybird.suncertify.db.RecordNotFoundException;
-import xcon.urlybird.suncertify.db.SecurityException;
+
+import xcon.hotel.db.DBAccess;
+import xcon.hotel.db.DuplicateKeyException;
+import xcon.hotel.db.RecordNotFoundException;
+import xcon.hotel.db.SecurityException;
 
 /*
  * In-memory implementatie
