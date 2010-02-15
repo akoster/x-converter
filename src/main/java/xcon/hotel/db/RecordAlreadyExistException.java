@@ -1,13 +1,13 @@
 package xcon.hotel.db;
 
-public class RecordDoesAllreadyExistException  extends Exception{
+public class RecordAlreadyExistException  extends Exception{
     
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public RecordDoesAllreadyExistException(String description)
+    public RecordAlreadyExistException(String description)
     {
         super(description);
     }

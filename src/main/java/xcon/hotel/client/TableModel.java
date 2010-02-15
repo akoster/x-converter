@@ -1,4 +1,4 @@
-package xcon.hotel.gui;
+package xcon.hotel.client;
 
 import java.util.*;
 import java.util.logging.*;
@@ -10,8 +10,9 @@ public class TableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = 5165L;
 
-    private Logger log = Logger.getLogger("urlybird.suncertify.gui");
+    private Logger log = Logger.getLogger(TableModel.class.getName());
 
+    // XXX: should be read from database
     private String[] headerNames =
         {
                 "id","valid/deleted", "hotelName", "City ", "persons", "smoking",
