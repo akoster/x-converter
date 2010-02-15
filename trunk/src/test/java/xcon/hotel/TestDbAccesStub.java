@@ -1,4 +1,4 @@
-package xcon.urlybird.suncertify;
+package xcon.hotel;
 
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.SecurityException;

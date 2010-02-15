@@ -1,0 +1,59 @@
+Documentation
+----------------------------------------------------------------------------
+
+This documentation describes the design decisions. It is divided into the
+following sections:
+1) Graphical client
+2) Network layer
+3) Database
+----------------------------------------------------------------------------
+
+
+Startup                           
+  |setup local or networked DbAccess based on standalone or networked mode
+  v                           
+ Controller -- DbAccess -----(stub) ------ DbAccesStub
+   |(uses model)   |  
+   |			   |---(local)--- DbAccessFileImpl--[Data File]
+  GUI              |
+                   (networked)-> DbAccessNetworkClientImpl
+                                             :
+                                             : (RMI)
+                                             :
+                                       DbAccessServer
+                                             |
+                                       DbAccessFileImpl
+                                             |
+                                         [Data file]                        
+
+----------------------------------------------------------------------------
+1) Graphical client
+----------------------------------------------------------------------------
+Question: How to obtain the heading names in the GUI's JTable
+Answer: the header strings are part of the data file (schema section) 
+----------------------------------
+Question: how does and event on a Gui components get registered
+Option:
+1) using the method getActionPerformed which is overriden 
+2) using actions
+----------------------------------
+
+----------------------------------------------------------------------------
+2 - Network layer
+----------------------------------------------------------------------------
+
+----------------------------------------------------------------------------
+3 - Database
+----------------------------------------------------------------------------
+The row ID in the database is defined by the offset (number of bytes read) 
+from the start of the file
+----------------------------------------------------------------------------
+In the current data file format there is no column for record-level locking.
+The magic-cookie in the header can be used to lock the complete database to 
+achieve the same effect. This would yield a poor performance if the application
+would be accessed by many clients concurrently.  
+We will use this method because there is not really another option for locking
+at record level, without changing the data file format, which is not allowed
+according to the requirements.
+----------------------------------------------------------------------------
+

@@ -1,0 +1,26 @@
+Hotel todo document
+------------------- 
+Move hotel.db to src/main/resources. Access it using a ResourceBundle
+
+Read table headers from hotel.db
+
+Remove file-specific constants from HotelRoom model class. Cleaan up this class!
+(sort fields and methods etc).
+
+Remove extra field isInvalidOrDeletedRecord from HotelRoom
+this field exists in the database, but should be used as a filter when records
+are retrieved; invalid or deleted records should never be returned by DbAccess.
+
+// TODO: in TableModel replace List<String[]> model with List<HotelRoom>
+// for this you need to use hotelROom.convertToArray to be able to find a
+// room field by column index
+
+unitTests 
+methode maken in Hotelroom die een string [] teruggeeft 
+in de tablemodel werkt met een string id meteen converteren naar long en verder meewerken 
+omgekeerd geldt dezelfde 
+stub uitbreiden, verbeteren 
+gui koppelen met de stub via de controller 
+tutorial rmi ("hello world")
+
+//TODO checkOrder of argument in hotelRoom constructor

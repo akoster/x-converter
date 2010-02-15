@@ -1,11 +1,11 @@
-package xcon.hotel.db.util;
+package xcon.hotel.client;
 
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class Utils {
+public class CustomerIdGenerator {
 
     private static Map<Long, String> customerIds = new HashMap<Long, String>();;
     
