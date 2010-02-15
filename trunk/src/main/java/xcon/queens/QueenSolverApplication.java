@@ -18,7 +18,7 @@ public class QueenSolverApplication {
 
         SolutionManager solutionManager =
             new SolutionManager(BOARD_SIZE, THREAD_POOL_SIZE);
-        solutionManager.execute();
+        solutionManager.start();
 
     }
 }

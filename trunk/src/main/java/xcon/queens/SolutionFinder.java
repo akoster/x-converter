@@ -21,7 +21,6 @@ public class SolutionFinder implements Runnable {
     {
         this.solutionFinderCallbackHandler = solutionFinderCallbackHandler;
         queenBoard = new QueenBoard(size);
-        queenBoard.init();
         queenBoard.setQueen(0, firstQueenColumn);
         solutionCount = 0;
         state = State.IDLE;
