@@ -36,7 +36,7 @@ public class SolutionManager implements SolutionFinderCallbackHandler {
 		threadExecutor = Executors.newFixedThreadPool(poolSize);
 	}
 
-	public void execute() {
+	public void start() {
 
 		startTime = System.currentTimeMillis();
 		completedCount = 0;

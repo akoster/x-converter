@@ -14,7 +14,6 @@ public class QueenBoardTest {
 	@Before
 	public void setUp() throws Exception {
 		queenSolver = new QueenBoard(4);
-		queenSolver.init();
 	}
 
 	@Test
