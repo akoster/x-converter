@@ -15,18 +15,13 @@ public class HotelRoom implements Serializable {
     private static final transient Logger log =
         Logger.getLogger(HotelApplication.HOTEL_APPLICATION);
 
-    // XXX: these constants are specific to the file implementation of the
-    // database, so do not belong in the domein model
-
     private String id;
 
     /**
      * The name of the hotel
      */
-    
-    private String isValidOrDeleted ; 
-    
-    
+
+    private String isValidOrDeleted;
 
     private String name;
 
@@ -80,7 +75,7 @@ public class HotelRoom implements Serializable {
     public HotelRoom(long recNo, String[] fields) {
 
         // this.id = String.valueOf(recNo);
-        
+
         this.id = String.valueOf(recNo);
         this.name = fields[1];
         this.location = fields[2];
@@ -103,18 +98,16 @@ public class HotelRoom implements Serializable {
      * @param owner Holds
      */
     public HotelRoom(String id,
-                     String isValidOrDeleted,
                      String name,
                      String location,
                      String size,
                      String smoking,
                      String rate,
                      String date,
-                     String owner )
+                     String owner)
     {
 
         this.id = id;
-        this.isValidOrDeleted = isValidOrDeleted;
         this.name = name;
         this.location = location;
         this.size = size;
@@ -124,15 +117,7 @@ public class HotelRoom implements Serializable {
         this.owner = owner;
     }
 
-    public String toString() {
-
-        String retVal =
-            "[" + this.isValidOrDeleted + ";" + this.name + "; " + this.location + "; " + this.size + "; "
-                + this.isSmokingAllowed + "; " + this.rate + "; " + this.date
-                + "; " + this.owner + "]";
-
-        return retVal;
-    }
+    
 
     public String getId() {
         return id;
@@ -141,11 +126,11 @@ public class HotelRoom implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
     public String getIsValidOrDeleted() {
         return isValidOrDeleted;
     }
 
-    
     public void setIsValidOrDeleted(String isValidOrDeleted) {
         this.isValidOrDeleted = isValidOrDeleted;
     }
@@ -212,6 +197,17 @@ public class HotelRoom implements Serializable {
                 this.isSmokingAllowed, this.rate, this.date, this.owner
 
         };
+    }
+    
+    public String toString() {
+
+        String retVal =
+            "[" + this.name + "; "
+                + this.location + "; " + this.size + "; "
+                + this.isSmokingAllowed + "; " + this.rate + "; " + this.date
+                + "; " + this.owner + "]";
+
+        return retVal;
     }
 
 }

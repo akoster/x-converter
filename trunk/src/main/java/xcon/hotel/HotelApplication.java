@@ -89,8 +89,8 @@ public class HotelApplication {
 			break;
 		default:
 			// XXX: fix DbAccessStub
-			dbAccess = new DbAccessStub();
-			//dbAccess = new DbAccessFileImpl();
+			//dbAccess = new DbAccessStub();
+			dbAccess = new DbAccessFileImpl();
 			break;
 		}
 		return dbAccess;
