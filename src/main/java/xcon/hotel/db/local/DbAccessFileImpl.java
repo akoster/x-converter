@@ -102,10 +102,14 @@ public class DbAccessFileImpl implements DBAccess {
         String rate = readRecord.read(DatabaseData.RATE_LENGHT);
         String date = readRecord.read(DatabaseData.DATE_LENGHT);
         String owner = readRecord.read(DatabaseData.OWNER_LENGHT);
-        HotelRoom returnValue =
+        /*HotelRoom returnValue =
             new HotelRoom(String.valueOf(id), isValidOrDeletedRecord, name,
                 location, size, isSmokingAllowed, rate, date, owner);
-
+                              
+*/
+        HotelRoom returnValue =
+            new HotelRoom(String.valueOf(id), name,
+                location, size, isSmokingAllowed, rate, date, owner);
         return returnValue;
 
     }
