@@ -58,8 +58,10 @@ public class SwingGui extends JFrame {
 		// 1: search for all rooms
 
 		List<HotelRoom> rooms = controller.search("", "");
-
+		
 		// 2: add all rooms to table model
+		
+		
 		tableData.addHotelrooms(rooms);
 		this.mainTable.setModel(tableData);
 
@@ -91,7 +93,8 @@ public class SwingGui extends JFrame {
 		this.setVisible(true);
 	}
 
-	private class HotelRoomScreen extends JPanel {
+
+    private class HotelRoomScreen extends JPanel {
 
 		private static final long serialVersionUID = 5165L;
 

@@ -1,6 +1,7 @@
 package xcon.hotel.db.local;
 
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DuplicateKeyException;
 import xcon.hotel.db.RecordNotFoundException;
@@ -22,224 +22,221 @@ import xcon.hotel.model.HotelRoom;
  */
 public class DbAccessFileImpl implements DBAccess {
 
-	// HotelRoomFileAcces database = null ;
-	private final static String DATABASE_NAME = "hotel.db";
+    // HotelRoomFileAcces database = null ;
 
-	static final int DATABASE_OFFSET_LENGHT = 80;
+    private final static String DATABASE_NAME = "urlyBird_bd.db";
+    private final static String DATABASE_DIRECTORY_NAME = "database";
 
-	private static RandomAccessFile database = null;
+    static final int DATABASE_OFFSET_LENGHT = 80;
 
-	Map<Long, HotelRoom> hotelRooms = new HashMap<Long, HotelRoom>();
+    private static RandomAccessFile database = null;
 
-	public DbAccessFileImpl() {
-		this(System.getProperty("user.dir"));
-	}
+    Map<Long, HotelRoom> hotelRooms = new HashMap<Long, HotelRoom>();
 
-	public DbAccessFileImpl(String path) {
+    public DbAccessFileImpl() {
+        this(System.getProperty("user.dir") + File.separator
+            + DATABASE_DIRECTORY_NAME);
+    }
 
-		String databasePath = path + "\\" + DATABASE_NAME;
-		System.out.println("databasePath" + databasePath);
+    public DbAccessFileImpl(String path) {
 
-		// database is used for the first time
-		if (database == null) {
-			try {
-				database = new RandomAccessFile(databasePath, "rw");
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			try {
-				getHotelRoomList();
-			} catch (EOFException e) {
-				System.out.println("end of file has been reached");
-			} catch (IOException e) {
+        System.out.println("databasePath" + path);
 
-			}
-			printHotelRooms();
-		}
+        // database is used for the first time
+        if (database == null) {
+            try {
+                database =
+                    new RandomAccessFile(path + File.separator + DATABASE_NAME,
+                        "rw");
+            }
+            catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
 
-	}
+    }
 
-	private void printHotelRooms() {
+    /**
+     * get all the hotelRooms from the database file. The size of the record is
+     * known, because we know the record size we can the determine the id of
+     * each hotelRoom.
+     * @throws IOException
+     */
 
-		for (Map.Entry<Long, HotelRoom> entry : hotelRooms.entrySet()) {
-			long key = entry.getKey();
-			HotelRoom value = entry.getValue();
-		}
+    private HotelRoom retrieveHotelRoom(long locationInFile, long id)
+            throws IOException
+    {
 
-	}
+        final byte[] input = new byte[DatabaseData.RECORD_LENGTH];
+        synchronized (database) {
+            database.seek(locationInFile);
+            database.readFully(input);
+        }
 
-	/**
-	 * get all the hotelRooms from the database file. The size of the record is
-	 * known, because we know the record size we can the determine the id of
-	 * each hotelRoom.
-	 * 
-	 * @throws IOException
-	 */
-	private void getHotelRoomList() throws IOException {
+        class RecordFieldReader {
 
-		long id = 0;
+            /** field to track the position within the byte array */
+            private int offset = 0;
 
-		// XXX I am going to use an offset (database_offset_lenght)of 15 for the
-		// moment.
+            /**
+             * converts the required number of bytes into a String.
+             * @param length the length to be converted from current offset.
+             * @return the converted String
+             * @throws UnsupportedEncodingException if "UTF-8" not known.
+             */
+            String read(int length) throws UnsupportedEncodingException {
+                String str = new String(input, offset, length, "UTF-8");
+                offset += length;
+                return str.trim();
+            }
+        }
 
-		long locationInFile = DATABASE_OFFSET_LENGHT;
-		for (; locationInFile < database.length(); locationInFile += HotelRoom
-				.getRecordLength()) {
+        RecordFieldReader readRecord = new RecordFieldReader();
+        String isValidOrDeletedRecord =
+            readRecord.read(DatabaseData.IS_VALID_OR_DELETED_RECORD_LENGTH);
+        String name = readRecord.read(DatabaseData.NAME_LENGHT);
+        String location = readRecord.read(DatabaseData.LOCATION_LENGHT);
+        String size = readRecord.read(DatabaseData.SIZE_LENGHT);
+        String isSmokingAllowed =
+            readRecord.read(DatabaseData.IS_SMOKING_ALLOWED_LENGHT);
+        String rate = readRecord.read(DatabaseData.RATE_LENGHT);
+        String date = readRecord.read(DatabaseData.DATE_LENGHT);
+        String owner = readRecord.read(DatabaseData.OWNER_LENGHT);
+        HotelRoom returnValue =
+            new HotelRoom(String.valueOf(id), isValidOrDeletedRecord, name,
+                location, size, isSmokingAllowed, rate, date, owner);
 
-			HotelRoom hotelRoom = retrieveHotelRoom(locationInFile, id);
+        return returnValue;
 
-			hotelRooms.put(id, hotelRoom);
-			id++;
-		}
-	}
+    }
 
-	private HotelRoom retrieveHotelRoom(long locationInFile, long id)
-			throws IOException {
+    @Override
+    public long createRecord(String[] data) throws DuplicateKeyException {
+        return 0;
+    }
 
-		final byte[] input = new byte[HotelRoom.getRecordLength()];
-		synchronized (database) {
-			database.seek(locationInFile);
-			database.readFully(input);
-		}
+    @Override
+    public void deleteRecord(long recNo, long lockCookie)
+            throws RecordNotFoundException, SecurityException
+    {
 
-		class RecordFieldReader {
+    }
 
-			/** field to track the position within the byte array */
-			private int offset = 0;
+    @Override
+    public long[] findByCriteria(String[] criteria) {
+        if (criteria == null) {
+            throw new IllegalArgumentException("criteria may not be null");
+        }
 
-			/**
-			 * converts the required number of bytes into a String.
-			 * 
-			 * @param length
-			 *            the length to be converted from current offset.
-			 * @return the converted String
-			 * @throws UnsupportedEncodingException
-			 *             if "UTF-8" not known.
-			 */
-			String read(int length) throws UnsupportedEncodingException {
-				String str = new String(input, offset, length, "UTF-8");
-				offset += length;
-				return str.trim();
-			}
-		}
+        List<Long> results = new ArrayList<Long>();
+        int locationInFile = 0;
+        int id = 0;
+        try {
+            for (; locationInFile < database.length(); locationInFile +=
+                DatabaseData.RECORD_LENGTH)
+            {
 
-		RecordFieldReader readRecord = new RecordFieldReader();
-		String isValidOrDeletedRecord = readRecord.read(HotelRoom
-				.getIsValidOrDeletedRecordLength());
-		String name = readRecord.read(HotelRoom.getNameLenght());
-		String location = readRecord.read(HotelRoom.getLocationLenght());
-		String size = readRecord.read(HotelRoom.getSizeLenght());
-		String isSmokingAllowed = readRecord.read(HotelRoom
-				.getIsSmokingAllowedLenght());
-		String rate = readRecord.read(HotelRoom.getRateLenght());
-		String date = readRecord.read(HotelRoom.getDateLenght());
-		String owner = readRecord.read(HotelRoom.getOwnerLenght());
-		HotelRoom returnValue = new HotelRoom(String.valueOf(id),
-				isValidOrDeletedRecord, name, location, size, isSmokingAllowed,
-				rate, date, owner);
+                HotelRoom hotelRoom = retrieveHotelRoom(locationInFile, id);
+                // System.out.println("hotelRoom" + hotelRoom.toString());
 
-		return returnValue;
+                if (findMatch(criteria, hotelRoom)) {
+                    results.add(Long.valueOf(hotelRoom.getId()));
+                }
+                id++;
+            }
+        }
+        // XXX Ik mag van mijn iterfaces deze exceptie niet gooien
 
-	}
+        catch (EOFException e) {
+            System.out.println("EOF has been reached");
+        }
+        catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return copyValues(results);
+    }
 
-	@Override
-	public long createRecord(String[] data) throws DuplicateKeyException {
-		return 0;
-	}
+    private boolean findMatch(String[] criteria, HotelRoom room) {
 
-	@Override
-	public void deleteRecord(long recNo, long lockCookie)
-			throws RecordNotFoundException, SecurityException {
+        boolean isMatch = true;
 
-	}
+        String hotelName = room.getName();
+        String location = room.getLocation();
+        String tempArray[] = {
+                hotelName, location
+        };
 
-	@Override
-	public long[] findByCriteria(String[] criteria) {
-		if (criteria == null) {
-			throw new IllegalArgumentException("criteria may not be null");
-		}
+        for (int c = 0; c < criteria.length; c++) {
 
-		for (String string : criteria) {
-		}
+            if (criteria[c] == null || criteria[c].length() == 0) {
+                continue;
+            }
 
-		List<Long> results = new ArrayList<Long>();
-		Iterator<Map.Entry<Long, HotelRoom>> it = hotelRooms.entrySet()
-				.iterator();
-		while (it.hasNext()) {
+            String field = tempArray[c].toLowerCase();
+            String criterium = criteria[c].toLowerCase();
+            if (!field.startsWith(criterium)) {
+                isMatch = false;
+                break;
 
-			Map.Entry<Long, HotelRoom> pair = it.next();
-			HotelRoom room = (HotelRoom) pair.getValue();
+            }
 
-			if (findMatch(criteria, room)) {
-				results.add((Long) pair.getKey());
-			}
-		}
-		return copyValues(results);
-	}
+        }
+        return isMatch;
 
-	private boolean findMatch(String[] criteria, HotelRoom room) {
+    }
 
-		boolean isMatch = true;
+    private long[] copyValues(List<Long> results) {
 
-		String hotelName = room.getName();
-		String location = room.getLocation();
-		String tempArray[] = { hotelName, location };
+        // copy values from results list to rowsFound array
+        // init rowsFound arrays with results.size()
+        long[] returnValues = new long[results.size()];
+        for (int i = 0; i < results.size(); i++) {
+            returnValues[i] = results.get(i);
+        }
+        return returnValues;
+    }
 
-		for (int c = 0; c < criteria.length; c++) {
+    @Override
+    public long lockRecord(long recNo) throws RecordNotFoundException {
+        return 0;
+    }
 
-			if (criteria[c] == null || criteria[c].length() == 0) {
-				continue;
-			}
+    @Override
+    public String[] readRecord(long recNo) throws RecordNotFoundException {
 
-			String field = tempArray[c].toLowerCase();
-			String criterium = criteria[c].toLowerCase();
-			if (!field.startsWith(criterium)) {
-				isMatch = false;
-				break;
+        long locationInFile = recNo * DatabaseData.RECORD_LENGTH;
+        HotelRoom room = null;
+        try {
+            room = retrieveHotelRoom(locationInFile, recNo);
+            if (room == null) {
+                throw new RecordNotFoundException("record does not exist");
+            }
 
-			}
+        }
 
-		}
-		return isMatch;
+ ///       XXX Ik mag van mijn interface geen IOexcetion gooien 
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-	}
+        return room.convertToArray();
+    }
 
-	private long[] copyValues(List<Long> results) {
+    @Override
+    public void unlock(long recNo, long cookie) throws SecurityException {
 
-		// copy values from results list to rowsFound array
-		// init rowsFound arrays with results.size()
-		long[] returnValues = new long[results.size()];
-		for (int i = 0; i < results.size(); i++) {
-			returnValues[i] = results.get(i);
-		}
-		return returnValues;
-	}
+    }
 
-	@Override
-	public long lockRecord(long recNo) throws RecordNotFoundException {
-		return 0;
-	}
+    @Override
+    public void updateRecord(long recNo, String[] data, long lockCookie)
+            throws RecordNotFoundException, SecurityException
+    {
+        System.out.println("updating the record");
 
-	@Override
-	public String[] readRecord(long recNo) throws RecordNotFoundException {
-		HotelRoom room = hotelRooms.get(recNo);
-		if (room == null) {
-			throw new RecordNotFoundException("record does not exist");
-		}
-
-		return room.convertToArray();
-	}
-
-	@Override
-	public void unlock(long recNo, long cookie) throws SecurityException {
-
-	}
-
-	@Override
-	public void updateRecord(long recNo, String[] data, long lockCookie)
-			throws RecordNotFoundException, SecurityException {
-		System.out.println("updating the record");
-
-	}
+    }
 
 }
