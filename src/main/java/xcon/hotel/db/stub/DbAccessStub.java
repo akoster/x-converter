@@ -32,16 +32,16 @@ public class DbAccessStub implements DBAccess {
         // TODO insert here some test data.
 
         hotelRooms.put(new Long(1), new String[] {
-                "best resort", "rotterdam", "2", "y", "129", "12-12-2008",
+                "x", "best resort", "rotterdam", "2", "y","129", "12-12-2008",
                 "11111111"
         });
 
         hotelRooms.put(new Long(2), new String[] {
-                "hilton", "amsterdam", "4", "n", "350", "12-12-2009", "2222222"
+               "z", "hilton", "amsterdam", "4", "y","350", "12-12-2009", "2222222"
         });
 
         hotelRooms.put(new Long(3), new String[] {
-                "golden tulip", "amsterdam", "2", "n", "120", "12-09-2009",
+                "y","golden tulip", "amsterdam", "2", "y","120", "12-09-2009",
                 null
         });
 

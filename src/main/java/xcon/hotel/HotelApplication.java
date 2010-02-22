@@ -13,6 +13,7 @@ import xcon.hotel.client.SwingGui;
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.local.DbAccessFileImpl;
 import xcon.hotel.db.network.DbAccessNetworkClientImpl;
+import xcon.hotel.db.stub.DbAccessStub;
 
 /**
  * Startup class for Hotel application
@@ -88,8 +89,8 @@ public class HotelApplication {
 			break;
 		default:
 			// XXX: fix DbAccessStub
-			// dbAccess = new DbAccessStub();
-			dbAccess = new DbAccessFileImpl();
+			dbAccess = new DbAccessStub();
+			//dbAccess = new DbAccessFileImpl();
 			break;
 		}
 		return dbAccess;

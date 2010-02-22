@@ -15,7 +15,7 @@ public class TableModel extends AbstractTableModel {
     // XXX: should be read from database
     private String[] headerNames =
         {
-                "id","valid/deleted", "hotelName", "City ", "persons", "smoking",
+                "id", "hotelName", "City ", "size", "smoking",
                 "price per Night", "date", "owner"
         };
     // XXX: replace List<String[]> with private List<Hotelroom>
@@ -58,18 +58,19 @@ public class TableModel extends AbstractTableModel {
         return false;
     }
 
-    public void addHotelRoomRecord(String id,String isValidOrDeleted,
+    public void addHotelRoomRecord(String id,
                                    String hotelName,
                                    String city,
-                                   String max_occ,
+                                   String size,
                                    String smoking,
                                    String price_per_night,
                                    String date,
                                    String owner)
     {
+        
         String[] temp =
             {
-                    id, isValidOrDeleted, hotelName, city, max_occ, smoking, price_per_night,
+                    id , hotelName, city, size, smoking, price_per_night,
                     date, owner
             };
         this.hotelRoomRecords.add(temp);
@@ -83,10 +84,9 @@ public class TableModel extends AbstractTableModel {
     public void addHotelRoomRecord(HotelRoom hotelRoom) {
         addHotelRoomRecord(
                 hotelRoom.getId(),
-                hotelRoom.getIsValidOrDeletedRecord(),
                 hotelRoom.getName(),
                 hotelRoom.getLocation(),
-                hotelRoom.getMaxOccupants(),
+                hotelRoom.getSize(),
                 hotelRoom.getSmoking(),
                 hotelRoom.getRate(),
                 hotelRoom.getDate(),
