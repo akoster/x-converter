@@ -1,12 +1,11 @@
 package xcon.hotel.client;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
 import xcon.hotel.db.DBAccess;
+import xcon.hotel.db.DbException;
 import xcon.hotel.db.RecordAlreadyExistException;
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.SecurityException;
@@ -18,10 +17,19 @@ public class ControllerImpl implements Controller {
 
     private Logger logger = Logger.getLogger(ControllerImpl.class.getName());
 
-    public ControllerImpl(DBAccess dbAccess) {
+    private String[] columnNames = null;
 
-        this.dbAccess = dbAccess;
+    public ControllerImpl(DBAccess dbAccess) throws DbException {
+
         logger.info("initializing controller object");
+        this.dbAccess = dbAccess;
+        try {
+            columnNames = dbAccess.readRecord(-1L);
+        }
+        catch (RecordNotFoundException e) {
+            throw new DbException("Could not read columns", e);
+        }
+
     }
 
     /*
@@ -89,8 +97,9 @@ public class ControllerImpl implements Controller {
             String[] roomFields;
             try {
                 roomFields = dbAccess.readRecord(id);
-                
-                System.out.println("roomFields are:" + Arrays.asList(roomFields));
+
+                System.out.println("roomFields are:"
+                    + Arrays.asList(roomFields));
                 HotelRoom hotelRoom = new HotelRoom(id, roomFields);
                 result.add(hotelRoom);
             }
@@ -100,4 +109,10 @@ public class ControllerImpl implements Controller {
         }
         return result;
     }
+
+    @Override
+    public String[] getColumnNames() {
+        return columnNames;
+    }
+
 }

@@ -30,4 +30,8 @@ public interface Controller {
 	public abstract List<HotelRoom> search(String hotelName,
 			String hotelLocation);
 
+    public abstract String [] getColumnNames();
+
+   
+
 }
