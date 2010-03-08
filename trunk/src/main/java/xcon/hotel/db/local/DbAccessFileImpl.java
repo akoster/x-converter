@@ -1,17 +1,19 @@
 package xcon.hotel.db.local;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import xcon.hotel.client.DataBaseInformation;
 import xcon.hotel.db.DBAccess;
+import xcon.hotel.db.DbException;
 import xcon.hotel.db.DuplicateKeyException;
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.SecurityException;
@@ -23,37 +25,42 @@ import xcon.hotel.model.HotelRoom;
 public class DbAccessFileImpl implements DBAccess {
 
     // HotelRoomFileAcces database = null ;
+    private String[] columnNames;
+    private int[] fieldLengths;
+    private long dataStartOffset;
 
-    private final static String DATABASE_NAME = "urlyBird_bd.db";
-    private final static String DATABASE_DIRECTORY_NAME = "database";
-
-    static final int DATABASE_OFFSET_LENGHT = 80;
-
-    private static RandomAccessFile database = null;
+    private RandomAccessFile database;
 
     Map<Long, HotelRoom> hotelRooms = new HashMap<Long, HotelRoom>();
 
-    public DbAccessFileImpl() {
-        this(System.getProperty("user.dir") + File.separator
-            + DATABASE_DIRECTORY_NAME);
-    }
+    static DataBaseInformation dataBaseInformation = new DataBaseInformation();
 
-    public DbAccessFileImpl(String path) {
+    private static final String ENCODING = "UTF-8";
 
-        System.out.println("databasePath" + path);
+    public DbAccessFileImpl() throws DbException {
 
-        // database is used for the first time
-        if (database == null) {
-            try {
-                database =
-                    new RandomAccessFile(path + File.separator + DATABASE_NAME,
-                        "rw");
-            }
-            catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+        URL resourceUrl = this.getClass().getResource("/hotel.db");
+        System.out.println("resourceUrl" + resourceUrl);
+
+        File resourceFile;
+        try {
+            resourceFile = new File(resourceUrl.toURI());
         }
-
+        catch (URISyntaxException e) {
+            throw new DbException("Could parse URL " + resourceUrl, e);
+        }
+        try {
+            database = new RandomAccessFile(resourceFile, "rw");
+        }
+        catch (FileNotFoundException e) {
+            throw new DbException("Could not acces file " + resourceFile, e);
+        }
+        try {
+            initDatabaseInformation();
+        }
+        catch (IOException e) {
+            throw new DbException("Could init Database meta data", e);
+        }
     }
 
     /**
@@ -61,13 +68,94 @@ public class DbAccessFileImpl implements DBAccess {
      * known, because we know the record size we can the determine the id of
      * each hotelRoom.
      * @throws IOException
+     * @throws IOException
      */
+    private void initDatabaseInformation() throws IOException {
 
-    private HotelRoom retrieveHotelRoom(long locationInFile, long id)
-            throws IOException
+        long locationInFile = 4;
+        database.seek(locationInFile);
+
+        byte[] input;
+        input = new byte[2];
+        database.readFully(input);
+        int numberOfFieldsInDatabase = unsignedShortToInt(input);
+        System.out.println("numberOfFieldsInDatabase"
+            + numberOfFieldsInDatabase);
+        locationInFile += input.length;
+
+        columnNames = new String[numberOfFieldsInDatabase];
+        fieldLengths = new int[numberOfFieldsInDatabase];
+        for (int i = 0; i < numberOfFieldsInDatabase; i++) {
+
+            database.seek(locationInFile);
+            byte columnLengthInBytes = database.readByte();
+            int columnLength = unsignedByteToInt(columnLengthInBytes);
+
+            System.out.println("columnValue" + columnLength);
+            locationInFile = locationInFile + 1;
+            byte[] columnBytes = new byte[columnLength];
+
+            database.seek(locationInFile);
+            database.read(columnBytes);
+
+            String columnName = new String(columnBytes, ENCODING);
+            System.out.println("columnName:" + columnName);
+            columnNames[i] = columnName;
+
+            locationInFile = locationInFile + columnLength;
+            database.seek(locationInFile);
+            byte fieldLengthInBytes = database.readByte();
+            int fieldLength = unsignedByteToInt(fieldLengthInBytes);
+            fieldLengths[i] = fieldLength;
+            System.out.println("fieldLength" + fieldLength);
+            System.out.println();
+            locationInFile = locationInFile + 1;
+        }
+        dataStartOffset = locationInFile;
+    }
+
+    /**
+     * Converts a 4 byte array of unsigned bytes to an long
+     * @param b an array of 4 unsigned bytes
+     * @return a long representing the unsigned int
+     */
+    public static final long unsignedIntToLong(byte[] b) {
+        long l = 0;
+        l |= b[0] & 0xFF;
+        l <<= 8;
+        l |= b[1] & 0xFF;
+        l <<= 8;
+        l |= b[2] & 0xFF;
+        l <<= 8;
+        l |= b[3] & 0xFF;
+        return l;
+    }
+
+    /**
+     * Converts a two byte array to an integer
+     * @param b a byte array of length 2
+     * @return an int representing the unsigned short
+     */
+    public static final int unsignedShortToInt(byte[] b) {
+        int i = 0;
+        i |= b[0] & 0xFF;
+        i <<= 8;
+        i |= b[1] & 0xFF;
+        return i;
+    }
+
+    public static int unsignedByteToInt(byte b) {
+        return (int) b & 0xFF;
+    }
+
+    private HotelRoom retrieveHotelRoom(long id) throws IOException,
+            RecordNotFoundException
     {
-
-        final byte[] input = new byte[DatabaseData.RECORD_LENGTH];
+        long locationInFile =
+            id * DataFileFormatConstants.RECORD_LENGTH + dataStartOffset;
+        System.out.println("in retrieveHotelRoom locationInfile "
+            + locationInFile);
+        final byte[] input = new byte[DataFileFormatConstants.RECORD_LENGTH];
         synchronized (database) {
             database.seek(locationInFile);
             database.readFully(input);
@@ -85,33 +173,58 @@ public class DbAccessFileImpl implements DBAccess {
              * @throws UnsupportedEncodingException if "UTF-8" not known.
              */
             String read(int length) throws UnsupportedEncodingException {
-                String str = new String(input, offset, length, "UTF-8");
+                String str = new String(input, offset, length, ENCODING);
+                System.out.println("string read" + str);
                 offset += length;
                 return str.trim();
             }
         }
 
         RecordFieldReader readRecord = new RecordFieldReader();
-        String isValidOrDeletedRecord =
-            readRecord.read(DatabaseData.IS_VALID_OR_DELETED_RECORD_LENGTH);
-        String name = readRecord.read(DatabaseData.NAME_LENGHT);
-        String location = readRecord.read(DatabaseData.LOCATION_LENGHT);
-        String size = readRecord.read(DatabaseData.SIZE_LENGHT);
-        String isSmokingAllowed =
-            readRecord.read(DatabaseData.IS_SMOKING_ALLOWED_LENGHT);
-        String rate = readRecord.read(DatabaseData.RATE_LENGHT);
-        String date = readRecord.read(DatabaseData.DATE_LENGHT);
-        String owner = readRecord.read(DatabaseData.OWNER_LENGHT);
-        /*HotelRoom returnValue =
-            new HotelRoom(String.valueOf(id), isValidOrDeletedRecord, name,
-                location, size, isSmokingAllowed, rate, date, owner);
-                              
-*/
-        HotelRoom returnValue =
-            new HotelRoom(String.valueOf(id), name,
-                location, size, isSmokingAllowed, rate, date, owner);
-        return returnValue;
+        boolean isInvalidOrDeletedRecord =
+            parseDeletedFlag(readRecord.read(DataFileFormatConstants.IS_VALID_OR_DELETED_RECORD_LENGTH));
 
+        if (isInvalidOrDeletedRecord) {
+            throw new RecordNotFoundException("Record is invalid or deleted: "
+                + id);
+        }
+        int i = 0;
+        String name = readRecord.read(fieldLengths[i++]);
+        String location = readRecord.read(fieldLengths[i++]);
+        int size = Integer.parseInt(readRecord.read(fieldLengths[i++]));
+        String isSmokingAllowed = readRecord.read(fieldLengths[i++]);
+        String rate = readRecord.read(fieldLengths[i++]);
+        String date = readRecord.read(fieldLengths[i++]);
+        String owner = readRecord.read(fieldLengths[i++]);
+        /*
+         * HotelRoom returnValue = new HotelRoom(String.valueOf(id),
+         * isValidOrDeletedRecord, name, location, size, isSmokingAllowed, rate,
+         * date, owner);
+         */
+        HotelRoom returnValue =
+            new HotelRoom(id, name, location, size, isSmokingAllowed, rate,
+                date, owner);
+        return returnValue;
+    }
+
+    private boolean parseDeletedFlag(String read)
+            throws RecordNotFoundException
+    {
+
+        System.out.println("in parseDeletedFlag read" + read + "read.length"
+            + read.length());
+        if (read == null || read.length() != 1) {
+            throw new RecordNotFoundException("Illegal isDeleted flag read");
+        }
+        byte value = read.getBytes()[0];
+        if (value == 0xFF) {
+            return true;
+        }
+        if (value == 0x00) {
+            return false;
+        }
+        throw new RecordNotFoundException("Illegal value for isDeleted flag: "
+            + value);
     }
 
     @Override
@@ -133,33 +246,40 @@ public class DbAccessFileImpl implements DBAccess {
         }
 
         List<Long> results = new ArrayList<Long>();
-        int locationInFile = 0;
-        int id = 0;
+        long databaseLength;
         try {
-            for (; locationInFile < database.length(); locationInFile +=
-                DatabaseData.RECORD_LENGTH)
+            databaseLength = database.length();
+
+            // XXX: nicer to start id at 1
+            int id = 0;
+
+            for (int locationInFile = (int) dataStartOffset; locationInFile < databaseLength; locationInFile +=
+                DataFileFormatConstants.RECORD_LENGTH)
             {
+                try {
 
-                HotelRoom hotelRoom = retrieveHotelRoom(locationInFile, id);
-                // System.out.println("hotelRoom" + hotelRoom.toString());
+                    HotelRoom hotelRoom = retrieveHotelRoom(id);
+                    System.out.println("hotelRoom" + hotelRoom.toString());
 
-                if (findMatch(criteria, hotelRoom)) {
-                    results.add(Long.valueOf(hotelRoom.getId()));
+                    if (findMatch(criteria, hotelRoom)) {
+                        results.add(Long.valueOf(hotelRoom.getId()));
+                    }
+                }
+                catch (IOException e) {
+                    // XXX: add logging
+                    System.err.println("Could not read record from datafile");
+                }
+                catch (RecordNotFoundException e) {
+                    System.err.println("Error parsing data" + e.getMessage());
                 }
                 id++;
             }
         }
-        // XXX Ik mag van mijn iterfaces deze exceptie niet gooien
+        catch (IOException e1) {
+            // XXX: add logging
+            System.err.println("Could not determine database length");
+        }
 
-        catch (EOFException e) {
-            System.out.println("EOF has been reached");
-        }
-        catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
         return copyValues(results);
     }
 
@@ -209,25 +329,27 @@ public class DbAccessFileImpl implements DBAccess {
     }
 
     @Override
-    public String[] readRecord(long recNo) throws RecordNotFoundException {
+    public String[] readRecord(long id) throws RecordNotFoundException {
 
-        long locationInFile = recNo * DatabaseData.RECORD_LENGTH;
-        HotelRoom room = null;
-        try {
-            room = retrieveHotelRoom(locationInFile, recNo);
-            if (room == null) {
-                throw new RecordNotFoundException("record does not exist");
+        String[] result;
+        if (id == -1) {
+            result = columnNames;
+        }
+        else {
+            HotelRoom room = null;
+            try {
+                room = retrieveHotelRoom(id);
+                if (room == null) {
+                    throw new RecordNotFoundException("record does not exist");
+                }
             }
-
+            catch (IOException e) {
+                throw new RecordNotFoundException(
+                    "Problem accessing data file", e);
+            }
+            result = room.convertToArray();
         }
-
- ///       XXX Ik mag van mijn interface geen IOexcetion gooien 
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return room.convertToArray();
+        return result;
     }
 
     @Override
@@ -241,6 +363,10 @@ public class DbAccessFileImpl implements DBAccess {
     {
         System.out.println("updating the record");
 
+    }
+
+    public DataBaseInformation getInformationData() {
+        return null;
     }
 
 }

@@ -1,7 +1,6 @@
 package xcon.hotel.model;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.logging.Logger;
 import xcon.hotel.HotelApplication;
 
@@ -12,16 +11,14 @@ public class HotelRoom implements Serializable {
 
     private static final long serialVersionUID = 5165L;
 
-    private static final transient Logger log =
+    private static final transient Logger LOG =
         Logger.getLogger(HotelApplication.HOTEL_APPLICATION);
 
-    private String id;
+    private long id;
 
     /**
      * The name of the hotel
      */
-
-    private String isValidOrDeleted;
 
     private String name;
 
@@ -33,7 +30,7 @@ public class HotelRoom implements Serializable {
     /**
      * The maximum number of people permitted in this room
      */
-    private String size;
+    private int size;
 
     /**
      * Flag indication if smoking is permitted
@@ -76,14 +73,14 @@ public class HotelRoom implements Serializable {
 
         // this.id = String.valueOf(recNo);
 
-        this.id = String.valueOf(recNo);
+        this.id = recNo;
         this.name = fields[1];
         this.location = fields[2];
-        this.size = fields[3];
+        this.size = Integer.valueOf(fields[3]);
         this.isSmokingAllowed = fields[4];
         this.rate = fields[5];
         this.date = fields[6];
-        this.owner = fields[7];
+        this.owner = (fields[7]);
     }
 
     /**
@@ -97,10 +94,10 @@ public class HotelRoom implements Serializable {
      * @param date Holds The date available of the HotelName (yyyy-mm-dd).
      * @param owner Holds
      */
-    public HotelRoom(String id,
+    public HotelRoom(long id,
                      String name,
                      String location,
-                     String size,
+                     int size,
                      String smoking,
                      String rate,
                      String date,
@@ -117,22 +114,12 @@ public class HotelRoom implements Serializable {
         this.owner = owner;
     }
 
-    
-
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
-    }
-
-    public String getIsValidOrDeleted() {
-        return isValidOrDeleted;
-    }
-
-    public void setIsValidOrDeleted(String isValidOrDeleted) {
-        this.isValidOrDeleted = isValidOrDeleted;
     }
 
     public String getName() {
@@ -151,11 +138,11 @@ public class HotelRoom implements Serializable {
         this.location = location;
     }
 
-    public String getSize() {
+    public int getSize() {
         return size;
     }
 
-    public void setSize(String size) {
+    public void setSize(int size) {
         this.size = size;
     }
 
@@ -192,18 +179,19 @@ public class HotelRoom implements Serializable {
     }
 
     public String[] convertToArray() {
+        System.out.println("in convertToArray");
         return new String[] {
-                this.id, this.name, this.location, this.size,
-                this.isSmokingAllowed, this.rate, this.date, this.owner
+                String.valueOf(this.id), this.name, this.location,
+                String.valueOf(this.size), this.isSmokingAllowed, this.rate,
+                this.date, owner
 
         };
     }
-    
+
     public String toString() {
 
         String retVal =
-            "[" + this.name + "; "
-                + this.location + "; " + this.size + "; "
+            "[" + this.name + "; " + this.location + "; " + this.size + "; "
                 + this.isSmokingAllowed + "; " + this.rate + "; " + this.date
                 + "; " + this.owner + "]";
 
