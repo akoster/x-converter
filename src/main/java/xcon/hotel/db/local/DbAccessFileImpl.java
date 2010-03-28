@@ -389,13 +389,13 @@ public class DbAccessFileImpl implements DBAccess {
 
         // when you are in the update methode, it means that the record is
         // valid.
-        byte deletedOrInvalidRecord = 0x00;
-
+        byte [] deletedOrInvalidRecord = new byte [1];
+        deletedOrInvalidRecord[0] = 0x00;
         // i is the index of the data
         // j is the index of the fieldlenth;
         int i = 1;
         int j = 0;
-        writeRecord.write(Byte.toString(deletedOrInvalidRecord), 1);
+        writeRecord.write(new String(deletedOrInvalidRecord), 1);
         String hotelName = data[i];
 
         logger.warning("hotelName:" + hotelName + " fieldLengths[i]:"
