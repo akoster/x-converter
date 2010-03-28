@@ -1,29 +1,22 @@
 package xcon.hotel.client;
 
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class CustomerIdGenerator {
 
-    private static Map<Long, String> customerIds = new HashMap<Long, String>();;
-    
-    public static  String generateCustumerId(long recNo) {
-        System.out.println("generating customer Id");
-        Random random = new Random();
-        // generate a number between of 8 digits
+    private static Set<String> customerIds = new HashSet<String>();
+    private static Random random = new Random();
 
-        int number = random.nextInt(89999999) + 10000000;
-        String customerId = String.valueOf(number);
-        // ik stop dit in een map omdat ik door de random alleen maar unieke
-        // waardes wil hebben. Dit is nog niet geimplemteerd
+    // XXX: replace with java.util.UUID
+    public static String generateCustumerId() {
 
-        // make sure that the customerId uniek is for each customer
-        if (customerIds.containsValue(customerId)) {
-            generateCustumerId(recNo);
+        String customerId = null;
+        while (customerId == null || customerIds.contains(customerId)) {
+            customerId = String.valueOf(random.nextInt(99999999));
         }
-        customerIds.put(recNo, customerId);
+        customerIds.add(customerId);
         return customerId;
     }
 }

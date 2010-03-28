@@ -12,14 +12,14 @@ following sections:
 Startup                           
   |setup local or networked DbAccess based on standalone or networked mode
   v                           
- Controller -- DbAccess -----(stub) ------ DbAccesStub
-   |(uses model)   |  
-   |			   |---(local)--- DbAccessFileImpl--[Data File]
-  GUI              |
-                   (networked)-> DbAccessNetworkClientImpl
+ GUI -- Controller -- DbAccess -----(stub) ------ DbAccesStub
+                      |  
+            	      |---(local)--- DbAccessFileImpl--[Data File]
+                      |
+                     (networked)-> DbAccessNetworkClientImpl
                                              :
                                              : (RMI)
-                                             :
+                                             v
                                        DbAccessServer
                                              |
                                        DbAccessFileImpl
@@ -37,6 +37,14 @@ Option:
 1) using the method getActionPerformed which is overriden 
 2) using actions
 ----------------------------------
+
+Question: what if our search action return more result than it would fit on the screen
+
+option: 
+1) show all the room 
+2) show only x rooms 
+3) show a button, when you click on the button you get to see the other result. 
+
 
 ----------------------------------------------------------------------------
 2 - Network layer

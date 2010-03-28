@@ -20,8 +20,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import xcon.hotel.HotelApplication;
-import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.RecordAlreadyExistException;
 import xcon.hotel.model.HotelRoom;
 
@@ -29,11 +27,9 @@ public class SwingGui extends JFrame {
 
     private static final long serialVersionUID = 5165L;
 
-    private Logger logger =
-        Logger.getLogger(HotelApplication.HOTEL_APPLICATION);
+    private Logger logger = Logger.getLogger("hotel-application");
 
     private Controller controller;
-    static DataBaseInformation dataBaseInformation = new DataBaseInformation();
     private JTable mainTable = new JTable();
     private JLabel commentLabel = new JLabel();
     private JTextField nameSearchField = new JTextField(20);
@@ -41,69 +37,67 @@ public class SwingGui extends JFrame {
     private JLabel nameLabel = new JLabel("name");
     private JLabel locationLabel = new JLabel("location");
 
-    private TableModel tableData;
+    private HotelTableModel hotelTableModel;
 
     public SwingGui(Controller controller) {
 
-		super("Hotel application");
+        super("Hotel application");
 
-		// set dependency
-		this.controller = controller;
+        // set dependency
+        this.controller = controller;
 
-		this.setDefaultCloseOperation(SwingGui.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(SwingGui.EXIT_ON_CLOSE);
 
-		// initialize the TableModel
-		
-		tableData = new TableModel(controller.getColumnNames());
-		// 1: search for all rooms
+        // initialize the TableModel
 
-		
-		List<HotelRoom> rooms = controller.search("", "");
-		
-		// 2: add all rooms to table model
-		
-		
-		tableData.addHotelrooms(rooms);
-		this.mainTable.setModel(tableData);
+        hotelTableModel = new HotelTableModel(controller.getColumnNames());
+        // 1: search for all rooms
 
-		// initialize status bar so it shows up
-		commentLabel.setText(" ");
+        List<HotelRoom> rooms = controller.search("", "");
 
-		// Add the menu bar
-		JMenuBar menuBar = new JMenuBar();
-		JMenu fileMenu = new JMenu("File");
-		JMenuItem quitMenuItem = new JMenuItem("Quit");
-		quitMenuItem.addActionListener(new QuitApplication());
-		quitMenuItem.setMnemonic(KeyEvent.VK_Q);
-		fileMenu.add(quitMenuItem);
-		fileMenu.setMnemonic(KeyEvent.VK_F);
-		menuBar.add(fileMenu);
+        // 2: add all rooms to table model
 
-		this.setJMenuBar(menuBar);
+        hotelTableModel.setHotelrooms(rooms);
+        mainTable.setModel(hotelTableModel);
 
-		this.add(new HotelRoomScreen());
+        // initialize status bar so it shows up
+        commentLabel.setText(" ");
 
-		this.pack();
-		this.setSize(750, 300);
+        // Add the menu bar
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        JMenuItem quitMenuItem = new JMenuItem("Quit");
+        quitMenuItem.addActionListener(new QuitApplication());
+        quitMenuItem.setMnemonic(KeyEvent.VK_Q);
+        fileMenu.add(quitMenuItem);
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+        menuBar.add(fileMenu);
 
-		// Center on screen
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (int) ((d.getWidth() - this.getWidth()) / 2);
-		int y = (int) ((d.getHeight() - this.getHeight()) / 2);
-		this.setLocation(x, y);
-		this.setVisible(true);
-	}
+        setJMenuBar(menuBar);
+
+        add(new HotelRoomScreen());
+
+        pack();
+        setSize(750, 300);
+
+        // Center on screen
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((d.getWidth() - getWidth()) / 2);
+        int y = (int) ((d.getHeight() - getHeight()) / 2);
+        setLocation(x, y);
+        setVisible(true);
+    }
 
     private class HotelRoomScreen extends JPanel {
 
         private static final long serialVersionUID = 5165L;
 
         public HotelRoomScreen() {
-            this.setLayout(new BorderLayout());
+            setLayout(new BorderLayout());
             JScrollPane tableScroll = new JScrollPane(mainTable);
             tableScroll.setSize(500, 250);
 
-            this.add(tableScroll, BorderLayout.CENTER);
+            add(tableScroll, BorderLayout.CENTER);
 
             JButton searchButton = new JButton("Search");
             searchButton.addActionListener(new SearchHotelRoom());
@@ -130,7 +124,7 @@ public class SwingGui extends JFrame {
             bottomPanel.add(searchPanel, BorderLayout.NORTH);
             bottomPanel.add(bookingPanel, BorderLayout.EAST);
             bottomPanel.add(commentLabel, BorderLayout.SOUTH);
-            this.add(bottomPanel, BorderLayout.SOUTH);
+            add(bottomPanel, BorderLayout.SOUTH);
 
             mainTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -140,28 +134,26 @@ public class SwingGui extends JFrame {
             nameSearchField.setToolTipText("Enter the name of the hotel you want to find.");
             locationSearchField.setToolTipText("Enter the name of the hotel you want to find");
             searchButton.setToolTipText("Submit the Hotelroom search.");
-
         }
     }
 
     private class BookHotelRoom implements ActionListener {
 
         public void actionPerformed(ActionEvent ae) {
-            String id = "";
+
             int index = mainTable.getSelectedRow();
-            try {
-                if (index >= 0) {
-                    id = (String) mainTable.getValueAt(index, 0);
+            if (index >= 0) {
+
+                try {
                     commentLabel.setText("book");
-                    HotelRoom hotelRoom = controller.bookRoom(Long.valueOf(id));
-                    tableData.setValueAt(
-                            hotelRoom.getOwner(),
-                            index,
-                            tableData.getTabelHeaderSize() - 1);
+                    HotelRoom room = hotelTableModel.getHotelRoom(index);
+                    controller.bookRoom(room);
+                    commentLabel.setText("");
                 }
-            }
-            catch (RecordAlreadyExistException e) {
-                System.out.println(e.getMessage());
+                catch (RecordAlreadyExistException e) {
+                    logger.warning(e.getMessage());
+                    commentLabel.setText("error whilst booking room");
+                }
             }
         }
     }
@@ -170,14 +162,13 @@ public class SwingGui extends JFrame {
 
         public void actionPerformed(ActionEvent ae) {
 
-            tableData.clear();
             String hotelName = nameSearchField.getText();
             String hotelLocation = locationSearchField.getText();
             commentLabel.setText("search");
             List<HotelRoom> hotelRooms =
                 controller.search(hotelName, hotelLocation);
 
-            tableData.addHotelrooms(hotelRooms);
+            hotelTableModel.setHotelrooms(hotelRooms);
         }
     }
 
