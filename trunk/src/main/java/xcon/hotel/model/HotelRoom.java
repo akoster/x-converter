@@ -1,6 +1,7 @@
 package xcon.hotel.model;
 
 import java.io.Serializable;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import xcon.hotel.HotelApplication;
 
@@ -11,8 +12,8 @@ public class HotelRoom implements Serializable {
 
     private static final long serialVersionUID = 5165L;
 
-    private static final transient Logger LOG =
-        Logger.getLogger(HotelApplication.HOTEL_APPLICATION);
+
+    private Logger logger = Logger.getLogger("hotel-application");
 
     private long id;
 
@@ -179,7 +180,6 @@ public class HotelRoom implements Serializable {
     }
 
     public String[] convertToArray() {
-        System.out.println("in convertToArray");
         return new String[] {
                 String.valueOf(this.id), this.name, this.location,
                 String.valueOf(this.size), this.isSmokingAllowed, this.rate,

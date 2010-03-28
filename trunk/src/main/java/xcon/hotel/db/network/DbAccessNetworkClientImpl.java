@@ -1,11 +1,15 @@
 package xcon.hotel.db.network;
 
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DuplicateKeyException;
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.SecurityException;
 
 public class DbAccessNetworkClientImpl implements DBAccess {
+    
+    private Logger logger = Logger.getLogger("hotel-application");
 
 	@Override
 	public long createRecord(String[] data) throws DuplicateKeyException {

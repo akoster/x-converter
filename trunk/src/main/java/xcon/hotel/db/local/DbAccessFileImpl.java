@@ -8,10 +8,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import xcon.hotel.client.DataBaseInformation;
+import java.util.logging.Logger;
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DbException;
 import xcon.hotel.db.DuplicateKeyException;
@@ -24,23 +23,22 @@ import xcon.hotel.model.HotelRoom;
  */
 public class DbAccessFileImpl implements DBAccess {
 
-    // HotelRoomFileAcces database = null ;
+    private static Logger logger = Logger.getLogger("hotel-application");
+
+    private static final String ENCODING = "UTF-8";
+    private static final int VALID_OR_DELETED_FLAG_LENGTH = 1;
+    private static final int ONE_BYTE = 1;
+
     private String[] columnNames;
     private int[] fieldLengths;
     private long dataStartOffset;
-
-    private RandomAccessFile database;
-
-    Map<Long, HotelRoom> hotelRooms = new HashMap<Long, HotelRoom>();
-
-    static DataBaseInformation dataBaseInformation = new DataBaseInformation();
-
-    private static final String ENCODING = "UTF-8";
+    private int record_length;
+    private  RandomAccessFile database;
 
     public DbAccessFileImpl() throws DbException {
 
         URL resourceUrl = this.getClass().getResource("/hotel.db");
-        System.out.println("resourceUrl" + resourceUrl);
+        logger.info("resourceUrl" + resourceUrl);
 
         File resourceFile;
         try {
@@ -56,7 +54,7 @@ public class DbAccessFileImpl implements DBAccess {
             throw new DbException("Could not acces file " + resourceFile, e);
         }
         try {
-            initDatabaseInformation();
+            initDbMetaData();
         }
         catch (IOException e) {
             throw new DbException("Could init Database meta data", e);
@@ -70,7 +68,7 @@ public class DbAccessFileImpl implements DBAccess {
      * @throws IOException
      * @throws IOException
      */
-    private void initDatabaseInformation() throws IOException {
+    private void initDbMetaData() throws IOException {
 
         long locationInFile = 4;
         database.seek(locationInFile);
@@ -79,8 +77,7 @@ public class DbAccessFileImpl implements DBAccess {
         input = new byte[2];
         database.readFully(input);
         int numberOfFieldsInDatabase = unsignedShortToInt(input);
-        System.out.println("numberOfFieldsInDatabase"
-            + numberOfFieldsInDatabase);
+        logger.info("numberOfFieldsInDatabase" + numberOfFieldsInDatabase);
         locationInFile += input.length;
 
         columnNames = new String[numberOfFieldsInDatabase];
@@ -91,15 +88,16 @@ public class DbAccessFileImpl implements DBAccess {
             byte columnLengthInBytes = database.readByte();
             int columnLength = unsignedByteToInt(columnLengthInBytes);
 
-            System.out.println("columnValue" + columnLength);
-            locationInFile = locationInFile + 1;
+            logger.info("columnLength" + columnLength);
+
+            locationInFile = locationInFile + ONE_BYTE;
             byte[] columnBytes = new byte[columnLength];
 
             database.seek(locationInFile);
             database.read(columnBytes);
 
             String columnName = new String(columnBytes, ENCODING);
-            System.out.println("columnName:" + columnName);
+            logger.info("columnName" + i + " : " + columnName);
             columnNames[i] = columnName;
 
             locationInFile = locationInFile + columnLength;
@@ -107,11 +105,17 @@ public class DbAccessFileImpl implements DBAccess {
             byte fieldLengthInBytes = database.readByte();
             int fieldLength = unsignedByteToInt(fieldLengthInBytes);
             fieldLengths[i] = fieldLength;
-            System.out.println("fieldLength" + fieldLength);
-            System.out.println();
-            locationInFile = locationInFile + 1;
+            logger.info("fieldLength" + fieldLength);
+            locationInFile = locationInFile + ONE_BYTE;
         }
+
         dataStartOffset = locationInFile;
+
+        for (int i = 0; i < fieldLengths.length; i++) {
+            record_length += fieldLengths[i];
+        }
+        record_length += VALID_OR_DELETED_FLAG_LENGTH;
+        System.out.println("record length :" + record_length);
     }
 
     /**
@@ -151,14 +155,12 @@ public class DbAccessFileImpl implements DBAccess {
     private HotelRoom retrieveHotelRoom(long id) throws IOException,
             RecordNotFoundException
     {
-        long locationInFile =
-            id * DataFileFormatConstants.RECORD_LENGTH + dataStartOffset;
-        System.out.println("in retrieveHotelRoom locationInfile "
-            + locationInFile);
-        final byte[] input = new byte[DataFileFormatConstants.RECORD_LENGTH];
+        long locationInFile = id * record_length + dataStartOffset;
+        final byte[] input = new byte[record_length];
         synchronized (database) {
             database.seek(locationInFile);
             database.readFully(input);
+            logger.info("input:" + new String(input));
         }
 
         class RecordFieldReader {
@@ -174,28 +176,27 @@ public class DbAccessFileImpl implements DBAccess {
              */
             String read(int length) throws UnsupportedEncodingException {
                 String str = new String(input, offset, length, ENCODING);
-                System.out.println("string read" + str);
                 offset += length;
-                return str.trim();
+                return str;
             }
         }
 
         RecordFieldReader readRecord = new RecordFieldReader();
-        boolean isInvalidOrDeletedRecord =
-            parseDeletedFlag(readRecord.read(DataFileFormatConstants.IS_VALID_OR_DELETED_RECORD_LENGTH));
+        String validOrDeleted = readRecord.read(1);
+        boolean isInvalidOrDeletedRecord = parseDeletedFlag(validOrDeleted);
 
         if (isInvalidOrDeletedRecord) {
             throw new RecordNotFoundException("Record is invalid or deleted: "
                 + id);
         }
         int i = 0;
-        String name = readRecord.read(fieldLengths[i++]);
-        String location = readRecord.read(fieldLengths[i++]);
-        int size = Integer.parseInt(readRecord.read(fieldLengths[i++]));
-        String isSmokingAllowed = readRecord.read(fieldLengths[i++]);
-        String rate = readRecord.read(fieldLengths[i++]);
-        String date = readRecord.read(fieldLengths[i++]);
-        String owner = readRecord.read(fieldLengths[i++]);
+        String name = readRecord.read(fieldLengths[i++]).trim();
+        String location = readRecord.read(fieldLengths[i++]).trim();
+        int size = Integer.parseInt(readRecord.read(fieldLengths[i++]).trim());
+        String isSmokingAllowed = readRecord.read(fieldLengths[i++]).trim();
+        String rate = readRecord.read(fieldLengths[i++]).trim();
+        String date = readRecord.read(fieldLengths[i++]).trim();
+        String owner = readRecord.read(fieldLengths[i++]).trim();
         /*
          * HotelRoom returnValue = new HotelRoom(String.valueOf(id),
          * isValidOrDeletedRecord, name, location, size, isSmokingAllowed, rate,
@@ -211,16 +212,16 @@ public class DbAccessFileImpl implements DBAccess {
             throws RecordNotFoundException
     {
 
-        System.out.println("in parseDeletedFlag read" + read + "read.length"
-            + read.length());
         if (read == null || read.length() != 1) {
             throw new RecordNotFoundException("Illegal isDeleted flag read");
         }
         byte value = read.getBytes()[0];
         if (value == 0xFF) {
+            logger.info("flag value is 0xFF, record is deleted");
             return true;
         }
         if (value == 0x00) {
+            logger.info("flag value is 0x00, record is valid");
             return false;
         }
         throw new RecordNotFoundException("Illegal value for isDeleted flag: "
@@ -254,12 +255,12 @@ public class DbAccessFileImpl implements DBAccess {
             int id = 0;
 
             for (int locationInFile = (int) dataStartOffset; locationInFile < databaseLength; locationInFile +=
-                DataFileFormatConstants.RECORD_LENGTH)
+                record_length)
             {
                 try {
 
                     HotelRoom hotelRoom = retrieveHotelRoom(id);
-                    System.out.println("hotelRoom" + hotelRoom.toString());
+                    logger.info("hotelRoom" + hotelRoom.toString());
 
                     if (findMatch(criteria, hotelRoom)) {
                         results.add(Long.valueOf(hotelRoom.getId()));
@@ -267,17 +268,17 @@ public class DbAccessFileImpl implements DBAccess {
                 }
                 catch (IOException e) {
                     // XXX: add logging
-                    System.err.println("Could not read record from datafile");
+                    logger.warning("Could not read record from datafile");
                 }
                 catch (RecordNotFoundException e) {
-                    System.err.println("Error parsing data" + e.getMessage());
+                    logger.warning("Error parsing data" + e.getMessage());
                 }
                 id++;
             }
         }
         catch (IOException e1) {
             // XXX: add logging
-            System.err.println("Could not determine database length");
+            logger.warning("Could not determine database length");
         }
 
         return copyValues(results);
@@ -361,12 +362,100 @@ public class DbAccessFileImpl implements DBAccess {
     public void updateRecord(long recNo, String[] data, long lockCookie)
             throws RecordNotFoundException, SecurityException
     {
-        System.out.println("updating the record");
+        logger.warning("updating the record with data" + Arrays.asList(data));
+        String emptyRecordString = new String(new byte[record_length]);
+        final StringBuilder out = new StringBuilder(emptyRecordString);
+
+        /** assists in converting Strings to a byte[] */
+        class RecordFieldWriter {
+
+            /** current position in byte[] */
+            private int currentPosition = 0;
+
+            /**
+             * converts a String of specified length to byte[]
+             * @param data the String to be converted into part of the byte[].
+             * @param length the maximum size of the String
+             */
+            void write(String data, int length) {
+                out.replace(
+                        currentPosition,
+                        currentPosition + data.length(),
+                        data);
+                currentPosition += length;
+            }
+        }
+        RecordFieldWriter writeRecord = new RecordFieldWriter();
+
+        // when you are in the update methode, it means that the record is
+        // valid.
+        byte deletedOrInvalidRecord = 0x00;
+
+        // i is the index of the data
+        // j is the index of the fieldlenth;
+        int i = 1;
+        int j = 0;
+        writeRecord.write(Byte.toString(deletedOrInvalidRecord), 1);
+        String hotelName = data[i];
+
+        logger.warning("hotelName:" + hotelName + " fieldLengths[i]:"
+            + fieldLengths[j]);
+        writeRecord.write(hotelName, fieldLengths[j++]);
+        i++;
+
+        String hotelLocation = data[i];
+        logger.warning("hotelLocation:" + hotelLocation + " fieldLengths[i]:"
+            + fieldLengths[j]);
+        writeRecord.write(hotelLocation, fieldLengths[j++]);
+        i++;
+
+        String size = data[i];
+        logger.warning("size:" + size + " fieldLengths[i]:" + fieldLengths[j]);
+        writeRecord.write(size, fieldLengths[j++]);
+        i++;
+
+        String isSmokingAllowed = data[i];
+        logger.warning("isSmokingAllowed:" + isSmokingAllowed
+            + " fieldLengths[i]:" + fieldLengths[j]);
+        writeRecord.write(isSmokingAllowed, fieldLengths[j++]);
+        i++;
+
+        String rate = data[i];
+        logger.warning("rate:" + rate + "fieldLengths[i]:" + fieldLengths[j]);
+        writeRecord.write(rate, fieldLengths[j++]);
+        i++;
+
+        String date = data[i];
+        logger.warning("date:" + date + "fieldLengths[i]:" + fieldLengths[j]);
+        writeRecord.write(date, fieldLengths[j++]);
+        i++;
+
+        String owner = data[i];
+        logger.warning("owner:" + owner + "fieldLengths[i]:" + fieldLengths[j]);
+        writeRecord.write(owner, fieldLengths[j++]);
+        i++;
+
+        // now that we have everything ready to go, we can go into our
+        // synchronized block & perform our operations as quickly as possible
+        // ensuring that we block other users for as little time as possible.
+
+        synchronized (database) {
+            int offset =
+                (int) (Integer.parseInt(data[0]) * record_length + dataStartOffset);
+            logger.warning("offset:" + offset);
+            try {
+                
+                System.out.println("database" + database);
+                database.seek(offset);
+                logger.warning("out.toString()" + out.toString());
+                database.write(out.toString().getBytes());
+                //database.close();
+
+            }
+            catch (IOException e) {
+                logger.warning("error occured while writing data to the database file");
+            }
+        }
 
     }
-
-    public DataBaseInformation getInformationData() {
-        return null;
-    }
-
 }

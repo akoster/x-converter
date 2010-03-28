@@ -1,26 +1,46 @@
 Hotel todo document
 ------------------- 
-Move hotel.db to src/main/resources. Access it using a ResourceBundle
 
-Read table headers from hotel.db
 
-Remove file-specific constants from HotelRoom model class. Cleaan up this class!
-(sort fields and methods etc).
+TODO 
 
-Remove extra field isInvalidOrDeletedRecord from HotelRoom
-this field exists in the database, but should be used as a filter when records
-are retrieved; invalid or deleted records should never be returned by DbAccess.
+to generate customer ID: java.util.UUID
 
-// TODO: in TableModel replace List<String[]> model with List<HotelRoom>
-// for this you need to use hotelROom.convertToArray to be able to find a
-// room field by column index
+fix the exception handling, no e.printStacktrace(), but either
+  handle neatly, or throw up to caller
+  
+implement the java logger, disable global logger? (DONE)
 
-unitTests 
-methode maken in Hotelroom die een string [] teruggeeft 
-in de tablemodel werkt met een string id meteen converteren naar long en verder meewerken 
-omgekeerd geldt dezelfde 
-stub uitbreiden, verbeteren 
-gui koppelen met de stub via de controller 
-tutorial rmi ("hello world")
+-> unitTests (begin met de Controller)
 
-//TODO checkOrder of argument in hotelRoom constructor
+-> complete implementation of DbFileAccess (locking, updating etc)
+
+DONE
+* add JavaDoc to new method in Controller interface
+* remove DataFileFormatConstants, move RECORD_LENGTH to DbAccessFileImpl, calculate
+  value by adding all fieldLengths found in initDatabaseInformation
+* rename initDatabaseInformation to initDbMetaData
+* gui city and location
+* Read table headers from hotel.db
+* debug problem with reading data (vreemd str.trim verwijderd de eerste byte)
+* Move hotel.db to src/main/resources. Access it using a ResourceBundle (DONE)
+* Move constants fromm databaseData to dataFileFomatConstants
+* Remove extra field isInvalidOrDeletedRecord from HotelRoom
+	this field exists in the database, but should be used as a filter when records
+	are retrieved; invalid or deleted records should never be returned by DbAccess.
+* in TableModel replace List<String[]> model with List<HotelRoom> (DONE)
+	// for this you need to use hotelROom.convertToArray to be able to find a
+	// room field by column index 
+* methode maken in Hotelroom die een string [] teruggeeft (DONE)
+* stub uitbreiden, verbeteren (DONE)
+* gui koppelen met de stub via de controller  (DONE)
+
+* tutorial rmi ("hello world")(DONE)
+
+* //TODO checkOrder of argument in hotelRoom constructor 
+* //TODO  Hotelroom object is not representative
+	id = long , size = int , 
+
+
+
+

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DuplicateKeyException;
@@ -15,6 +17,8 @@ import xcon.hotel.db.SecurityException;
  * In-memory implementatie
  */
 public class DbAccessStub implements DBAccess {
+
+    private Logger logger = Logger.getLogger("hotel-application");
 
     // map of ID to HotelRoom
     private Map<Long, String[]> hotelRooms;
@@ -121,7 +125,7 @@ public class DbAccessStub implements DBAccess {
 
             }
             catch (RecordNotFoundException e) {
-                System.out.println("record Not foud");
+                logger.warning("record Not foud");
             }
         }
     }
@@ -137,7 +141,7 @@ public class DbAccessStub implements DBAccess {
     @Override
     public long[] findByCriteria(String[] criteria) {
 
-        System.out.println("criteria " + criteria.toString());
+        logger.info("criteria " + criteria.toString());
         if (criteria == null) {
             throw new IllegalArgumentException("criteria may not be null");
         }
@@ -181,7 +185,7 @@ public class DbAccessStub implements DBAccess {
                 continue;
             }
             String field = room[c].toLowerCase();
-            System.out.println("field " + field + "c: "+ c );
+            logger.info("field " + field + "c: "+ c );
             String criterium = criteria[c].toLowerCase();
             if (!field.startsWith(criterium)) {
 

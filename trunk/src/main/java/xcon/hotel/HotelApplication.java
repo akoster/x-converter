@@ -1,12 +1,16 @@
 package xcon.hotel;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.ResourceBundle;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import xcon.hotel.client.Controller;
 import xcon.hotel.client.ControllerImpl;
 import xcon.hotel.client.SwingGui;
@@ -14,7 +18,6 @@ import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DbException;
 import xcon.hotel.db.local.DbAccessFileImpl;
 import xcon.hotel.db.network.DbAccessNetworkClientImpl;
-import xcon.hotel.db.stub.DbAccessStub;
 
 /**
  * Startup class for Hotel application
@@ -22,8 +25,61 @@ import xcon.hotel.db.stub.DbAccessStub;
  */
 public class HotelApplication {
 
-    public static final String HOTEL_APPLICATION = "hotel-application";
-    private Logger logger = Logger.getLogger(HOTEL_APPLICATION);
+    private static Logger logger = Logger.getLogger("hotel-application");
+
+    static {
+        try {
+            ResourceBundle props = ResourceBundle.getBundle("hotel_log");
+            String levelName = props.getString("level");
+            // default
+            Level level = Level.INFO;
+            if (levelName != null) {
+                try {
+                    level = Level.parse(levelName);
+                }
+                catch (IllegalArgumentException e) {
+                    // ignore, fall back to default
+                }
+            }
+            logger.setLevel(level);
+
+            Formatter formatter = new Formatter() {
+
+                @Override
+                public String format(LogRecord arg0) {
+                    StringBuilder b = new StringBuilder();
+                    b.append(new Date());
+                    b.append(" ");
+                    b.append(arg0.getSourceClassName());
+                    b.append(" ");
+                    b.append(arg0.getSourceMethodName());
+                    b.append(" ");
+                    b.append(arg0.getLevel());
+                    b.append(" ");
+                    b.append(arg0.getMessage());
+                    b.append(System.getProperty("line.separator"));
+                    return b.toString();
+                }
+
+            };
+
+            Handler fh = new FileHandler("hotel_log.txt");
+            fh.setFormatter(formatter);
+            logger.addHandler(fh);
+
+            Handler ch = new ConsoleHandler();
+            ch.setFormatter(formatter);
+            logger.addHandler(ch);
+
+            LogManager lm = LogManager.getLogManager();
+            lm.addLogger(logger);
+            
+            logger.setUseParentHandlers(false);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
 
     private enum Mode {
         NETWORKED, LOCAL, TEST
@@ -32,8 +88,10 @@ public class HotelApplication {
     /**
      * @param args
      * @throws DbException if access to the database failed
+     * @throws IOException
+     * @throws SecurityException
      */
-    public static void main(String[] args) throws DbException {
+    public static void main(String[] args) throws Exception {
 
         Mode mode = parseArguments(args);
         DBAccess dbAccess;
@@ -42,30 +100,9 @@ public class HotelApplication {
         SwingGui gui = new SwingGui(controller);
     }
 
-    private void createLogger() {
-
-        logger = Logger.getLogger(HOTEL_APPLICATION);
-        LogManager lm = LogManager.getLogManager();
-        FileHandler fh = null;
-        try {
-            fh = new FileHandler("hotel_log.txt");
-        }
-        catch (SecurityException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        lm.addLogger(logger);
-        logger.setLevel(Level.INFO);
-        fh.setFormatter(new SimpleFormatter());
-
-        logger.addHandler(fh);
-    }
-
     private static Mode parseArguments(String[] args) {
 
+        logger.info("parsing arguments!");
         Mode mode = Mode.TEST;
         if (args.length > 0) {
             if ("networked".equals(args[0])) {

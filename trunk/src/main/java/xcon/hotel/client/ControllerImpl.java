@@ -15,71 +15,54 @@ public class ControllerImpl implements Controller {
 
     private DBAccess dbAccess;
 
-    private Logger logger = Logger.getLogger(ControllerImpl.class.getName());
+    private static Logger logger = Logger.getLogger("hotel-application");
 
-    private String[] columnNames = null;
+    private String[] columnNames;
 
     public ControllerImpl(DBAccess dbAccess) throws DbException {
 
         logger.info("initializing controller object");
         this.dbAccess = dbAccess;
         try {
+            // convention to request meta data by reading record -1
             columnNames = dbAccess.readRecord(-1L);
         }
         catch (RecordNotFoundException e) {
             throw new DbException("Could not read columns", e);
         }
-
     }
 
-    /*
-     * (non-Javadoc)
-     * @see xcon.hotel.client.Controller#bookRoom(long)
-     */
-    public HotelRoom bookRoom(long id) throws RecordAlreadyExistException {
+    public void bookRoom(HotelRoom hotelRoom)
+            throws RecordAlreadyExistException
+    {
 
-        HotelRoom hotelRoom = null;
+        long id = hotelRoom.getId();
+        long lockCookie;
         try {
-
+            // read
+            lockCookie = dbAccess.lockRecord(id);
             String[] roomFields = dbAccess.readRecord(id);
             String owner = roomFields[roomFields.length - 1];
-            if (owner != null) {
-                throw new RecordAlreadyExistException("record Already Exists");
-            }
-            else {
-                long lockCookie = dbAccess.lockRecord(id);
-                String ownerId = CustomerIdGenerator.generateCustumerId(id);
-                hotelRoom = new HotelRoom(id, roomFields);
-                hotelRoom.setOwner(ownerId);
-                dbAccess.updateRecord(
-                        id,
-                        hotelRoom.convertToArray(),
-                        lockCookie);
-                dbAccess.unlock(id, lockCookie);
+            if (owner != null && owner.length() > 0) {
+                throw new RecordAlreadyExistException(
+                    "record Already Exists, owner=" + owner);
             }
 
-        }
-        catch (NumberFormatException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // update
+            String ownerId = CustomerIdGenerator.generateCustumerId();
+            hotelRoom.setOwner(ownerId);
+            dbAccess.updateRecord(id, hotelRoom.convertToArray(), lockCookie);
+            dbAccess.unlock(id, lockCookie);
         }
         catch (RecordNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RecordAlreadyExistException(e);
         }
         catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RecordAlreadyExistException(e);
         }
 
-        return hotelRoom;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see xcon.hotel.client.Controller#search(java.lang.String,
-     * java.lang.String)
-     */
     public List<HotelRoom> search(String hotelName, String hotelLocation) {
 
         if (hotelName == null || hotelLocation == null) {
@@ -98,18 +81,18 @@ public class ControllerImpl implements Controller {
             try {
                 roomFields = dbAccess.readRecord(id);
 
-                System.out.println("roomFields are:"
-                    + Arrays.asList(roomFields));
+                logger.info("roomFields are:" + Arrays.asList(roomFields));
                 HotelRoom hotelRoom = new HotelRoom(id, roomFields);
                 result.add(hotelRoom);
             }
             catch (RecordNotFoundException e) {
-                System.err.println("room " + id + " mysteriously disappeared");
+                logger.warning("room " + id + " mysteriously disappeared");
             }
         }
         return result;
     }
 
+    /* @see xcon.hotel.client.Controller#getColumnNames() */
     @Override
     public String[] getColumnNames() {
         return columnNames;
