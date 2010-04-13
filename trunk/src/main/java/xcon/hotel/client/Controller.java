@@ -1,21 +1,21 @@
 package xcon.hotel.client;
 
 import java.util.List;
-import xcon.hotel.db.RecordAlreadyExistException;
+import xcon.hotel.db.ControllerException;
 import xcon.hotel.model.HotelRoom;
 
 /**
- * Controller with the business logic of the hotel appliction
+ * Controller with the business logic of the hotel application
  */
 public interface Controller {
 
     /**
      * Books the room with the given id
      * @param id
-     * @throws RecordAlreadyExistException
+     * @throws ControllerException
      */
     public abstract void bookRoom(HotelRoom room)
-            throws RecordAlreadyExistException;
+            throws ControllerException;
 
     /**
      * Searches for a room with the given hotel name and/or location

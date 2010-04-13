@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import xcon.hotel.db.DBAccess;
-import xcon.hotel.db.DbException;
-import xcon.hotel.db.RecordAlreadyExistException;
+import xcon.hotel.db.DbAccesssInitializationException;
 import xcon.hotel.db.RecordNotFoundException;
+import xcon.hotel.db.ControllerException;
 import xcon.hotel.db.SecurityException;
 import xcon.hotel.model.HotelRoom;
 
@@ -19,7 +19,9 @@ public class ControllerImpl implements Controller {
 
     private String[] columnNames;
 
-    public ControllerImpl(DBAccess dbAccess) throws DbException {
+    public ControllerImpl(DBAccess dbAccess)
+            throws DbAccesssInitializationException
+    {
 
         logger.info("initializing controller object");
         this.dbAccess = dbAccess;
@@ -28,37 +30,28 @@ public class ControllerImpl implements Controller {
             columnNames = dbAccess.readRecord(-1L);
         }
         catch (RecordNotFoundException e) {
-            throw new DbException("Could not read columns", e);
+            throw new DbAccesssInitializationException(
+                "Could not read columns", e);
         }
     }
 
-    public void bookRoom(HotelRoom hotelRoom)
-            throws RecordAlreadyExistException
-    {
+    public void bookRoom(HotelRoom hotelRoom) throws ControllerException {
 
         long id = hotelRoom.getId();
         long lockCookie;
         try {
             // read
             lockCookie = dbAccess.lockRecord(id);
-            String[] roomFields = dbAccess.readRecord(id);
-            String owner = roomFields[roomFields.length - 1];
-            if (owner != null && owner.length() > 0) {
-                throw new RecordAlreadyExistException(
-                    "record Already Exists, owner=" + owner);
-            }
-
-            // update
-            String ownerId = CustomerIdGenerator.generateCustumerId();
-            hotelRoom.setOwner(ownerId);
             dbAccess.updateRecord(id, hotelRoom.convertToArray(), lockCookie);
             dbAccess.unlock(id, lockCookie);
         }
         catch (RecordNotFoundException e) {
-            throw new RecordAlreadyExistException(e);
+            throw new ControllerException(
+                "the room you wanted to book could not be found", e);
         }
         catch (SecurityException e) {
-            throw new RecordAlreadyExistException(e);
+            throw new ControllerException(
+                "you are not allowed to book the room", e);
         }
 
     }
@@ -86,7 +79,7 @@ public class ControllerImpl implements Controller {
                 result.add(hotelRoom);
             }
             catch (RecordNotFoundException e) {
-                logger.warning("room " + id + " mysteriously disappeared");
+                logger.severe("room " + id + " mysteriously disappeared");
             }
         }
         return result;
