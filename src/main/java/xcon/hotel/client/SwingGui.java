@@ -20,7 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import xcon.hotel.db.RecordAlreadyExistException;
+import xcon.hotel.db.ControllerException;
+import xcon.hotel.db.SwingGuiException;
 import xcon.hotel.model.HotelRoom;
 
 public class SwingGui extends JFrame {
@@ -109,13 +110,19 @@ public class SwingGui extends JFrame {
             searchPanel.add(locationSearchField);
             searchPanel.add(searchButton);
 
+            JLabel bookingLabel = new JLabel();
+            bookingLabel.setText("enter here the customerID");
+
+            JTextField ownerIdTextField = new JTextField(10);
             JButton BookButton = new JButton("book selected room");
 
-            BookButton.addActionListener(new BookHotelRoom());
+            BookButton.addActionListener(new BookHotelRoom(ownerIdTextField));
             BookButton.setRequestFocusEnabled(false);
             BookButton.setMnemonic(KeyEvent.VK_B);
-            JPanel bookingPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JPanel bookingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             bookingPanel.add(BookButton);
+            bookingPanel.add(bookingLabel);
+            bookingPanel.add(ownerIdTextField);
 
             JPanel commentPanel = new JPanel();
             commentPanel.add(commentLabel);
@@ -139,20 +146,64 @@ public class SwingGui extends JFrame {
 
     private class BookHotelRoom implements ActionListener {
 
+        private JTextField ownerIDTextField = null;
+
+        public BookHotelRoom(JTextField ownerIdTextField) {
+            this.ownerIDTextField = ownerIdTextField;
+        }
+
         public void actionPerformed(ActionEvent ae) {
 
             int index = mainTable.getSelectedRow();
+            
+            if (index == -1 )
+            {
+                commentLabel.setText("please select a hotelroom form the gui");
+            }
             if (index >= 0) {
 
                 try {
                     commentLabel.setText("book");
                     HotelRoom room = hotelTableModel.getHotelRoom(index);
-                    controller.bookRoom(room);
-                    commentLabel.setText("");
+                    if (!room.getOwner().equals("")) {
+                        commentLabel.setText("room already booked");
+                        throw new SwingGuiException("room already booked");
+                    }
+                    else {
+
+                        String ownerId = ownerIDTextField.getText();
+                        if (ownerId.equals("")) {
+                            throw new SwingGuiException(
+                                "CustomerID not entered");
+                        }
+                        
+                        else {
+                            
+                            try {
+                            Integer.parseInt(ownerId);
+                            if (ownerId.length() != 8) {
+
+                                throw new SwingGuiException("field is not 8 number");
+                            }
+
+                            room.setOwner(ownerId);
+                            controller.bookRoom(room);
+                            }
+                            catch (NumberFormatException e)
+                            {
+                                throw new SwingGuiException("values entered are not numbers");
+                            }
+                            
+                        }
+                    }
                 }
-                catch (RecordAlreadyExistException e) {
+                catch (SwingGuiException e) {
                     logger.warning(e.getMessage());
-                    commentLabel.setText("error whilst booking room");
+                    commentLabel.setText("error occured in gui");
+                }
+                catch (ControllerException e) {
+                    logger.warning(e.getMessage());
+                    commentLabel.setText("error while booking room");
                 }
             }
         }
@@ -164,6 +215,10 @@ public class SwingGui extends JFrame {
 
             String hotelName = nameSearchField.getText();
             String hotelLocation = locationSearchField.getText();
+            if (hotelName == null || hotelLocation == null) {
+                commentLabel.setText("search arguments may not be empty");
+                return;
+            }
             commentLabel.setText("search");
             List<HotelRoom> hotelRooms =
                 controller.search(hotelName, hotelLocation);

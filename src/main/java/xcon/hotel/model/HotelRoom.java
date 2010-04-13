@@ -12,7 +12,6 @@ public class HotelRoom implements Serializable {
 
     private static final long serialVersionUID = 5165L;
 
-
     private Logger logger = Logger.getLogger("hotel-application");
 
     private long id;
@@ -75,13 +74,13 @@ public class HotelRoom implements Serializable {
         // this.id = String.valueOf(recNo);
 
         this.id = recNo;
-        this.name = fields[1];
-        this.location = fields[2];
-        this.size = Integer.valueOf(fields[3]);
-        this.isSmokingAllowed = fields[4];
-        this.rate = fields[5];
-        this.date = fields[6];
-        this.owner = (fields[7]);
+        this.name = fields[0];
+        this.location = fields[1];
+        this.size = Integer.valueOf(fields[2]);
+        this.isSmokingAllowed = fields[3];
+        this.rate = fields[4];
+        this.date = fields[5];
+        this.owner = (fields[6]);
     }
 
     /**
@@ -181,10 +180,8 @@ public class HotelRoom implements Serializable {
 
     public String[] convertToArray() {
         return new String[] {
-                String.valueOf(this.id), this.name, this.location,
-                String.valueOf(this.size), this.isSmokingAllowed, this.rate,
-                this.date, owner
-
+                this.name, this.location, String.valueOf(this.size),
+                this.isSmokingAllowed, this.rate, this.date, owner
         };
     }
 

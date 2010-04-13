@@ -15,7 +15,7 @@ import xcon.hotel.client.Controller;
 import xcon.hotel.client.ControllerImpl;
 import xcon.hotel.client.SwingGui;
 import xcon.hotel.db.DBAccess;
-import xcon.hotel.db.DbException;
+import xcon.hotel.db.DbAccesssInitializationException;
 import xcon.hotel.db.local.DbAccessFileImpl;
 import xcon.hotel.db.network.DbAccessNetworkClientImpl;
 
@@ -29,7 +29,7 @@ public class HotelApplication {
 
     static {
         try {
-            ResourceBundle props = ResourceBundle.getBundle("hotel_log");
+            /*ResourceBundle props = ResourceBundle.getBundle("hotel_log");
             String levelName = props.getString("level");
             // default
             Level level = Level.INFO;
@@ -42,7 +42,7 @@ public class HotelApplication {
                 }
             }
             logger.setLevel(level);
-
+*/
             Formatter formatter = new Formatter() {
 
                 @Override
@@ -73,13 +73,14 @@ public class HotelApplication {
 
             LogManager lm = LogManager.getLogManager();
             lm.addLogger(logger);
-            
+
             logger.setUseParentHandlers(false);
         }
         catch (Throwable e) {
+
             e.printStackTrace();
         }
-    }
+   }
 
     private enum Mode {
         NETWORKED, LOCAL, TEST
@@ -87,7 +88,7 @@ public class HotelApplication {
 
     /**
      * @param args
-     * @throws DbException if access to the database failed
+     * @throws DbAccesssInitializationException if access to the database failed
      * @throws IOException
      * @throws SecurityException
      */
@@ -120,7 +121,9 @@ public class HotelApplication {
         return mode;
     }
 
-    private static DBAccess getDbAccess(Mode mode) throws DbException {
+    private static DBAccess getDbAccess(Mode mode)
+            throws DbAccesssInitializationException
+    {
 
         DBAccess dbAccess;
         switch (mode) {

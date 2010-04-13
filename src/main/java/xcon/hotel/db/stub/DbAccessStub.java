@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DuplicateKeyException;
 import xcon.hotel.db.RecordNotFoundException;
@@ -36,17 +35,18 @@ public class DbAccessStub implements DBAccess {
         // TODO insert here some test data.
 
         hotelRooms.put(new Long(1), new String[] {
-                "x", "best resort", "rotterdam", "2", "y","129", "12-12-2008",
+                "x", "best resort", "rotterdam", "2", "y", "129", "12-12-2008",
                 "11111111"
         });
 
         hotelRooms.put(new Long(2), new String[] {
-               "z", "hilton", "amsterdam", "4", "y","350", "12-12-2009", "2222222"
+                "z", "hilton", "amsterdam", "4", "y", "350", "12-12-2009",
+                "2222222"
         });
 
         hotelRooms.put(new Long(3), new String[] {
-                "y","golden tulip", "amsterdam", "2", "y","120", "12-09-2009",
-                null
+                "y", "golden tulip", "amsterdam", "2", "y", "120",
+                "12-09-2009", null
         });
 
         locks = new HashMap<Long, Long>();
@@ -112,21 +112,16 @@ public class DbAccessStub implements DBAccess {
     public void unlock(long recNo, long cookie) throws SecurityException {
 
         if (cookie != locks.get(recNo)) {
-            throw new SecurityException("record is locked");
+            throw new SecurityException("record cannot be unlocked");
         }
         else {
-            try {
-                Long recordNr = getRecordNumberObject(recNo);
-                synchronized (recordNr) {
-                    locks.put(recordNr, null);
-                    // notify all thread. there is now no lock for this
-                    recordNr.notifyAll();
-                }
+            Long recordNr = new Long(recNo);
+            synchronized (recordNr) {
+                locks.put(recordNr, null);
+                // notify all thread. there is now no lock for this
+                recordNr.notifyAll();
+            }
 
-            }
-            catch (RecordNotFoundException e) {
-                logger.warning("record Not foud");
-            }
         }
     }
 
@@ -157,7 +152,7 @@ public class DbAccessStub implements DBAccess {
 
             Map.Entry<Long, String[]> pair = it.next();
             String[] room = (String[]) pair.getValue();
-            
+
             if (findMatch(criteria, room)) {
                 results.add((Long) pair.getKey());
             }
@@ -185,7 +180,7 @@ public class DbAccessStub implements DBAccess {
                 continue;
             }
             String field = room[c].toLowerCase();
-            logger.info("field " + field + "c: "+ c );
+            logger.info("field " + field + "c: " + c);
             String criterium = criteria[c].toLowerCase();
             if (!field.startsWith(criterium)) {
 
@@ -228,8 +223,6 @@ public class DbAccessStub implements DBAccess {
         hotelRooms.put(recNo, data);
     }
 
-  
-
     // synchronized to avoid concurrent access problems
     private synchronized long getNextId() {
         return ++recordNrSequence;
@@ -245,5 +238,4 @@ public class DbAccessStub implements DBAccess {
         return hotelRooms;
     }
 
-   
 }

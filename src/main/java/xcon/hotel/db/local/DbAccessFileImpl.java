@@ -9,10 +9,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import xcon.hotel.db.DBAccess;
-import xcon.hotel.db.DbException;
+import xcon.hotel.db.DbAccesssInitializationException;
 import xcon.hotel.db.DuplicateKeyException;
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.SecurityException;
@@ -23,7 +25,7 @@ import xcon.hotel.model.HotelRoom;
  */
 public class DbAccessFileImpl implements DBAccess {
 
-    private static Logger logger = Logger.getLogger("hotel-application");
+    private Logger logger = Logger.getLogger(getClass().getName());
 
     private static final String ENCODING = "UTF-8";
     private static final int VALID_OR_DELETED_FLAG_LENGTH = 1;
@@ -33,31 +35,43 @@ public class DbAccessFileImpl implements DBAccess {
     private int[] fieldLengths;
     private long dataStartOffset;
     private int record_length;
-    private  RandomAccessFile database;
+    private RandomAccessFile database;
+    private Map<Long, Long> locks;
 
-    public DbAccessFileImpl() throws DbException {
+    public DbAccessFileImpl() throws DbAccesssInitializationException {
 
         URL resourceUrl = this.getClass().getResource("/hotel.db");
         logger.info("resourceUrl" + resourceUrl);
 
+        locks = new HashMap<Long, Long>();
         File resourceFile;
         try {
             resourceFile = new File(resourceUrl.toURI());
+            try {
+                logger.warning("File:" + resourceFile.getCanonicalPath());
+            }
+            catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         catch (URISyntaxException e) {
-            throw new DbException("Could parse URL " + resourceUrl, e);
+            throw new DbAccesssInitializationException("Could parse URL "
+                + resourceUrl, e);
         }
         try {
             database = new RandomAccessFile(resourceFile, "rw");
         }
         catch (FileNotFoundException e) {
-            throw new DbException("Could not acces file " + resourceFile, e);
+            throw new DbAccesssInitializationException("Could not acces file "
+                + resourceFile, e);
         }
         try {
             initDbMetaData();
         }
         catch (IOException e) {
-            throw new DbException("Could init Database meta data", e);
+            throw new DbAccesssInitializationException(
+                "Could init Database meta data", e);
         }
     }
 
@@ -97,7 +111,7 @@ public class DbAccessFileImpl implements DBAccess {
             database.read(columnBytes);
 
             String columnName = new String(columnBytes, ENCODING);
-            logger.info("columnName" + i + " : " + columnName);
+            logger.fine("columnName" + i + " : " + columnName);
             columnNames[i] = columnName;
 
             locationInFile = locationInFile + columnLength;
@@ -105,7 +119,7 @@ public class DbAccessFileImpl implements DBAccess {
             byte fieldLengthInBytes = database.readByte();
             int fieldLength = unsignedByteToInt(fieldLengthInBytes);
             fieldLengths[i] = fieldLength;
-            logger.info("fieldLength" + fieldLength);
+            logger.fine("fieldLength" + fieldLength);
             locationInFile = locationInFile + ONE_BYTE;
         }
 
@@ -152,10 +166,11 @@ public class DbAccessFileImpl implements DBAccess {
         return (int) b & 0xFF;
     }
 
-    private HotelRoom retrieveHotelRoom(long id) throws IOException,
-            RecordNotFoundException
+    // XXX moeten we niet check dat de id niet groter is dan de file
+    private synchronized HotelRoom retrieveHotelRoom(long recNo)
+            throws IOException, RecordNotFoundException
     {
-        long locationInFile = id * record_length + dataStartOffset;
+        long locationInFile = recNo * record_length + dataStartOffset;
         final byte[] input = new byte[record_length];
         synchronized (database) {
             database.seek(locationInFile);
@@ -187,7 +202,7 @@ public class DbAccessFileImpl implements DBAccess {
 
         if (isInvalidOrDeletedRecord) {
             throw new RecordNotFoundException("Record is invalid or deleted: "
-                + id);
+                + recNo);
         }
         int i = 0;
         String name = readRecord.read(fieldLengths[i++]).trim();
@@ -203,7 +218,7 @@ public class DbAccessFileImpl implements DBAccess {
          * date, owner);
          */
         HotelRoom returnValue =
-            new HotelRoom(id, name, location, size, isSmokingAllowed, rate,
+            new HotelRoom(recNo, name, location, size, isSmokingAllowed, rate,
                 date, owner);
         return returnValue;
     }
@@ -326,20 +341,63 @@ public class DbAccessFileImpl implements DBAccess {
 
     @Override
     public long lockRecord(long recNo) throws RecordNotFoundException {
-        return 0;
+
+        Long cookie = locks.get(recNo);
+        if (cookie != null) {
+
+            // synchronize on a record.
+            Long recordNr = new Long(recNo);
+            synchronized (recordNr) {
+
+                while (locks.get(recNo) != null) {
+                    try {
+                        // wait till the lock on the record is released
+                        recordNr.wait();
+
+                    }
+                    catch (InterruptedException e) {}
+                }
+            }
+        }
+        // post conditie: cookie == null
+        cookie = getNewMagicCookie();
+        locks.put(recNo, cookie);
+        return cookie;
+    }
+
+    private synchronized Long getNewMagicCookie() {
+
+        Long magicCookie = (long) (Math.random() * 999999999) + 1;
+        return magicCookie;
     }
 
     @Override
-    public String[] readRecord(long id) throws RecordNotFoundException {
+    public void unlock(long recNo, long cookie) throws SecurityException {
+
+        if (cookie != locks.get(recNo)) {
+            throw new SecurityException("record is locked");
+        }
+        else {
+            Long recordNr = new Long(recNo);
+            synchronized (recordNr) {
+                locks.put(recordNr, null);
+                // notify all thread. there is now no lock for this
+                recordNr.notifyAll();
+            }
+        }
+    }
+
+    @Override
+    public String[] readRecord(long recNo) throws RecordNotFoundException {
 
         String[] result;
-        if (id == -1) {
+        if (recNo == -1) {
             result = columnNames;
         }
         else {
             HotelRoom room = null;
             try {
-                room = retrieveHotelRoom(id);
+                room = retrieveHotelRoom(recNo);
                 if (room == null) {
                     throw new RecordNotFoundException("record does not exist");
                 }
@@ -354,16 +412,14 @@ public class DbAccessFileImpl implements DBAccess {
     }
 
     @Override
-    public void unlock(long recNo, long cookie) throws SecurityException {
-
-    }
-
-    @Override
     public void updateRecord(long recNo, String[] data, long lockCookie)
             throws RecordNotFoundException, SecurityException
     {
         logger.warning("updating the record with data" + Arrays.asList(data));
-        String emptyRecordString = new String(new byte[record_length]);
+        // final StringBuilder out = new StringBuilder(record_length);
+        byte[] emptyData = new byte[record_length];
+        Arrays.fill(emptyData, (byte) ' ');
+        String emptyRecordString = new String(emptyData);
         final StringBuilder out = new StringBuilder(emptyRecordString);
 
         /** assists in converting Strings to a byte[] */
@@ -378,78 +434,88 @@ public class DbAccessFileImpl implements DBAccess {
              * @param length the maximum size of the String
              */
             void write(String data, int length) {
-                out.replace(
-                        currentPosition,
-                        currentPosition + data.length(),
-                        data);
-                currentPosition += length;
+                // XXX: check that data is not longer than length and truncate
+                // if necessary
+                if (data.length() <= length) {
+                    out.replace(
+
+                    currentPosition, currentPosition + data.length(), data);
+                    currentPosition += length;
+                }
+                else {
+                    String stringTruncated = data.substring(0, length - 1);
+                    out.replace(
+
+                            currentPosition,
+                            currentPosition + data.length(),
+                            stringTruncated);
+                    currentPosition += length;
+                }
             }
         }
         RecordFieldWriter writeRecord = new RecordFieldWriter();
 
         // when you are in the update methode, it means that the record is
         // valid.
-        byte [] deletedOrInvalidRecord = new byte [1];
-        deletedOrInvalidRecord[0] = 0x00;
-        // i is the index of the data
-        // j is the index of the fieldlenth;
-        int i = 1;
-        int j = 0;
-        writeRecord.write(new String(deletedOrInvalidRecord), 1);
+        // i is the index of the data and the fieldlength
+        int i = 0;
+        String recordNotDeletedNorInvalid = "\u0000";
+        writeRecord.write(recordNotDeletedNorInvalid, 1);
         String hotelName = data[i];
 
         logger.warning("hotelName:" + hotelName + " fieldLengths[i]:"
-            + fieldLengths[j]);
-        writeRecord.write(hotelName, fieldLengths[j++]);
+            + fieldLengths[i]);
+        writeRecord.write(hotelName, fieldLengths[i]);
         i++;
 
         String hotelLocation = data[i];
         logger.warning("hotelLocation:" + hotelLocation + " fieldLengths[i]:"
-            + fieldLengths[j]);
-        writeRecord.write(hotelLocation, fieldLengths[j++]);
+            + fieldLengths[i]);
+        writeRecord.write(hotelLocation, fieldLengths[i]);
         i++;
 
         String size = data[i];
-        logger.warning("size:" + size + " fieldLengths[i]:" + fieldLengths[j]);
-        writeRecord.write(size, fieldLengths[j++]);
+        logger.warning("size:" + size + " fieldLengths[i]:" + fieldLengths[i]);
+        writeRecord.write(size, fieldLengths[i]);
         i++;
 
         String isSmokingAllowed = data[i];
         logger.warning("isSmokingAllowed:" + isSmokingAllowed
-            + " fieldLengths[i]:" + fieldLengths[j]);
-        writeRecord.write(isSmokingAllowed, fieldLengths[j++]);
+            + " fieldLengths[i]:" + fieldLengths[i]);
+        writeRecord.write(isSmokingAllowed, fieldLengths[i]);
         i++;
 
         String rate = data[i];
-        logger.warning("rate:" + rate + "fieldLengths[i]:" + fieldLengths[j]);
-        writeRecord.write(rate, fieldLengths[j++]);
+        logger.warning("rate:" + rate + "fieldLengths[i]:" + fieldLengths[i]);
+        writeRecord.write(rate, fieldLengths[i]);
         i++;
 
         String date = data[i];
-        logger.warning("date:" + date + "fieldLengths[i]:" + fieldLengths[j]);
-        writeRecord.write(date, fieldLengths[j++]);
+        logger.warning("date:" + date + "fieldLengths[i]:" + fieldLengths[i]);
+        writeRecord.write(date, fieldLengths[i]);
         i++;
 
         String owner = data[i];
-        logger.warning("owner:" + owner + "fieldLengths[i]:" + fieldLengths[j]);
-        writeRecord.write(owner, fieldLengths[j++]);
+        logger.info("owner:" + owner + "fieldLengths[i]:" + fieldLengths[i]);
+        writeRecord.write(owner, fieldLengths[i]);
         i++;
 
         // now that we have everything ready to go, we can go into our
         // synchronized block & perform our operations as quickly as possible
         // ensuring that we block other users for as little time as possible.
 
+        // XXX ik synchroniseer al in de lock methode. kan ook hier
+        // sysnchroneseren of niet.
         synchronized (database) {
-            int offset =
-                (int) (Integer.parseInt(data[0]) * record_length + dataStartOffset);
-            logger.warning("offset:" + offset);
+            long offset = recNo * record_length + dataStartOffset;
+            logger.info("offset:" + offset);
             try {
-                
+
                 System.out.println("database" + database);
                 database.seek(offset);
-                logger.warning("out.toString()" + out.toString());
+                logger.info("out.toString()" + out.toString());
                 database.write(out.toString().getBytes());
-                //database.close();
+                // database.close();
 
             }
             catch (IOException e) {
