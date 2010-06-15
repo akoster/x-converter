@@ -17,35 +17,24 @@ import java.net.URLConnection;
  * 4 - content ophalen
  * 5 - uitprinten op de command lijn
  */
-
 public class UrlLoader {
 
 	private URL url;
 
 	public UrlLoader(String url) throws MalformedURLException {
-
 		this.url = new URL(url);
-
 	}
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws IOException {
 
+		String urlString;
 		if (args != null && args.length > 0) {
-
-			try {
-				UrlLoader loader = new UrlLoader(args[0]);
-				loader.load();
-			} catch (MalformedURLException e) {
-				System.err.println("verkeerde URL:  " + e.getMessage());
-			} catch (IOException e) {
-
-				System.err.println("kon geen verbinding maken met URL");
-			}
-
+			urlString = args[0];
 		} else {
-			System.out.println("geef een URL");
+			urlString = "http://stackoverflow.com";
 		}
-
+		UrlLoader loader = new UrlLoader(urlString);
+		loader.load();
 	}
 
 	private void load() throws IOException {
@@ -64,5 +53,4 @@ public class UrlLoader {
 		}
 		System.out.println(builder.toString());
 	}
-
 }
