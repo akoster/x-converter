@@ -4,18 +4,68 @@ Hotel todo document
 
 TODO 
 
-to generate customer ID: java.util.UUID
 
-fix the exception handling, no e.printStacktrace(), but either
-  handle neatly, or throw up to caller
-  
-implement the java logger, disable global logger? (DONE)
+
+     ///TODO retry connection   ==> done
+     
+in DbNetworkStub interface: gebruik excepties uit DbAcces interface naast RemoteException  ==> done
+
+Bug met boeken: 'room already booked', refreshen van Swing panel  ==> done
+
+Logging consistent maken, naam van klasse en regelnummer loggen via configuratie  ==> regelnummer uitprinten nog niet
+Overal dezelfde conventie voor logger namen gebruiken (0dus of allemaal "hotel-application"
+of ieder zijn eigen klasse naam)
+
+resource bundles ontdoen van typo's in keys en values ==> done
+
+Sleep 5000 in server kan misschien korter of weg
+
+testen of locking goed werkt, evt met meerdere clients
+     
+     
+createRecord is not finished (it is not necessary but it is better if it is implemented)
+     
+=============
 
 -> unitTests (begin met de Controller)
+http://martinfowler.com/articles/mocksArentStubs.html
 
 -> complete implementation of DbFileAccess (locking, updating etc)
-
+                
+-> consider network implementation using RMI or Sockets
+-> come up with  other fun communication procotocol:
+* file-based messaging (write and read files to from directory)
+* terracotta
+* SMTP based communication
+* SOAP of REST webservice (kan makkelijk met annotaties JAX-WS of JAX-RS) 
+* JMS (ActiveMQ)
+ 
 DONE
+
+Localization afmaken:
+- alle teksten in de GUI uit resource bundles halen
+- vertalingen in engels (en arabisch) in aparte bundles
+
+log.properties rename naar hotel_log.properties
+formatter verplaatsen van code naar properties file
+(geen log setup meer in de code dus)
+
+// XXX: check that data is not longer than length and truncate
+// if necessary
+
+find out how to configure java.util.Logger using a  config file
+And how to filter logging on logger name (fully qualified classname)
+//volgende documtnet gezlezen en bregrepen http://www.crazysquirrel.com/computing/java/logging.jspx
+
+create a textfield customer and add the logic. 
+CSR enters  customer ID, application checks it is 8-digit number, then record is
+booked with this customer ID (does not have to be unique)
+
+(Ik heb mijn policy check aan de gui kant gedaan bijvoorbeeld lengte van de veld moet 8)
+
+* fix the exception handling, no e.printStacktrace(), but either
+  handle neatly, or throw up to caller
+* implement the java logger, disable global logger? 
 * add JavaDoc to new method in Controller interface
 * remove DataFileFormatConstants, move RECORD_LENGTH to DbAccessFileImpl, calculate
   value by adding all fieldLengths found in initDatabaseInformation

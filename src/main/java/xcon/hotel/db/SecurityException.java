@@ -1,6 +1,7 @@
 package xcon.hotel.db;
 
-public class SecurityException extends Exception {
+
+public class SecurityException extends Exception  {
 
 	private static final long serialVersionUID = 1L;
 

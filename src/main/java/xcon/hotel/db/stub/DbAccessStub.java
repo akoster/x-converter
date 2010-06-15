@@ -17,7 +17,7 @@ import xcon.hotel.db.SecurityException;
  */
 public class DbAccessStub implements DBAccess {
 
-    private Logger logger = Logger.getLogger("hotel-application");
+    private Logger logger = Logger.getLogger(DbAccessStub.class.getName());
 
     // map of ID to HotelRoom
     private Map<Long, String[]> hotelRooms;

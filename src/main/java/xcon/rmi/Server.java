@@ -13,7 +13,7 @@ public class Server implements Hello {
             Server server = new Server();
             Hello stub = (Hello) UnicastRemoteObject.exportObject(server, 0);
             // bind the remote object to a registery
-            // LocateRegistry.createRegistry(2009);
+            //LocateRegistry.createRegistry(2009);
             Registry registry = LocateRegistry.getRegistry();
             registry.bind("Hello", stub);
         }
