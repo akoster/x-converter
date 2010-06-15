@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DbAccesssInitializationException;
+import xcon.hotel.db.HotelNetworkException;
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.ControllerException;
 import xcon.hotel.db.SecurityException;
@@ -15,7 +16,7 @@ public class ControllerImpl implements Controller {
 
     private DBAccess dbAccess;
 
-    private static Logger logger = Logger.getLogger("hotel-application");
+    private static Logger logger = Logger.getLogger(ControllerImpl.class.getName());
 
     private String[] columnNames;
 
@@ -35,25 +36,30 @@ public class ControllerImpl implements Controller {
         }
     }
 
-    public void bookRoom(HotelRoom hotelRoom) throws ControllerException {
-
+    public void bookRoom(long customerId, HotelRoom hotelRoom) throws ControllerException {
+        
         long id = hotelRoom.getId();
         long lockCookie;
         try {
             // read
             lockCookie = dbAccess.lockRecord(id);
+            hotelRoom.setOwner(customerId);
             dbAccess.updateRecord(id, hotelRoom.convertToArray(), lockCookie);
             dbAccess.unlock(id, lockCookie);
         }
         catch (RecordNotFoundException e) {
             throw new ControllerException(
-                "the room you wanted to book could not be found", e);
+                e, "validation.room.not.found");
         }
         catch (SecurityException e) {
             throw new ControllerException(
-                "you are not allowed to book the room", e);
+                "error.internal", e);
         }
-
+        catch (HotelNetworkException e)
+        {
+            throw new ControllerException("error.network", e);
+        }
+        
     }
 
     public List<HotelRoom> search(String hotelName, String hotelLocation) {

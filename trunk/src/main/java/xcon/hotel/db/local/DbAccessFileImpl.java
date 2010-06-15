@@ -25,7 +25,7 @@ import xcon.hotel.model.HotelRoom;
  */
 public class DbAccessFileImpl implements DBAccess {
 
-    private Logger logger = Logger.getLogger(getClass().getName());
+    private Logger logger = Logger.getLogger(DbAccessFileImpl.class.getName());
 
     private static final String ENCODING = "UTF-8";
     private static final int VALID_OR_DELETED_FLAG_LENGTH = 1;
@@ -38,6 +38,8 @@ public class DbAccessFileImpl implements DBAccess {
     private RandomAccessFile database;
     private Map<Long, Long> locks;
 
+    private long magicCookie;
+
     public DbAccessFileImpl() throws DbAccesssInitializationException {
 
         URL resourceUrl = this.getClass().getResource("/hotel.db");
@@ -47,11 +49,12 @@ public class DbAccessFileImpl implements DBAccess {
         File resourceFile;
         try {
             resourceFile = new File(resourceUrl.toURI());
+            
+            //TODO remove this block at the end. 
             try {
                 logger.warning("File:" + resourceFile.getCanonicalPath());
             }
             catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -111,7 +114,7 @@ public class DbAccessFileImpl implements DBAccess {
             database.read(columnBytes);
 
             String columnName = new String(columnBytes, ENCODING);
-            logger.fine("columnName" + i + " : " + columnName);
+            logger.info("columnName" + i + " : " + columnName);
             columnNames[i] = columnName;
 
             locationInFile = locationInFile + columnLength;
@@ -119,7 +122,7 @@ public class DbAccessFileImpl implements DBAccess {
             byte fieldLengthInBytes = database.readByte();
             int fieldLength = unsignedByteToInt(fieldLengthInBytes);
             fieldLengths[i] = fieldLength;
-            logger.fine("fieldLength" + fieldLength);
+            logger.info("fieldLength" + fieldLength);
             locationInFile = locationInFile + ONE_BYTE;
         }
 
@@ -129,25 +132,9 @@ public class DbAccessFileImpl implements DBAccess {
             record_length += fieldLengths[i];
         }
         record_length += VALID_OR_DELETED_FLAG_LENGTH;
-        System.out.println("record length :" + record_length);
     }
 
-    /**
-     * Converts a 4 byte array of unsigned bytes to an long
-     * @param b an array of 4 unsigned bytes
-     * @return a long representing the unsigned int
-     */
-    public static final long unsignedIntToLong(byte[] b) {
-        long l = 0;
-        l |= b[0] & 0xFF;
-        l <<= 8;
-        l |= b[1] & 0xFF;
-        l <<= 8;
-        l |= b[2] & 0xFF;
-        l <<= 8;
-        l |= b[3] & 0xFF;
-        return l;
-    }
+
 
     /**
      * Converts a two byte array to an integer
@@ -204,23 +191,25 @@ public class DbAccessFileImpl implements DBAccess {
             throw new RecordNotFoundException("Record is invalid or deleted: "
                 + recNo);
         }
+
         int i = 0;
-        String name = readRecord.read(fieldLengths[i++]).trim();
-        String location = readRecord.read(fieldLengths[i++]).trim();
-        int size = Integer.parseInt(readRecord.read(fieldLengths[i++]).trim());
-        String isSmokingAllowed = readRecord.read(fieldLengths[i++]).trim();
-        String rate = readRecord.read(fieldLengths[i++]).trim();
-        String date = readRecord.read(fieldLengths[i++]).trim();
-        String owner = readRecord.read(fieldLengths[i++]).trim();
-        /*
-         * HotelRoom returnValue = new HotelRoom(String.valueOf(id),
-         * isValidOrDeletedRecord, name, location, size, isSmokingAllowed, rate,
-         * date, owner);
-         */
-        HotelRoom returnValue =
-            new HotelRoom(recNo, name, location, size, isSmokingAllowed, rate,
-                date, owner);
-        return returnValue;
+        String[] roomFields = new String[7];
+        // hotelname
+        roomFields[0] = readRecord.read(fieldLengths[i++]).trim();
+        // location
+        roomFields[1] = readRecord.read(fieldLengths[i++]).trim();
+        // size
+        roomFields[2] = readRecord.read(fieldLengths[i++]).trim();
+        // isSmokingAllowed
+        roomFields[3] = readRecord.read(fieldLengths[i++]).trim();
+        // rate
+        roomFields[4] = readRecord.read(fieldLengths[i++]).trim();
+        // date
+        roomFields[5] = readRecord.read(fieldLengths[i++]).trim();
+        // owner
+        roomFields[6] = readRecord.read(fieldLengths[i++]).trim();
+
+        return new HotelRoom(recNo, roomFields);
     }
 
     private boolean parseDeletedFlag(String read)
@@ -353,7 +342,6 @@ public class DbAccessFileImpl implements DBAccess {
                     try {
                         // wait till the lock on the record is released
                         recordNr.wait();
-
                     }
                     catch (InterruptedException e) {}
                 }
@@ -367,8 +355,10 @@ public class DbAccessFileImpl implements DBAccess {
 
     private synchronized Long getNewMagicCookie() {
 
-        Long magicCookie = (long) (Math.random() * 999999999) + 1;
-        return magicCookie;
+        // XXX there a chance that the id will not be unique, thant why i am
+        // using a counter, instead of random number
+        // Long magicCookie = (long) (Math.random() * 999999999) + 1;
+        return magicCookie++;
     }
 
     @Override
@@ -511,7 +501,6 @@ public class DbAccessFileImpl implements DBAccess {
             logger.info("offset:" + offset);
             try {
 
-                System.out.println("database" + database);
                 database.seek(offset);
                 logger.info("out.toString()" + out.toString());
                 database.write(out.toString().getBytes());

@@ -1,15 +1,6 @@
 package xcon.hotel;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.ResourceBundle;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import xcon.hotel.client.Controller;
 import xcon.hotel.client.ControllerImpl;
@@ -18,69 +9,20 @@ import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DbAccesssInitializationException;
 import xcon.hotel.db.local.DbAccessFileImpl;
 import xcon.hotel.db.network.DbAccessNetworkClientImpl;
+import xcon.hotel.db.stub.DbAccessStub;
 
 /**
  * Startup class for Hotel application
  * @author mohamed loudiyi
  */
+/**
+ * @author Mohamed
+ */
 public class HotelApplication {
 
-    private static Logger logger = Logger.getLogger("hotel-application");
-
-    static {
-        try {
-            /*ResourceBundle props = ResourceBundle.getBundle("hotel_log");
-            String levelName = props.getString("level");
-            // default
-            Level level = Level.INFO;
-            if (levelName != null) {
-                try {
-                    level = Level.parse(levelName);
-                }
-                catch (IllegalArgumentException e) {
-                    // ignore, fall back to default
-                }
-            }
-            logger.setLevel(level);
-*/
-            Formatter formatter = new Formatter() {
-
-                @Override
-                public String format(LogRecord arg0) {
-                    StringBuilder b = new StringBuilder();
-                    b.append(new Date());
-                    b.append(" ");
-                    b.append(arg0.getSourceClassName());
-                    b.append(" ");
-                    b.append(arg0.getSourceMethodName());
-                    b.append(" ");
-                    b.append(arg0.getLevel());
-                    b.append(" ");
-                    b.append(arg0.getMessage());
-                    b.append(System.getProperty("line.separator"));
-                    return b.toString();
-                }
-
-            };
-
-            Handler fh = new FileHandler("hotel_log.txt");
-            fh.setFormatter(formatter);
-            logger.addHandler(fh);
-
-            Handler ch = new ConsoleHandler();
-            ch.setFormatter(formatter);
-            logger.addHandler(ch);
-
-            LogManager lm = LogManager.getLogManager();
-            lm.addLogger(logger);
-
-            logger.setUseParentHandlers(false);
-        }
-        catch (Throwable e) {
-
-            e.printStackTrace();
-        }
-   }
+    
+    private static Logger logger =
+        Logger.getLogger(HotelApplication.class.getName());
 
     private enum Mode {
         NETWORKED, LOCAL, TEST
@@ -94,8 +36,12 @@ public class HotelApplication {
      */
     public static void main(String[] args) throws Exception {
 
+        logger.info("starting the hotel appliacation");
         Mode mode = parseArguments(args);
+        logger.fine("The application has parsed mode:" + mode.toString());
+        
         DBAccess dbAccess;
+        logger.fine("getting the dbAccesMode");
         dbAccess = getDbAccess(mode);
         Controller controller = new ControllerImpl(dbAccess);
         SwingGui gui = new SwingGui(controller);
@@ -103,7 +49,7 @@ public class HotelApplication {
 
     private static Mode parseArguments(String[] args) {
 
-        logger.info("parsing arguments!");
+        logger.fine("parsing arguments!");
         Mode mode = Mode.TEST;
         if (args.length > 0) {
             if ("networked".equals(args[0])) {
@@ -118,6 +64,7 @@ public class HotelApplication {
                     + ". Allowed arguments are 'networked' and 'local'");
             }
         }
+        logger.info("the hotelapplication is going to use mode: "+ mode);
         return mode;
     }
 
@@ -135,8 +82,9 @@ public class HotelApplication {
             break;
         default:
             // XXX: fix DbAccessStub
-            // dbAccess = new DbAccessStub();
-            dbAccess = new DbAccessFileImpl();
+            dbAccess = new DbAccessStub();
+            // dbAccess = new DbAccessFileImpl();
+            // dbAccess = new DbAccessNetworkClientImpl();
             break;
         }
         return dbAccess;

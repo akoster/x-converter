@@ -1,9 +1,8 @@
 package xcon.hotel.model;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
-import xcon.hotel.HotelApplication;
+import xcon.hotel.db.RecordNotFoundException;
 
 /**
  * @author loudiyimo
@@ -51,27 +50,9 @@ public class HotelRoom implements Serializable {
     /**
      * The customer holding this Record
      */
-    private String owner;
-
-    /**
-     * 
-     */
-
-    public HotelRoom() {
-    // TODO Auto-generated constructor stub
-
-    }
-
-    /*
-     * public HotelRoom(String[] fields) { this.id = fields[0]; this.name =
-     * fields[1]; this.location = fields[2]; this.maxOccupants = fields[3];
-     * this.isSmokingAllowed = fields[4]; this.rate = fields[5]; this.date =
-     * fields[6]; this.owner = fields[7]; }
-     */
+    private Long owner;
 
     public HotelRoom(long recNo, String[] fields) {
-
-        // this.id = String.valueOf(recNo);
 
         this.id = recNo;
         this.name = fields[0];
@@ -80,38 +61,12 @@ public class HotelRoom implements Serializable {
         this.isSmokingAllowed = fields[3];
         this.rate = fields[4];
         this.date = fields[5];
-        this.owner = (fields[6]);
-    }
-
-    /**
-     * Creates an instance of this object with a specified list of initial
-     * values. Assumes initial number of copies is 1.
-     * @param name Holds
-     * @param location Holds
-     * @param size Holds .
-     * @param smoking Holds .
-     * @param rate Holds
-     * @param date Holds The date available of the HotelName (yyyy-mm-dd).
-     * @param owner Holds
-     */
-    public HotelRoom(long id,
-                     String name,
-                     String location,
-                     int size,
-                     String smoking,
-                     String rate,
-                     String date,
-                     String owner)
-    {
-
-        this.id = id;
-        this.name = name;
-        this.location = location;
-        this.size = size;
-        this.isSmokingAllowed = smoking;
-        this.rate = rate;
-        this.date = date;
-        this.owner = owner;
+        try {
+            this.owner = Long.valueOf(fields[6]);
+        }
+        catch (NumberFormatException e) {
+            this.owner = null;
+        }
     }
 
     public long getId() {
@@ -170,18 +125,19 @@ public class HotelRoom implements Serializable {
         this.date = date;
     }
 
-    public String getOwner() {
+    public Long getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(Long owner) {
         this.owner = owner;
     }
 
     public String[] convertToArray() {
         return new String[] {
                 this.name, this.location, String.valueOf(this.size),
-                this.isSmokingAllowed, this.rate, this.date, owner
+                this.isSmokingAllowed, this.rate, this.date,
+                String.valueOf(owner)
         };
     }
 

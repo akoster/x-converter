@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -28,22 +30,25 @@ public class SwingGui extends JFrame {
 
     private static final long serialVersionUID = 5165L;
 
-    private Logger logger = Logger.getLogger("hotel-application");
+    private Logger logger = Logger.getLogger(SwingGui.class.getName());
 
     private Controller controller;
     private JTable mainTable = new JTable();
     private JLabel commentLabel = new JLabel();
     private JTextField nameSearchField = new JTextField(20);
     private JTextField locationSearchField = new JTextField(20);
-    private JLabel nameLabel = new JLabel("name");
-    private JLabel locationLabel = new JLabel("location");
+    private JLabel nameLabel;
+    private JLabel locationLabel;
 
     private HotelTableModel hotelTableModel;
 
+    private ResourceBundle messages;
+
     public SwingGui(Controller controller) {
 
-        super("Hotel application");
-
+        messages =
+            ResourceBundle.getBundle("hotel_messages", Locale.getDefault());
+        setTitle(messages.getString("gui.frame.application.name"));
         // set dependency
         this.controller = controller;
 
@@ -51,7 +56,8 @@ public class SwingGui extends JFrame {
 
         // initialize the TableModel
 
-        hotelTableModel = new HotelTableModel(controller.getColumnNames());
+        hotelTableModel =
+            new HotelTableModel(controller.getColumnNames(), messages);
         // 1: search for all rooms
 
         List<HotelRoom> rooms = controller.search("", "");
@@ -66,8 +72,9 @@ public class SwingGui extends JFrame {
 
         // Add the menu bar
         JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("File");
-        JMenuItem quitMenuItem = new JMenuItem("Quit");
+        JMenu fileMenu = new JMenu(messages.getString("gui.jmenu.file.name"));
+        JMenuItem quitMenuItem =
+            new JMenuItem(messages.getString("gui.jmenu.item.quit"));
         quitMenuItem.addActionListener(new QuitApplication());
         quitMenuItem.setMnemonic(KeyEvent.VK_Q);
         fileMenu.add(quitMenuItem);
@@ -100,21 +107,26 @@ public class SwingGui extends JFrame {
 
             add(tableScroll, BorderLayout.CENTER);
 
-            JButton searchButton = new JButton("Search");
+            JButton searchButton =
+                new JButton(messages.getString("gui.button.seach"));
             searchButton.addActionListener(new SearchHotelRoom());
             searchButton.setMnemonic(KeyEvent.VK_S);
             JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            nameLabel = new JLabel(messages.getString("gui.label.hotelname"));
             searchPanel.add(nameLabel);
             searchPanel.add(nameSearchField);
+            locationLabel =
+                new JLabel(messages.getString("gui.label.location"));
             searchPanel.add(locationLabel);
             searchPanel.add(locationSearchField);
             searchPanel.add(searchButton);
 
             JLabel bookingLabel = new JLabel();
-            bookingLabel.setText("enter here the customerID");
+            bookingLabel.setText(messages.getString("gui.label.enter.customerid"));
 
-            JTextField ownerIdTextField = new JTextField(10);
-            JButton BookButton = new JButton("book selected room");
+            JTextField ownerIdTextField = new JTextField(8);
+            JButton BookButton =
+                new JButton(messages.getString("gui.button.book"));
 
             BookButton.addActionListener(new BookHotelRoom(ownerIdTextField));
             BookButton.setRequestFocusEnabled(false);
@@ -135,78 +147,72 @@ public class SwingGui extends JFrame {
 
             mainTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-            mainTable.setToolTipText("Select a hotel record book a room.");
+            mainTable.setToolTipText(messages.getString("gui.Jtabel.maintable.tooltiptext"));
 
-            BookButton.setToolTipText("book a room selected in the above table.");
-            nameSearchField.setToolTipText("Enter the name of the hotel you want to find.");
-            locationSearchField.setToolTipText("Enter the name of the hotel you want to find");
-            searchButton.setToolTipText("Submit the Hotelroom search.");
+            BookButton.setToolTipText(messages.getString("gui.jbutton.book.tooltiptext"));
+            nameSearchField.setToolTipText(messages.getString("gui.jtextfield.search.location.tooltiptext"));
+            locationSearchField.setToolTipText(messages.getString("gui.jtextfield.search.hotelname.tooltiptext"));
+            searchButton.setToolTipText(messages.getString("gui.button.seach"));
         }
     }
 
+    // XXX: extract as top level class
     private class BookHotelRoom implements ActionListener {
 
-        private JTextField ownerIDTextField = null;
+        private JTextField customerIdField = null;
 
-        public BookHotelRoom(JTextField ownerIdTextField) {
-            this.ownerIDTextField = ownerIdTextField;
+        public BookHotelRoom(JTextField customerIdField) {
+            this.customerIdField = customerIdField;
         }
 
         public void actionPerformed(ActionEvent ae) {
 
             int index = mainTable.getSelectedRow();
-            
-            if (index == -1 )
-            {
-                commentLabel.setText("please select a hotelroom form the gui");
+            if (index < 0) {
+                commentLabel.setText(messages.getString("gui.jlabel.info.room.not.selected"));
+                return;
             }
-            if (index >= 0) {
 
-                try {
-                    commentLabel.setText("book");
-                    HotelRoom room = hotelTableModel.getHotelRoom(index);
-                    if (!room.getOwner().equals("")) {
-                        commentLabel.setText("room already booked");
-                        throw new SwingGuiException("room already booked");
-                    }
-                    else {
-
-                        String ownerId = ownerIDTextField.getText();
-                        if (ownerId.equals("")) {
-                            throw new SwingGuiException(
-                                "CustomerID not entered");
-                        }
-                        
-                        else {
-                            
-                            try {
-                            Integer.parseInt(ownerId);
-                            if (ownerId.length() != 8) {
-
-                                throw new SwingGuiException("field is not 8 number");
-                            }
-
-                            room.setOwner(ownerId);
-                            controller.bookRoom(room);
-                            }
-                            catch (NumberFormatException e)
-                            {
-                                throw new SwingGuiException("values entered are not numbers");
-                            }
-                            
-                        }
-                    }
-                }
-                catch (SwingGuiException e) {
-                    logger.warning(e.getMessage());
-                    commentLabel.setText("error occured in gui");
-                }
-                catch (ControllerException e) {
-                    logger.warning(e.getMessage());
-                    commentLabel.setText("error while booking room");
-                }
+            HotelRoom room = hotelTableModel.getHotelRoom(index);
+            if (room.getOwner() != null) {
+                commentLabel.setText(messages.getString("gui.jlabel.info.room.allready.booked"));
+                return;
             }
+
+            String customerIdFieldValue = customerIdField.getText();
+            if (customerIdFieldValue.equals("")) {
+                commentLabel.setText(messages.getString("gui.jlabel.info.customerid.not.entered"));
+                return;
+            }
+
+            long customerId;
+            try {
+                customerId = Long.parseLong(customerIdFieldValue);
+            }
+            catch (NumberFormatException e) {
+                commentLabel.setText("gui.jlabel.info.customerid.not.number");
+                return;
+            }
+
+            if (customerIdFieldValue.length() != 8) {
+                commentLabel.setText(messages.getString("validation.customerid.length"));
+                return;
+            }
+
+            try {
+
+                controller.bookRoom(customerId, room);
+                commentLabel.setText(messages.getString("gui.jlabel.info.room.is.booked"));
+                hotelTableModel.fireTableDataChanged();
+                customerIdField.setText("");
+            }
+            catch (ControllerException e) {
+                commentLabel.setText(messages.getString(e.getMessageKey()));
+                return;
+            }
+
         }
+
     }
 
     private class SearchHotelRoom implements ActionListener {
@@ -216,13 +222,13 @@ public class SwingGui extends JFrame {
             String hotelName = nameSearchField.getText();
             String hotelLocation = locationSearchField.getText();
             if (hotelName == null || hotelLocation == null) {
-                commentLabel.setText("search arguments may not be empty");
                 return;
             }
-            commentLabel.setText("search");
+
             List<HotelRoom> hotelRooms =
                 controller.search(hotelName, hotelLocation);
-
+            commentLabel.setText(hotelRooms.size() + " "
+                + messages.getString("gui.jlabel.info.search.result"));
             hotelTableModel.setHotelrooms(hotelRooms);
         }
     }

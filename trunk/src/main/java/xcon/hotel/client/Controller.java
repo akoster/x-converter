@@ -10,11 +10,12 @@ import xcon.hotel.model.HotelRoom;
 public interface Controller {
 
     /**
-     * Books the room with the given id
-     * @param id
+     * Books the room for the given customer id
+     * @param customerId
+     * @param room
      * @throws ControllerException
      */
-    public abstract void bookRoom(HotelRoom room)
+    public abstract void bookRoom(long customerId, HotelRoom room)
             throws ControllerException;
 
     /**

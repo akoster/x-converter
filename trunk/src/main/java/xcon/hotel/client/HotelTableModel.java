@@ -2,6 +2,8 @@ package xcon.hotel.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
 import xcon.hotel.model.HotelRoom;
 
@@ -9,13 +11,20 @@ public class HotelTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = 5165L;
 
-    // private static Logger logger = Logger.getLogger("hotel-application");
+    private static Logger logger =
+        Logger.getLogger(HotelTableModel.class.getName());
     private String[] headerNames = null;
 
     private List<HotelRoom> hotelRoomRecords = new ArrayList<HotelRoom>();
 
-    public HotelTableModel(String[] columnNames) {
-        headerNames = columnNames;
+
+    public HotelTableModel(String[] columnNames, ResourceBundle messages) {
+
+        headerNames = new String[columnNames.length];
+        for (int i = 0; i < columnNames.length; i++) {
+            headerNames[i] =
+                messages.getString("column.header." + columnNames[i]);
+        }
     }
 
     /* @see javax.swing.table.TableModel#getColumnCount() */
@@ -61,38 +70,7 @@ public class HotelTableModel extends AbstractTableModel {
 
         return value;
     }
-
-    /*
-     * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object,
-     * int, int)
-     */
-    public void setValueAt(Object obj, int row, int column) {
-
-    // HotelRoom hotelRoom = hotelRoomRecords.get(row);
-    // if (column == 0) {
-    // hotelRoom.setName((String) obj);
-    // }
-    // else if (column == 1) {
-    // hotelRoom.setLocation((String) (obj));
-    // }
-    // else if (column == 2) {
-    // hotelRoom.setSize((Integer) (obj));
-    // }
-    // else if (column == 3) {
-    // hotelRoom.setSmoking((String) (obj));
-    // }
-    // else if (column == 4) {
-    // hotelRoom.setRate((String) (obj));
-    // }
-    // else if (column == 5) {
-    // hotelRoom.setDate((String) (obj));
-    // }
-    // else if (column == 6) {
-    // hotelRoom.setOwner((String) (obj));
-    // }
-    // fireTableDataChanged();
-    }
-
+   
     /* @see javax.swing.table.AbstractTableModel#getColumnName(int) */
     public String getColumnName(int column) {
         return headerNames[column];
