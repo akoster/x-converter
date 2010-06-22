@@ -29,15 +29,21 @@ public class PhoneWords {
 		}
 
 		String fileName = args[0];
-		readWords(fileName);
-
 		String phoneNumber = args[1];
+		if (!StringUtils.isNumeric(phoneNumber)) {
+			throw new IllegalArgumentException(
+					"Phone number can only contain digits");
+		}
+
+		readWords(fileName);
 		printWordsMatching(phoneNumber);
 
 		System.out.println("Done.");
 	}
 
 	private static void readWords(String fileName) throws FileNotFoundException {
+
+		System.out.println("Reading words from " + fileName);
 
 		words = new HashSet<String>();
 		Scanner input = new Scanner(new File(fileName));
@@ -52,11 +58,10 @@ public class PhoneWords {
 
 	private static void printWordsMatching(String phoneNumber) {
 
-		if (!StringUtils.isNumeric(phoneNumber)) {
-			throw new IllegalArgumentException(
-					"Phone number can only contain digits");
-		}
+		System.out.println("Printing words matching " + phoneNumber);
+
 		Set<String> candidates = new HashSet<String>();
+		int words = 1;
 		for (String digit : phoneNumber.split("")) {
 
 			if (digit.equals("")) {
@@ -67,7 +72,6 @@ public class PhoneWords {
 				continue;
 			}
 			if (candidates.isEmpty()) {
-
 				candidates.addAll(Arrays.asList(letters));
 			} else {
 				Set<String> newCandidates = new HashSet<String>();
@@ -82,12 +86,14 @@ public class PhoneWords {
 					}
 				}
 				if (newCandidates.isEmpty()) {
+					System.out.println("word #" + words + ": " + candidates);
+					words++;
 					newCandidates.addAll(Arrays.asList(letters));
 				}
 				candidates = newCandidates;
 			}
-			System.out.println(candidates);
 		}
+		System.out.println("word #" + words + ": " + candidates);
 	}
 
 	private static boolean wordsExistStartingWith(String startOfWord) {
