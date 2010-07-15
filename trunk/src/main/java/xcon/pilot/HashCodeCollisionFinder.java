@@ -44,7 +44,7 @@ public class HashCodeCollisionFinder {
 		
 		String inputFile;
 		if (args == null || args[0] == null) {
-			inputFile = "english.txt";
+			inputFile = "doc/english.txt";
 		} else {
 			inputFile = args[0];
 		}
