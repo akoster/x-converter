@@ -13,15 +13,15 @@ public class RontonymFinderTest extends TestCase {
 	}
 
 	public void testMain3() {
-		RotonymFinderApp.main(new String[] { "english.txt" });
+		RotonymFinderApp.main(new String[] { "doc/english.txt" });
 	}
 
 	public void testMain4() {
-		RotonymFinderApp.main(new String[] { "english.txt", "180" });
+		RotonymFinderApp.main(new String[] { "doc/english.txt", "180" });
 	}
 
 	public void testMain5() {
 		RotonymFinderApp
-				.main(new String[] { "english.txt", "180", "90", "bla" });
+				.main(new String[] { "doc/english.txt", "180", "90", "bla" });
 	}
 }

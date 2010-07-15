@@ -1,50 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
-	<classpathentry including="**/*.java" kind="src" output="target/test-classes" path="src/test/java"/>
-	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
-	<classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.0/mail-1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.4/commons-lang-2.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/google/code/guice/guice/1.0/guice-1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/net/sf/json-lib/json-lib/2.3/json-lib-2.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/4.0/junit-4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13.jar"/>
-	<classpathentry kind="var" path="M2_REPO/mockito/mockito-all/6.0/mockito-all-6.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.5/mockito-all-1.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/mysql/mysql/5.1.6/mysql-5.1.6.jar"/>
-	<classpathentry kind="var" path="M2_REPO/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="lib/slick/hiero.jar"/>
-	<classpathentry kind="lib" path="lib/slick/ibxm.jar"/>
-	<classpathentry kind="lib" path="lib/slick/jinput.jar"/>
-	<classpathentry kind="lib" path="lib/slick/jnlp.jar"/>
-	<classpathentry kind="lib" path="lib/slick/jogg-0.0.7.jar"/>
-	<classpathentry kind="lib" path="lib/slick/jorbis-0.0.15.jar"/>
-	<classpathentry kind="lib" path="lib/slick/lwjgl.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="xcon/lib/slick"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/slick/natives-linux.jar"/>
-	<classpathentry kind="lib" path="lib/slick/natives-mac.jar"/>
-	<classpathentry kind="lib" path="lib/slick/natives-win32.jar"/>
-	<classpathentry kind="lib" path="lib/slick/packulike.jar"/>
-	<classpathentry kind="lib" path="lib/slick/pedigree.jar"/>
-	<classpathentry kind="lib" path="lib/slick/scalar.jar"/>
-	<classpathentry kind="lib" path="lib/slick/slick-examples.jar"/>
-	<classpathentry kind="lib" path="lib/slick/slick-sources.jar"/>
-	<classpathentry kind="lib" path="lib/slick/slick-util.jar"/>
-	<classpathentry kind="lib" path="lib/slick/slick.jar"/>
-	<classpathentry kind="lib" path="lib/slick/tinylinepp.jar"/>
-	<classpathentry kind="lib" path="lib/slick/jinput-dx8.dll"/>
-	<classpathentry kind="lib" path="lib/slick/jinput-raw.dll"/>
-	<classpathentry kind="lib" path="lib/slick/lwjgl.dll"/>
-	<classpathentry kind="lib" path="lib/slick/OpenAL32.dll"/>
-	<classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1/activation-1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.4/commons-lang-2.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/code/guice/guice/1.0/guice-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/ibxm/ibxm/unknown/ibxm-unknown.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/jnlp/jnlp/1.2/jnlp-1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jcraft/jogg/0.0.7/jogg-0.0.7.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jcraft/jorbis/0.0.15/jorbis-0.0.15.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/sf/json-lib/json-lib/2.2.3/json-lib-2.2.3-jdk15.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.0/junit-4.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/lwjgl/lwjgl/2.1.0/lwjgl-2.1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/lwjgl/lwjgl-jinput/2.1.0/lwjgl-jinput-2.1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/lwjgl/lwjgl-native/2.1.0/lwjgl-native-2.1.0-win32.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.4/mail-1.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.8.5/mockito-all-1.8.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/mysql/mysql-connector-java/5.1.13/mysql-connector-java-5.1.13.jar"/>
+  <classpathentry kind="var" path="M2_REPO/phys2d/phys2d/060408/phys2d-060408.jar"/>
+  <classpathentry kind="var" path="M2_REPO/slick/slick/274/slick-274.jar"/>
+  <classpathentry kind="var" path="M2_REPO/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.jar"/>
 </classpath>

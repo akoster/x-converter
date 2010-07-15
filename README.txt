@@ -1,16 +1,13 @@
 README x-converter
-17 december 2009
+15 July 2010
 --
+First install maven 2
+  * set system evnrionment variables MAVEN_HOME and JAVA_HOME
+  * add MAVEN_HOME/bin to your system path
 
-To install jars, go to the project root and execute the command line:
+To install jars and generate the Eclipse artifacts, go to the project root and 
+execute the command line:
 
-mvn install
+mvn eclipse:eclipse
 
-Follow maven's instructions about installing the libraries in the repository
- 
-For example, to install the MySQL driver:
-
-mvn install:install-file -DgroupId=mysql -DartifactId=mysql -Dversion=5.1.6 
--Dpackaging=jar -DgeneratePom=true -Dfile=mysql-connector-java-5.1.6-bin.jar
-
-.
+Then refresh in Eclipse
