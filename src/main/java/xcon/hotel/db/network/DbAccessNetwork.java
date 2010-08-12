@@ -2,7 +2,6 @@ package xcon.hotel.db.network;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DuplicateKeyException;
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.SecurityException;

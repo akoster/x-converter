@@ -54,21 +54,24 @@ public class SwingGui extends JFrame {
 
         setDefaultCloseOperation(SwingGui.EXIT_ON_CLOSE);
 
-        // initialize the TableModel
+        // initialize status bar so it shows up
+        commentLabel.setText(" ");
 
+        // initialize the TableModel
         hotelTableModel =
             new HotelTableModel(controller.getColumnNames(), messages);
         // 1: search for all rooms
 
-        List<HotelRoom> rooms = controller.search("", "");
-
-        // 2: add all rooms to table model
-
-        hotelTableModel.setHotelrooms(rooms);
-        mainTable.setModel(hotelTableModel);
-
-        // initialize status bar so it shows up
-        commentLabel.setText(" ");
+        try {
+            List<HotelRoom> rooms = controller.search("", "");
+            // 2: add all rooms to table model
+            hotelTableModel.setHotelrooms(rooms);
+            mainTable.setModel(hotelTableModel);
+        }
+        catch (ControllerException e) {
+            commentLabel.setText(messages.getString(e.getMessageKey()));
+            return;
+        }
 
         // Add the menu bar
         JMenuBar menuBar = new JMenuBar();
@@ -156,7 +159,6 @@ public class SwingGui extends JFrame {
         }
     }
 
-    // XXX: extract as top level class
     private class BookHotelRoom implements ActionListener {
 
         private JTextField customerIdField = null;
@@ -174,6 +176,7 @@ public class SwingGui extends JFrame {
             }
 
             HotelRoom room = hotelTableModel.getHotelRoom(index);
+            logger.info("room to be booked" + room.toString());
             if (room.getOwner() != null) {
                 commentLabel.setText(messages.getString("gui.jlabel.info.room.allready.booked"));
                 return;
@@ -200,7 +203,6 @@ public class SwingGui extends JFrame {
             }
 
             try {
-
                 controller.bookRoom(customerId, room);
                 commentLabel.setText(messages.getString("gui.jlabel.info.room.is.booked"));
                 hotelTableModel.fireTableDataChanged();
@@ -225,11 +227,17 @@ public class SwingGui extends JFrame {
                 return;
             }
 
-            List<HotelRoom> hotelRooms =
-                controller.search(hotelName, hotelLocation);
-            commentLabel.setText(hotelRooms.size() + " "
-                + messages.getString("gui.jlabel.info.search.result"));
-            hotelTableModel.setHotelrooms(hotelRooms);
+            try {
+                List<HotelRoom> hotelRooms =
+                    controller.search(hotelName, hotelLocation);
+                commentLabel.setText(hotelRooms.size() + " "
+                    + messages.getString("gui.jlabel.info.search.result"));
+                hotelTableModel.setHotelrooms(hotelRooms);
+            }
+            catch (ControllerException e) {
+                commentLabel.setText(messages.getString(e.getMessageKey()));
+                return;
+            }
         }
     }
 
@@ -239,5 +247,4 @@ public class SwingGui extends JFrame {
             System.exit(0);
         }
     }
-
 }

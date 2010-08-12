@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import xcon.hotel.client.Controller;
 import xcon.hotel.client.ControllerImpl;
 import xcon.hotel.client.SwingGui;
+import xcon.hotel.db.ControllerException;
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DbAccesssInitializationException;
 import xcon.hotel.db.local.DbAccessFileImpl;
@@ -20,7 +21,6 @@ import xcon.hotel.db.stub.DbAccessStub;
  */
 public class HotelApplication {
 
-    
     private static Logger logger =
         Logger.getLogger(HotelApplication.class.getName());
 
@@ -30,16 +30,20 @@ public class HotelApplication {
 
     /**
      * @param args
+     * @throws DbAccesssInitializationException
      * @throws DbAccesssInitializationException if access to the database failed
+     * @throws ControllerException
      * @throws IOException
      * @throws SecurityException
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args)
+            throws DbAccesssInitializationException, ControllerException
+    {
 
         logger.info("starting the hotel appliacation");
         Mode mode = parseArguments(args);
         logger.fine("The application has parsed mode:" + mode.toString());
-        
+
         DBAccess dbAccess;
         logger.fine("getting the dbAccesMode");
         dbAccess = getDbAccess(mode);
@@ -64,7 +68,7 @@ public class HotelApplication {
                     + ". Allowed arguments are 'networked' and 'local'");
             }
         }
-        logger.info("the hotelapplication is going to use mode: "+ mode);
+        logger.info("the hotelapplication is going to use mode: " + mode);
         return mode;
     }
 
