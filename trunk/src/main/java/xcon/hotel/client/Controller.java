@@ -23,9 +23,11 @@ public interface Controller {
      * @param hotelName
      * @param hotelLocation
      * @return
+     * @throws ControllerException
      */
     public abstract List<HotelRoom> search(String hotelName,
-                                           String hotelLocation);
+                                           String hotelLocation)
+            throws ControllerException;
 
     /**
      * The columnNmaes which are determined in the constructor of the Dbacces

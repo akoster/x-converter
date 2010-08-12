@@ -16,13 +16,12 @@ public class ControllerImpl implements Controller {
 
     private DBAccess dbAccess;
 
-    private static Logger logger = Logger.getLogger(ControllerImpl.class.getName());
+    private static Logger logger =
+        Logger.getLogger(ControllerImpl.class.getName());
 
     private String[] columnNames;
 
-    public ControllerImpl(DBAccess dbAccess)
-            throws DbAccesssInitializationException
-    {
+    public ControllerImpl(DBAccess dbAccess) throws ControllerException {
 
         logger.info("initializing controller object");
         this.dbAccess = dbAccess;
@@ -31,64 +30,86 @@ public class ControllerImpl implements Controller {
             columnNames = dbAccess.readRecord(-1L);
         }
         catch (RecordNotFoundException e) {
-            throw new DbAccesssInitializationException(
-                "Could not read columns", e);
+            throw new ControllerException("Could not read columns", e);
+        }
+        catch (HotelNetworkException e) {
+            throw new ControllerException("error.network", e);
         }
     }
 
-    public void bookRoom(long customerId, HotelRoom hotelRoom) throws ControllerException {
-        
+    public void bookRoom(long customerId, HotelRoom hotelRoom)
+            throws ControllerException
+    {
+        logger.info("booking room with  customerId: " + customerId);
         long id = hotelRoom.getId();
         long lockCookie;
         try {
-            // read
+            // begin 'transaction'
             lockCookie = dbAccess.lockRecord(id);
+            logger.info("Sleeping 20 seconds " + customerId);
+            try {
+                Thread.sleep(20000);
+            }
+            catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            // read the room again to be certain it's available
+            HotelRoom currentRoom = new HotelRoom(id, dbAccess.readRecord(id));
+            if (currentRoom.getOwner() != null) {
+                logger.info("Room already booked " + customerId);
+                throw new ControllerException(null,
+                    "gui.jlabel.info.room.allready.booked");
+            }
             hotelRoom.setOwner(customerId);
             dbAccess.updateRecord(id, hotelRoom.convertToArray(), lockCookie);
+
+            // end 'transaction'
             dbAccess.unlock(id, lockCookie);
+            logger.info("Transaction done " + customerId);
         }
         catch (RecordNotFoundException e) {
-            throw new ControllerException(
-                e, "validation.room.not.found");
+            throw new ControllerException(e, "validation.room.not.found");
         }
         catch (SecurityException e) {
-            throw new ControllerException(
-                "error.internal", e);
+            throw new ControllerException("error.internal", e);
         }
-        catch (HotelNetworkException e)
-        {
+        catch (HotelNetworkException e) {
             throw new ControllerException("error.network", e);
         }
-        
     }
 
-    public List<HotelRoom> search(String hotelName, String hotelLocation) {
-
+    public List<HotelRoom> search(String hotelName, String hotelLocation)
+            throws ControllerException
+    {
         if (hotelName == null || hotelLocation == null) {
             throw new IllegalArgumentException("arguments must not be null");
         }
+        try {
+            List<HotelRoom> result = new ArrayList<HotelRoom>();
+            String[] criteria = new String[] {
+                    hotelName, hotelLocation
+            };
+            long[] roomIds = dbAccess.findByCriteria(criteria);
+            for (long id : roomIds) {
+                String[] roomFields;
+                try {
+                    roomFields = dbAccess.readRecord(id);
 
-        List<HotelRoom> result = new ArrayList<HotelRoom>();
-        String[] criteria = new String[] {
-                hotelName, hotelLocation
-        };
-
-        long[] roomIds = dbAccess.findByCriteria(criteria);
-
-        for (long id : roomIds) {
-            String[] roomFields;
-            try {
-                roomFields = dbAccess.readRecord(id);
-
-                logger.info("roomFields are:" + Arrays.asList(roomFields));
-                HotelRoom hotelRoom = new HotelRoom(id, roomFields);
-                result.add(hotelRoom);
+                    logger.fine("roomFields are:" + Arrays.asList(roomFields));
+                    HotelRoom hotelRoom = new HotelRoom(id, roomFields);
+                    result.add(hotelRoom);
+                }
+                catch (RecordNotFoundException e) {
+                    logger.severe("room " + id + " mysteriously disappeared");
+                }
             }
-            catch (RecordNotFoundException e) {
-                logger.severe("room " + id + " mysteriously disappeared");
-            }
+            return result;
         }
-        return result;
+        catch (HotelNetworkException e) {
+            throw new ControllerException("error.network", e);
+        }
     }
 
     /* @see xcon.hotel.client.Controller#getColumnNames() */

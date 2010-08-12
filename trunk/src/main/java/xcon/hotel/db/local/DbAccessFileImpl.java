@@ -38,25 +38,20 @@ public class DbAccessFileImpl implements DBAccess {
     private RandomAccessFile database;
     private Map<Long, Long> locks;
 
-    private long magicCookie;
+    // XXX I have chosen for 1000 as a start value and the increment it by one
+    // to get the magiccookie
+    private long magicCookie = 1000;
 
     public DbAccessFileImpl() throws DbAccesssInitializationException {
 
         URL resourceUrl = this.getClass().getResource("/hotel.db");
-        logger.info("resourceUrl" + resourceUrl);
+        logger.fine("resourceUrl" + resourceUrl);
 
         locks = new HashMap<Long, Long>();
         File resourceFile;
         try {
             resourceFile = new File(resourceUrl.toURI());
-            
-            //TODO remove this block at the end. 
-            try {
-                logger.warning("File:" + resourceFile.getCanonicalPath());
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
+
         }
         catch (URISyntaxException e) {
             throw new DbAccesssInitializationException("Could parse URL "
@@ -94,7 +89,7 @@ public class DbAccessFileImpl implements DBAccess {
         input = new byte[2];
         database.readFully(input);
         int numberOfFieldsInDatabase = unsignedShortToInt(input);
-        logger.info("numberOfFieldsInDatabase" + numberOfFieldsInDatabase);
+        logger.fine("numberOfFieldsInDatabase" + numberOfFieldsInDatabase);
         locationInFile += input.length;
 
         columnNames = new String[numberOfFieldsInDatabase];
@@ -105,7 +100,7 @@ public class DbAccessFileImpl implements DBAccess {
             byte columnLengthInBytes = database.readByte();
             int columnLength = unsignedByteToInt(columnLengthInBytes);
 
-            logger.info("columnLength" + columnLength);
+            logger.fine("columnLength" + columnLength);
 
             locationInFile = locationInFile + ONE_BYTE;
             byte[] columnBytes = new byte[columnLength];
@@ -114,7 +109,7 @@ public class DbAccessFileImpl implements DBAccess {
             database.read(columnBytes);
 
             String columnName = new String(columnBytes, ENCODING);
-            logger.info("columnName" + i + " : " + columnName);
+            logger.fine("columnName" + i + " : " + columnName);
             columnNames[i] = columnName;
 
             locationInFile = locationInFile + columnLength;
@@ -122,7 +117,7 @@ public class DbAccessFileImpl implements DBAccess {
             byte fieldLengthInBytes = database.readByte();
             int fieldLength = unsignedByteToInt(fieldLengthInBytes);
             fieldLengths[i] = fieldLength;
-            logger.info("fieldLength" + fieldLength);
+            logger.fine("fieldLength" + fieldLength);
             locationInFile = locationInFile + ONE_BYTE;
         }
 
@@ -133,8 +128,6 @@ public class DbAccessFileImpl implements DBAccess {
         }
         record_length += VALID_OR_DELETED_FLAG_LENGTH;
     }
-
-
 
     /**
      * Converts a two byte array to an integer
@@ -153,7 +146,6 @@ public class DbAccessFileImpl implements DBAccess {
         return (int) b & 0xFF;
     }
 
-    // XXX moeten we niet check dat de id niet groter is dan de file
     private synchronized HotelRoom retrieveHotelRoom(long recNo)
             throws IOException, RecordNotFoundException
     {
@@ -162,7 +154,7 @@ public class DbAccessFileImpl implements DBAccess {
         synchronized (database) {
             database.seek(locationInFile);
             database.readFully(input);
-            logger.info("input:" + new String(input));
+            logger.fine("input:" + new String(input));
         }
 
         class RecordFieldReader {
@@ -221,22 +213,24 @@ public class DbAccessFileImpl implements DBAccess {
         }
         byte value = read.getBytes()[0];
         if (value == 0xFF) {
-            logger.info("flag value is 0xFF, record is deleted");
+            logger.fine("flag value is 0xFF, record is deleted");
             return true;
         }
         if (value == 0x00) {
-            logger.info("flag value is 0x00, record is valid");
+            logger.fine("flag value is 0x00, record is valid");
             return false;
         }
         throw new RecordNotFoundException("Illegal value for isDeleted flag: "
             + value);
     }
 
+    // TODO can be implemented
     @Override
     public long createRecord(String[] data) throws DuplicateKeyException {
         return 0;
     }
 
+    // TODO can be implemented
     @Override
     public void deleteRecord(long recNo, long lockCookie)
             throws RecordNotFoundException, SecurityException
@@ -264,25 +258,23 @@ public class DbAccessFileImpl implements DBAccess {
                 try {
 
                     HotelRoom hotelRoom = retrieveHotelRoom(id);
-                    logger.info("hotelRoom" + hotelRoom.toString());
+                    logger.fine("hotelRoom" + hotelRoom.toString());
 
                     if (findMatch(criteria, hotelRoom)) {
                         results.add(Long.valueOf(hotelRoom.getId()));
                     }
                 }
                 catch (IOException e) {
-                    // XXX: add logging
-                    logger.warning("Could not read record from datafile");
+                    logger.severe("Could not read record from datafile");
                 }
                 catch (RecordNotFoundException e) {
-                    logger.warning("Error parsing data" + e.getMessage());
+                    logger.severe("Error parsing data" + e.getMessage());
                 }
                 id++;
             }
         }
         catch (IOException e1) {
-            // XXX: add logging
-            logger.warning("Could not determine database length");
+            logger.severe("Could not determine database length");
         }
 
         return copyValues(results);
@@ -319,8 +311,6 @@ public class DbAccessFileImpl implements DBAccess {
 
     private long[] copyValues(List<Long> results) {
 
-        // copy values from results list to rowsFound array
-        // init rowsFound arrays with results.size()
         long[] returnValues = new long[results.size()];
         for (int i = 0; i < results.size(); i++) {
             returnValues[i] = results.get(i);
@@ -328,20 +318,22 @@ public class DbAccessFileImpl implements DBAccess {
         return returnValues;
     }
 
+    // XXX: check synchronization code
     @Override
     public long lockRecord(long recNo) throws RecordNotFoundException {
 
+        logger.info("locking record " + recNo);
         Long cookie = locks.get(recNo);
+
         if (cookie != null) {
 
             // synchronize on a record.
-            Long recordNr = new Long(recNo);
-            synchronized (recordNr) {
+            synchronized (cookie) {
 
                 while (locks.get(recNo) != null) {
                     try {
                         // wait till the lock on the record is released
-                        recordNr.wait();
+                        cookie.wait();
                     }
                     catch (InterruptedException e) {}
                 }
@@ -349,30 +341,31 @@ public class DbAccessFileImpl implements DBAccess {
         }
         // post conditie: cookie == null
         cookie = getNewMagicCookie();
+        logger.info("record :" + recNo + "has been locked with cookie" + cookie);
         locks.put(recNo, cookie);
         return cookie;
     }
 
-    private synchronized Long getNewMagicCookie() {
-
-        // XXX there a chance that the id will not be unique, thant why i am
-        // using a counter, instead of random number
-        // Long magicCookie = (long) (Math.random() * 999999999) + 1;
+    private synchronized long getNewMagicCookie() {
         return magicCookie++;
     }
-
+    
+    // XXX: check synchronization code
     @Override
     public void unlock(long recNo, long cookie) throws SecurityException {
 
-        if (cookie != locks.get(recNo)) {
-            throw new SecurityException("record is locked");
+        Long existingCookie = locks.get(recNo);
+        if (existingCookie == null) {
+            // do nothing, record is already unlocked
+        }
+        else if (!existingCookie.equals(cookie)) {
+            throw new SecurityException("record is locked with other cookie");
         }
         else {
-            Long recordNr = new Long(recNo);
-            synchronized (recordNr) {
-                locks.put(recordNr, null);
-                // notify all thread. there is now no lock for this
-                recordNr.notifyAll();
+            synchronized (existingCookie) {
+                locks.remove(recNo);
+                // notify all threads. there is now no lock for this
+                existingCookie.notifyAll();
             }
         }
     }
@@ -405,7 +398,7 @@ public class DbAccessFileImpl implements DBAccess {
     public void updateRecord(long recNo, String[] data, long lockCookie)
             throws RecordNotFoundException, SecurityException
     {
-        logger.warning("updating the record with data" + Arrays.asList(data));
+        logger.info("updating the record with data" + Arrays.asList(data));
         // final StringBuilder out = new StringBuilder(record_length);
         byte[] emptyData = new byte[record_length];
         Arrays.fill(emptyData, (byte) ' ');
@@ -424,8 +417,6 @@ public class DbAccessFileImpl implements DBAccess {
              * @param length the maximum size of the String
              */
             void write(String data, int length) {
-                // XXX: check that data is not longer than length and truncate
-                // if necessary
                 if (data.length() <= length) {
                     out.replace(
 
@@ -445,48 +436,46 @@ public class DbAccessFileImpl implements DBAccess {
         }
         RecordFieldWriter writeRecord = new RecordFieldWriter();
 
-        // when you are in the update methode, it means that the record is
-        // valid.
-        // i is the index of the data and the fieldlength
         int i = 0;
         String recordNotDeletedNorInvalid = "\u0000";
         writeRecord.write(recordNotDeletedNorInvalid, 1);
         String hotelName = data[i];
 
-        logger.warning("hotelName:" + hotelName + " fieldLengths[i]:"
+        logger.fine("the folling data wil be written to the file");
+        logger.fine("hotelName:" + hotelName + " fieldLengths[i]:"
             + fieldLengths[i]);
         writeRecord.write(hotelName, fieldLengths[i]);
         i++;
 
         String hotelLocation = data[i];
-        logger.warning("hotelLocation:" + hotelLocation + " fieldLengths[i]:"
+        logger.fine("hotelLocation:" + hotelLocation + " fieldLengths[i]:"
             + fieldLengths[i]);
         writeRecord.write(hotelLocation, fieldLengths[i]);
         i++;
 
         String size = data[i];
-        logger.warning("size:" + size + " fieldLengths[i]:" + fieldLengths[i]);
+        logger.fine("size:" + size + " fieldLengths[i]:" + fieldLengths[i]);
         writeRecord.write(size, fieldLengths[i]);
         i++;
 
         String isSmokingAllowed = data[i];
-        logger.warning("isSmokingAllowed:" + isSmokingAllowed
+        logger.fine("isSmokingAllowed:" + isSmokingAllowed
             + " fieldLengths[i]:" + fieldLengths[i]);
         writeRecord.write(isSmokingAllowed, fieldLengths[i]);
         i++;
 
         String rate = data[i];
-        logger.warning("rate:" + rate + "fieldLengths[i]:" + fieldLengths[i]);
+        logger.fine("rate:" + rate + "fieldLengths[i]:" + fieldLengths[i]);
         writeRecord.write(rate, fieldLengths[i]);
         i++;
 
         String date = data[i];
-        logger.warning("date:" + date + "fieldLengths[i]:" + fieldLengths[i]);
+        logger.fine("date:" + date + "fieldLengths[i]:" + fieldLengths[i]);
         writeRecord.write(date, fieldLengths[i]);
         i++;
 
         String owner = data[i];
-        logger.info("owner:" + owner + "fieldLengths[i]:" + fieldLengths[i]);
+        logger.fine("owner:" + owner + "fieldLengths[i]:" + fieldLengths[i]);
         writeRecord.write(owner, fieldLengths[i]);
         i++;
 
@@ -494,21 +483,19 @@ public class DbAccessFileImpl implements DBAccess {
         // synchronized block & perform our operations as quickly as possible
         // ensuring that we block other users for as little time as possible.
 
-        // XXX ik synchroniseer al in de lock methode. kan ook hier
-        // sysnchroneseren of niet.
         synchronized (database) {
             long offset = recNo * record_length + dataStartOffset;
-            logger.info("offset:" + offset);
+            logger.fine("offset:" + offset);
             try {
 
                 database.seek(offset);
-                logger.info("out.toString()" + out.toString());
+                logger.fine("the record data that is going to be written to a file"
+                    + out.toString());
                 database.write(out.toString().getBytes());
-                // database.close();
 
             }
             catch (IOException e) {
-                logger.warning("error occured while writing data to the database file");
+                logger.severe("error occured while writing data to the database file");
             }
         }
 

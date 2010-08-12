@@ -31,11 +31,11 @@ public class HotelServer implements DbAccessNetwork {
         dbAccessFileImpl = new DbAccessFileImpl();
 
         stub =
-            (DbAccessNetwork) UnicastRemoteObject.exportObject(new HotelServer());
+            (DbAccessNetwork) UnicastRemoteObject.exportObject(new HotelServer(),0);
 
         registry = java.rmi.registry.LocateRegistry.createRegistry(1099);
 
-        //Thread.sleep(5000);
+        Thread.sleep(5000);
 
         registry.rebind("DbAccessNetwork", stub);
 
@@ -72,7 +72,7 @@ public class HotelServer implements DbAccessNetwork {
             RecordNotFoundException
     {
 
-        logger.info("locking record " + recNo + "on server side");
+        logger.fine("locking record " + recNo + "on server side");
         long cookie = 0;
         cookie = dbAccessFileImpl.lockRecord(recNo);
         return cookie;
@@ -83,11 +83,11 @@ public class HotelServer implements DbAccessNetwork {
             RecordNotFoundException
     {
 
-        logger.info(" reading record" + recNo + "on server side");
+        logger.fine(" reading record" + recNo + "on server side");
 
         String[] record = null;
         record = dbAccessFileImpl.readRecord(recNo);
-        logger.info("the record that is  read on server side is:"
+        logger.fine("the record that is  read on server side is:"
             + Arrays.asList(record));
         return record;
 
@@ -98,7 +98,7 @@ public class HotelServer implements DbAccessNetwork {
             SecurityException
     {
 
-        logger.info("unlock record " + recNo + " with cookie" + cookie
+        logger.fine("unlock record " + recNo + " with cookie" + cookie
             + "on server side ");
         dbAccessFileImpl.unlock(recNo, cookie);
 
@@ -108,7 +108,7 @@ public class HotelServer implements DbAccessNetwork {
     public void updateRecord(long recNo, String[] data, long lockCookie)
             throws RemoteException, RecordNotFoundException, SecurityException
     {
-        logger.info("updating " + recNo + "with data: " + Arrays.asList(data)
+        logger.fine("updating " + recNo + "with data: " + Arrays.asList(data)
             + " and magic lockcookie " + lockCookie + " on client side");
 
         dbAccessFileImpl.updateRecord(recNo, data, lockCookie);
