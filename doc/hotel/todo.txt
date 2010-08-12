@@ -4,28 +4,23 @@ Hotel todo document
 
 TODO 
 
+Keeping the screen up to date:
+* If a room is already booked, update that room in the TableModel.
+* poll the database cookie( every minute for example); if it is changed re-read the rooms
+(another solution is to add a refresh button)
 
+Packaging ; think about it.
 
-     ///TODO retry connection   ==> done
-     
-in DbNetworkStub interface: gebruik excepties uit DbAcces interface naast RemoteException  ==> done
-
-Bug met boeken: 'room already booked', refreshen van Swing panel  ==> done
+Show paged data not the complete database.
 
 Logging consistent maken, naam van klasse en regelnummer loggen via configuratie  ==> regelnummer uitprinten nog niet
 Overal dezelfde conventie voor logger namen gebruiken (0dus of allemaal "hotel-application"
-of ieder zijn eigen klasse naam)
-
-resource bundles ontdoen van typo's in keys en values ==> done
-
-Sleep 5000 in server kan misschien korter of weg
-
-testen of locking goed werkt, evt met meerdere clients
-     
+of ieder zijn eigen klasse naam     
      
 createRecord is not finished (it is not necessary but it is better if it is implemented)
      
 =============
+
 
 -> unitTests (begin met de Controller)
 http://martinfowler.com/articles/mocksArentStubs.html
@@ -41,6 +36,17 @@ http://martinfowler.com/articles/mocksArentStubs.html
 * JMS (ActiveMQ)
  
 DONE
+
+Sleep 5000 in server kan misschien korter of weg
+
+testen of locking goed werkt, evt met meerdere clients
+
+
+in DbNetworkStub interface: gebruik excepties uit DbAcces interface naast RemoteException  
+Bug met boeken: 'room already booked', refreshen van Swing panel 
+resource bundles ontdoen van typo's in keys en values
+
+TODO retry connection
 
 Localization afmaken:
 - alle teksten in de GUI uit resource bundles halen
