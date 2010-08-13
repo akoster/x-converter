@@ -11,14 +11,13 @@ import java.util.Map;
  * 
  * @author Adriaan
  */
-@SuppressWarnings("unchecked")
-public class IndexedMap extends HashMap {
+public class IndexedMap<K, V> extends HashMap<K, V> {
 
 	private static final long serialVersionUID = 1L;
-	private List<Object> keyIndex;
+	private List<K> keyIndex;
 
 	public IndexedMap() {
-		keyIndex = new ArrayList<Object>();
+		keyIndex = new ArrayList<K>();
 	}
 
 	/**
@@ -30,37 +29,35 @@ public class IndexedMap extends HashMap {
 	 * @throws IndexOutOfBoundsException
 	 *             if the index is out of range (index < 0 || index >= size())
 	 */
-	public Object get(int index) {
+	public K get(int index) {
 		return keyIndex.get(index);
 	}
 
 	@Override
-	public Object put(Object key, Object value) {
+	public V put(K key, V value) {
 
 		addKeyToIndex(key);
 		return super.put(key, value);
 	}
 
 	@Override
-	public void putAll(Map source) {
-
-		for (Object key : source.keySet()) {
+	public void putAll(Map<? extends K, ? extends V> source) {
+		for (K key : source.keySet()) {
 			addKeyToIndex(key);
 		}
 		super.putAll(source);
 	}
 
-	private void addKeyToIndex(Object key) {
+	@Override
+	public V remove(Object key) {
+		keyIndex.remove(key);
+		return super.remove(key);
+	}
+
+	private void addKeyToIndex(K key) {
 
 		if (!keyIndex.contains(key)) {
 			keyIndex.add(key);
 		}
-	}
-
-	@Override
-	public Object remove(Object key) {
-
-		keyIndex.remove(key);
-		return super.remove(key);
 	}
 }
