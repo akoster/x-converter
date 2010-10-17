@@ -17,7 +17,6 @@ public class HotelTableModel extends AbstractTableModel {
 
     private List<HotelRoom> hotelRoomRecords = new ArrayList<HotelRoom>();
 
-
     public HotelTableModel(String[] columnNames, ResourceBundle messages) {
 
         headerNames = new String[columnNames.length];
@@ -70,7 +69,7 @@ public class HotelTableModel extends AbstractTableModel {
 
         return value;
     }
-   
+
     /* @see javax.swing.table.AbstractTableModel#getColumnName(int) */
     public String getColumnName(int column) {
         return headerNames[column];

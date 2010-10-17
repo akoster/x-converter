@@ -2,6 +2,7 @@ package xcon.hotel.client;
 
 import java.util.List;
 import xcon.hotel.db.ControllerException;
+import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.model.HotelRoom;
 
 /**
@@ -35,5 +36,8 @@ public interface Controller {
      * @return
      */
     public abstract String[] getColumnNames();
+
+    public abstract String[] readRecord(int index)
+            throws RecordNotFoundException;
 
 }
