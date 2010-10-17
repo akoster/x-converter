@@ -7,10 +7,13 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,7 +25,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import org.mockito.internal.matchers.InstanceOf;
+import xcon.atm.event.ScreenEvent;
+import xcon.hotel.HotelApplication;
 import xcon.hotel.db.ControllerException;
+import xcon.hotel.db.DbAccesssInitializationException;
 import xcon.hotel.db.SwingGuiException;
 import xcon.hotel.model.HotelRoom;
 
@@ -42,13 +49,34 @@ public class SwingGui extends JFrame {
 
     private HotelTableModel hotelTableModel;
 
+    List<HotelRoom> rooms;
     private ResourceBundle messages;
+
+    // HOME_WORK :
+    //
+    private ResourceBundle hotelRoomProperties;
+    private static int totalHotelRoomsAmount;
+    private static int guiDisplayAmount;
+    int pagingButtonsAmount;
+    private Navigation navigation = new Navigation();;
+    private JButton[] navigationButtons;
+
+    private int currentNavigationPointer;
 
     public SwingGui(Controller controller) {
 
         messages =
             ResourceBundle.getBundle("hotel_messages", Locale.getDefault());
         setTitle(messages.getString("gui.frame.application.name"));
+
+        hotelRoomProperties = ResourceBundle.getBundle("hotel");
+
+        guiDisplayAmount =
+            Integer.parseInt(hotelRoomProperties.getString("gui_room_display"));
+
+        logger.info("numerber of hotels to display in the gui :"
+            + guiDisplayAmount);
+
         // set dependency
         this.controller = controller;
 
@@ -63,9 +91,13 @@ public class SwingGui extends JFrame {
         // 1: search for all rooms
 
         try {
-            List<HotelRoom> rooms = controller.search("", "");
+            rooms = controller.search("", "");
+            totalHotelRoomsAmount = rooms.size();
+
+            navigation.displayRooms(rooms, 1, guiDisplayAmount);
+
             // 2: add all rooms to table model
-            hotelTableModel.setHotelrooms(rooms);
+            // hotelTableModel.setHotelrooms(rooms);
             mainTable.setModel(hotelTableModel);
         }
         catch (ControllerException e) {
@@ -104,11 +136,79 @@ public class SwingGui extends JFrame {
         private static final long serialVersionUID = 5165L;
 
         public HotelRoomScreen() {
+
             setLayout(new BorderLayout());
+
+            JPanel tablePanel = new JPanel();
+            tablePanel.setLayout(new BorderLayout());
+
             JScrollPane tableScroll = new JScrollPane(mainTable);
             tableScroll.setSize(500, 250);
+            tablePanel.add(tableScroll, BorderLayout.CENTER);
 
-            add(tableScroll, BorderLayout.CENTER);
+            JPanel navigationPanel = new JPanel();
+            // TODO read from images from the rsource folder
+            // " resources/images/back.gif" and " resources/images/back.gif"
+            // JButton backButton = new JButton(new
+            // ImageIcon(getClass().getResource("back.gif")));
+
+            JButton backButton =
+                new JButton(new ImageIcon(this.getClass().getResource(
+                        "/back.gif")));
+
+            backButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    --currentNavigationPointer;
+                    if (currentNavigationPointer <= 0) {
+                        ++currentNavigationPointer;
+                        return;
+                    }
+                    navigation.displayRooms(
+                            rooms,
+                            currentNavigationPointer,
+                            guiDisplayAmount);
+                }
+            });
+
+            JPanel navigationNumbersPanel = new JPanel();
+
+            final Navigation navigation = new Navigation();
+            navigation.createNavigationButtons(navigationNumbersPanel);
+
+            JButton nextButton =
+                new JButton(new ImageIcon(this.getClass().getResource(
+                        "/next.gif")));
+
+            nextButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    // waarom is moet de variable navigation final en hoe kan ik
+                    // die oplossen
+                    ++currentNavigationPointer;
+                    if (currentNavigationPointer > pagingButtonsAmount) {
+
+                        --currentNavigationPointer;
+                        return;
+                    }
+                    navigation.displayRooms(
+                            rooms,
+                            currentNavigationPointer,
+                            guiDisplayAmount);
+                }
+            });
+            navigationPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            navigationPanel.add(backButton);
+            navigationPanel.add(navigationNumbersPanel);
+
+            navigationPanel.add(nextButton);
+            tablePanel.add(navigationPanel, BorderLayout.SOUTH);
+
+            add(tablePanel, BorderLayout.CENTER);
 
             JButton searchButton =
                 new JButton(messages.getString("gui.button.seach"));
@@ -159,6 +259,93 @@ public class SwingGui extends JFrame {
         }
     }
 
+    private class Navigation {
+
+        private JPanel createNavigationButtons(JPanel navigationNumbersPanel) {
+            pagingButtonsAmount = totalHotelRoomsAmount / guiDisplayAmount;
+            navigationButtons = new NavigationButton[pagingButtonsAmount];
+            int buttonNumber = 0;
+            for (int i = 0; i < pagingButtonsAmount; i++) {
+
+                ++buttonNumber;
+                navigationButtons[i] =
+                    new NavigationButton(String.valueOf(buttonNumber),
+                        buttonNumber);
+                navigationButtons[i].addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent event) {
+                        // TODO Auto-generated method stub
+
+                        Object source = event.getSource();
+                        if (source instanceof NavigationButton) {
+                            NavigationButton selectedButton =
+                                (NavigationButton) source;
+                            displayRooms(
+                                    rooms,
+                                    selectedButton.getButtonNumber(),
+                                    guiDisplayAmount);
+                        }
+
+                    }
+                });
+                navigationNumbersPanel.add(navigationButtons[i]);
+
+            }
+
+            return null;
+
+        }
+
+        public void displayRooms(List<HotelRoom> rooms,
+                                 int buttonNumber,
+                                 int guiDisplayAmount)
+        {
+
+            logger.info("rooms will be displayed of buttonNumber: "
+                + buttonNumber + " and the displayamount is: "
+                + guiDisplayAmount);
+            int startDispalyindex =
+                Integer.valueOf(guiDisplayAmount) * buttonNumber
+                    - guiDisplayAmount + 1;
+            logger.info("startDisplayIndex: " + startDispalyindex);
+
+            int endDisplayIndex =
+                Integer.valueOf(buttonNumber)
+                    * Integer.valueOf(guiDisplayAmount);
+
+            if (endDisplayIndex > rooms.size()) {
+                endDisplayIndex = rooms.size();
+            }
+            logger.info("endDisplayIndex: " + endDisplayIndex);
+
+            List<HotelRoom> subListRooms = new ArrayList<HotelRoom>();
+            for (int i = startDispalyindex; i <= endDisplayIndex; i++) {
+
+                subListRooms.add(rooms.get(i - 1));
+            }
+            hotelTableModel.setHotelrooms(subListRooms);
+            currentNavigationPointer = buttonNumber;
+
+        }
+
+        private class NavigationButton extends JButton {
+
+            private int buttonNumber;
+            private static final long serialVersionUID = 2L;
+
+            public NavigationButton(String text, int buttonNumber) {
+                super(text);
+                this.buttonNumber = buttonNumber;
+            }
+
+            public int getButtonNumber() {
+                return buttonNumber;
+            }
+
+        }
+    }
+
     private class BookHotelRoom implements ActionListener {
 
         private JTextField customerIdField = null;
@@ -205,12 +392,14 @@ public class SwingGui extends JFrame {
             try {
                 controller.bookRoom(customerId, room);
                 commentLabel.setText(messages.getString("gui.jlabel.info.room.is.booked"));
-                hotelTableModel.fireTableDataChanged();
                 customerIdField.setText("");
             }
             catch (ControllerException e) {
                 commentLabel.setText(messages.getString(e.getMessageKey()));
                 return;
+            }
+            finally {
+                hotelTableModel.fireTableDataChanged();
             }
 
         }
@@ -230,9 +419,11 @@ public class SwingGui extends JFrame {
             try {
                 List<HotelRoom> hotelRooms =
                     controller.search(hotelName, hotelLocation);
+
                 commentLabel.setText(hotelRooms.size() + " "
                     + messages.getString("gui.jlabel.info.search.result"));
                 hotelTableModel.setHotelrooms(hotelRooms);
+                navigation.displayRooms(hotelRooms, 1, guiDisplayAmount);
             }
             catch (ControllerException e) {
                 commentLabel.setText(messages.getString(e.getMessageKey()));
@@ -247,4 +438,5 @@ public class SwingGui extends JFrame {
             System.exit(0);
         }
     }
+
 }

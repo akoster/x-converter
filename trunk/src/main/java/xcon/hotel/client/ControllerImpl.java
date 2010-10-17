@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import xcon.hotel.db.ControllerException;
 import xcon.hotel.db.DBAccess;
-import xcon.hotel.db.DbAccesssInitializationException;
 import xcon.hotel.db.HotelNetworkException;
 import xcon.hotel.db.RecordNotFoundException;
-import xcon.hotel.db.ControllerException;
 import xcon.hotel.db.SecurityException;
 import xcon.hotel.model.HotelRoom;
 
@@ -40,34 +39,25 @@ public class ControllerImpl implements Controller {
     public void bookRoom(long customerId, HotelRoom hotelRoom)
             throws ControllerException
     {
-        logger.info("booking room with  customerId: " + customerId);
+        // precondition: hotelRoom.getOwner() == null
+        logger.info("booking room with customerId: " + customerId);
         long id = hotelRoom.getId();
-        long lockCookie;
+        Long lockCookie = null;
         try {
             // begin 'transaction'
             lockCookie = dbAccess.lockRecord(id);
-            logger.info("Sleeping 20 seconds " + customerId);
-            try {
-                Thread.sleep(20000);
-            }
-            catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
 
             // read the room again to be certain it's available
             HotelRoom currentRoom = new HotelRoom(id, dbAccess.readRecord(id));
             if (currentRoom.getOwner() != null) {
                 logger.info("Room already booked " + customerId);
+                // copy new owner into room
+                hotelRoom.setOwner(currentRoom.getOwner());
                 throw new ControllerException(null,
                     "gui.jlabel.info.room.allready.booked");
             }
             hotelRoom.setOwner(customerId);
             dbAccess.updateRecord(id, hotelRoom.convertToArray(), lockCookie);
-
-            // end 'transaction'
-            dbAccess.unlock(id, lockCookie);
-            logger.info("Transaction done " + customerId);
         }
         catch (RecordNotFoundException e) {
             throw new ControllerException(e, "validation.room.not.found");
@@ -77,6 +67,18 @@ public class ControllerImpl implements Controller {
         }
         catch (HotelNetworkException e) {
             throw new ControllerException("error.network", e);
+        }
+        finally {
+            // end 'transaction'
+            if (lockCookie != null) {
+                try {
+                    dbAccess.unlock(id, lockCookie);
+                }
+                catch (SecurityException e) {
+                    logger.severe("Could not unlock cookie " + lockCookie);
+                }
+            }
+            logger.info("Transaction done " + customerId);
         }
     }
 
@@ -88,10 +90,16 @@ public class ControllerImpl implements Controller {
         }
         try {
             List<HotelRoom> result = new ArrayList<HotelRoom>();
+            
+          
             String[] criteria = new String[] {
                     hotelName, hotelLocation
             };
             long[] roomIds = dbAccess.findByCriteria(criteria);
+            // TODO:caching approach
+            // compare first value (magic cookie) to our last received magic cookie
+            // if cookies match, then do not read records again
+            // when reading rooms skip first value             
             for (long id : roomIds) {
                 String[] roomFields;
                 try {
@@ -116,6 +124,13 @@ public class ControllerImpl implements Controller {
     @Override
     public String[] getColumnNames() {
         return columnNames;
+    }
+
+    @Override
+    public String[] readRecord(int index) throws RecordNotFoundException {
+        String[] record = null;
+        record = dbAccess.readRecord(index);
+        return record;
     }
 
 }

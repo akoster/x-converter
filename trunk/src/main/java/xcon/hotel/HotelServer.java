@@ -27,7 +27,7 @@ public class HotelServer implements DbAccessNetwork {
             DbAccesssInitializationException, AlreadyBoundException,
             InterruptedException
     {
-
+        logger.info(" in main server");
         dbAccessFileImpl = new DbAccessFileImpl();
 
         stub =

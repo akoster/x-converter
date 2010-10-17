@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -45,12 +46,15 @@ public class DbAccessFileImpl implements DBAccess {
     public DbAccessFileImpl() throws DbAccesssInitializationException {
 
         URL resourceUrl = this.getClass().getResource("/hotel.db");
-        logger.fine("resourceUrl" + resourceUrl);
+        System.out.println("resourceUrl" + resourceUrl);
+        logger.fine("resourceUrl " + resourceUrl);
 
         locks = new HashMap<Long, Long>();
         File resourceFile;
         try {
-            resourceFile = new File(resourceUrl.toURI());
+            URI uri = resourceUrl.toURI();
+            System.out.println("resourceUrlToURI " + uri);
+            resourceFile = new File(uri);
 
         }
         catch (URISyntaxException e) {
@@ -176,6 +180,7 @@ public class DbAccessFileImpl implements DBAccess {
         }
 
         RecordFieldReader readRecord = new RecordFieldReader();
+        // XXX: contradicting names
         String validOrDeleted = readRecord.read(1);
         boolean isInvalidOrDeletedRecord = parseDeletedFlag(validOrDeleted);
 
@@ -240,11 +245,12 @@ public class DbAccessFileImpl implements DBAccess {
 
     @Override
     public long[] findByCriteria(String[] criteria) {
-        if (criteria == null) {
-            throw new IllegalArgumentException("criteria may not be null");
-        }
+
+
 
         List<Long> results = new ArrayList<Long>();
+        // TODO: pass magic cookie for caching
+        // results.add(magicCookie);
         long databaseLength;
         try {
             databaseLength = database.length();
@@ -349,7 +355,7 @@ public class DbAccessFileImpl implements DBAccess {
     private synchronized long getNewMagicCookie() {
         return magicCookie++;
     }
-    
+
     // XXX: check synchronization code
     @Override
     public void unlock(long recNo, long cookie) throws SecurityException {
@@ -441,7 +447,7 @@ public class DbAccessFileImpl implements DBAccess {
         writeRecord.write(recordNotDeletedNorInvalid, 1);
         String hotelName = data[i];
 
-        logger.fine("the folling data wil be written to the file");
+        logger.fine("the following data wil be written to the file");
         logger.fine("hotelName:" + hotelName + " fieldLengths[i]:"
             + fieldLengths[i]);
         writeRecord.write(hotelName, fieldLengths[i]);

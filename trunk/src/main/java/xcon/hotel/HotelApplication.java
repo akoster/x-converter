@@ -75,7 +75,6 @@ public class HotelApplication {
     private static DBAccess getDbAccess(Mode mode)
             throws DbAccesssInitializationException
     {
-
         DBAccess dbAccess;
         switch (mode) {
         case NETWORKED:
