@@ -6,6 +6,10 @@ import xcon.hotel.db.DuplicateKeyException;
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.SecurityException;
 
+/**
+ * Extension of DBAccesss for use with RMI
+ * @author Mohamed
+ */
 public interface DbAccessNetwork extends Remote {
 
     public long createRecord(String[] data) throws RemoteException,
@@ -27,4 +31,5 @@ public interface DbAccessNetwork extends Remote {
 
     public void updateRecord(long recNo, String[] data, long lockCookie)
             throws RemoteException, RecordNotFoundException, SecurityException;
+
 }

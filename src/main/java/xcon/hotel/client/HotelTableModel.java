@@ -19,6 +19,7 @@ public class HotelTableModel extends AbstractTableModel {
 
     public HotelTableModel(String[] columnNames, ResourceBundle messages) {
 
+        logger.info("constructing the HotelTableModedel");
         headerNames = new String[columnNames.length];
         for (int i = 0; i < columnNames.length; i++) {
             headerNames[i] =
@@ -47,24 +48,31 @@ public class HotelTableModel extends AbstractTableModel {
         Object value = null;
         if (column == 0) {
             value = room.getName();
+            logger.fine("column: " + column + " value: " + value);
         }
         else if (column == 1) {
             value = room.getLocation();
+            logger.fine("column: " + column + " value: " + value);
         }
         else if (column == 2) {
             value = room.getSize();
+            logger.fine("column: " + column + " value: " + value);
         }
         else if (column == 3) {
             value = room.getSmoking();
+            logger.fine("column: " + column + " value: " + value);
         }
         else if (column == 4) {
             value = room.getRate();
+            logger.fine("column: " + column + " value: " + value);
         }
         else if (column == 5) {
             value = room.getDate();
+            logger.fine("column: " + column + " value: " + value);
         }
         else if (column == 6) {
             value = room.getOwner();
+            logger.fine("column: " + column + " value: " + value);
         }
 
         return value;
