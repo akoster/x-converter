@@ -11,7 +11,8 @@ public class HotelRoom implements Serializable {
 
     private static final long serialVersionUID = 5165L;
 
-    private Logger logger = Logger.getLogger("hotel-application");
+    
+    private Logger logger = Logger.getLogger(HotelRoom.class.getName());
 
     private long id;
 

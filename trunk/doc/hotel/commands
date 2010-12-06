@@ -1,0 +1,5 @@
+D:\development\workspace\Java_oefenen\xconverter\target\classes>
+java -classpath . xcon/hotel/HotelApplication server
+
+jar cfm ..\myapp.jar ..\META.INF\MANIFEST.MF *
+\Java_oefenen\xcon-jar>java  -jar myapp.jar local -Djava.util.logging.config.file=src/main/resources/hotel_log.properties  > out.txt

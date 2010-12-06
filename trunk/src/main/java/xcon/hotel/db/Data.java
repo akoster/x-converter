@@ -1,4 +1,4 @@
-package xcon.hotel.db.local;
+package xcon.hotel.db;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,19 +14,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import xcon.hotel.db.DBAccess;
-import xcon.hotel.db.DbAccesssInitializationException;
-import xcon.hotel.db.DuplicateKeyException;
-import xcon.hotel.db.RecordNotFoundException;
-import xcon.hotel.db.SecurityException;
 import xcon.hotel.model.HotelRoom;
 
 /*
  * Dit moet de DBAccess implementatie worden die de file leest en schrijft
  */
-public class DbAccessFileImpl implements DBAccess {
 
-    private Logger logger = Logger.getLogger(DbAccessFileImpl.class.getName());
+/**
+ * This class is reads from the database and writes to it 
+ */
+public class Data implements DBAccess {
+
+    private Logger logger = Logger.getLogger(Data.class.getName());
 
     private static final String ENCODING = "UTF-8";
     private static final int VALID_OR_DELETED_FLAG_LENGTH = 1;
@@ -43,30 +42,18 @@ public class DbAccessFileImpl implements DBAccess {
     // to get the magiccookie
     private long magicCookie = 1000;
 
-    public DbAccessFileImpl() throws DbAccesssInitializationException {
-
-        URL resourceUrl = this.getClass().getResource("/hotel.db");
-        System.out.println("resourceUrl" + resourceUrl);
-        logger.fine("resourceUrl " + resourceUrl);
+    public Data(File hotelDBFile) throws DbAccesssInitializationException {
 
         locks = new HashMap<Long, Long>();
-        File resourceFile;
-        try {
-            URI uri = resourceUrl.toURI();
-            System.out.println("resourceUrlToURI " + uri);
-            resourceFile = new File(uri);
-
-        }
-        catch (URISyntaxException e) {
-            throw new DbAccesssInitializationException("Could parse URL "
-                + resourceUrl, e);
+        if (hotelDBFile == null) {
+            throw new DbAccesssInitializationException("File cannot be null");
         }
         try {
-            database = new RandomAccessFile(resourceFile, "rw");
+            database = new RandomAccessFile(hotelDBFile, "rw");
         }
         catch (FileNotFoundException e) {
-            throw new DbAccesssInitializationException("Could not acces file "
-                + resourceFile, e);
+            throw new DbAccesssInitializationException("Could not access file "
+                + hotelDBFile, e);
         }
         try {
             initDbMetaData();
@@ -75,6 +62,7 @@ public class DbAccessFileImpl implements DBAccess {
             throw new DbAccesssInitializationException(
                 "Could init Database meta data", e);
         }
+
     }
 
     /**
@@ -82,13 +70,11 @@ public class DbAccessFileImpl implements DBAccess {
      * known, because we know the record size we can the determine the id of
      * each hotelRoom.
      * @throws IOException
-     * @throws IOException
      */
     private void initDbMetaData() throws IOException {
 
         long locationInFile = 4;
         database.seek(locationInFile);
-
         byte[] input;
         input = new byte[2];
         database.readFully(input);
@@ -246,8 +232,6 @@ public class DbAccessFileImpl implements DBAccess {
     @Override
     public long[] findByCriteria(String[] criteria) {
 
-
-
         List<Long> results = new ArrayList<Long>();
         // TODO: pass magic cookie for caching
         // results.add(magicCookie);
@@ -330,7 +314,7 @@ public class DbAccessFileImpl implements DBAccess {
 
         logger.info("locking record " + recNo);
         Long cookie = locks.get(recNo);
-
+        logger.info("cookie:" + cookie + "will be used");
         if (cookie != null) {
 
             // synchronize on a record.
@@ -353,7 +337,12 @@ public class DbAccessFileImpl implements DBAccess {
     }
 
     private synchronized long getNewMagicCookie() {
+
         return magicCookie++;
+    }
+
+    public long getMagicCookie() {
+        return magicCookie;
     }
 
     // XXX: check synchronization code
@@ -404,7 +393,13 @@ public class DbAccessFileImpl implements DBAccess {
     public void updateRecord(long recNo, String[] data, long lockCookie)
             throws RecordNotFoundException, SecurityException
     {
-        logger.info("updating the record with data" + Arrays.asList(data));
+
+        if (lockCookie != locks.get(recNo)) {
+            throw new SecurityException("failed updating record: " + recNo
+                + "wrong lockCookie");
+        }
+        logger.info("updating the record with data" + Arrays.asList(data)
+            + "and lockCookie: " + lockCookie);
         // final StringBuilder out = new StringBuilder(record_length);
         byte[] emptyData = new byte[record_length];
         Arrays.fill(emptyData, (byte) ' ');

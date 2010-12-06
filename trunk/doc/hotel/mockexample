@@ -1,0 +1,72 @@
+ class X {
+
+   private  A a; //  = new A(); // optie 1
+
+   public X (A a) // optie 2
+   {
+    this.a = a;
+   }
+
+
+   //public void setA (A a) // optie 3
+   //{
+   //  this.a = a  
+   //}
+
+    public int methode1(int v)
+   {
+    //if (a == null) {
+    //     a  = new A();// optie 4 lazy init
+    //}
+    return  v + a.getNumber(); 
+   } 
+
+}
+
+class A {
+private int value;
+
+public A(int value) {
+  this.value = value;
+}
+public int getNumber() {return value}
+}
+
+class App {
+  public static void main(String[] args) {
+  
+
+  A a  = new A();
+  X app = new X(a);  //optie 2
+
+  X app = new X();
+
+  x.setA(a);  //optie 3
+
+  app.methode1(25);
+ }
+}
+
+import....
+
+public class TestA {
+ 
+ @test
+ test methode1 ()
+ {
+   //A mocka = mock(A.class).expectCall("getNumber").andReturn(678);
+
+
+   A mocka = new A() {
+       public int getNumber() {
+        return 678;
+       }
+   };
+   X testInstance = new X(mocka);
+    int result = testInstance.methode1(33);
+    assertEquals(711, result);
+}
+   
+ }
+}
+

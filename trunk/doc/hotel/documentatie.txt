@@ -26,6 +26,28 @@ Startup
                                              |
                                          [Data file]                        
 
+
+
+
+
+
+
+startup 
+  
+  1)server                      2)alone     3)no args   4 stub
+  
+  HotelServerWindow                 HotelMainWindow
+      |                                  |
+      |        hotelCOnfiguration        |  
+      |                                  |
+  HotelConfigWindowPanel ( maakt een)     HotelConfigWindowPanel 
+                          panel afhanhelijk 
+                          van de mode 
+                    
+                  
+                  
+                  
+            
 ----------------------------------------------------------------------------
 1) Graphical client
 ----------------------------------------------------------------------------

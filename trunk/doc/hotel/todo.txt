@@ -4,26 +4,56 @@ Hotel todo document
 
 TODO 
 
+In either case, the program must allow the user to specify the location of the 
+database, and it must also accept an indication that a local database is to be used
+-> so we should be able to specify either hostname + port or local path
+Suggestion: do this in the 'file' menu in the top bar. 
+In networked mode, the
+setting should be a hostname and port, in alone/server mode the setting should
+be a local file path. In stub mode, no setting should be visible.
+
+For the server add a GUI with a 'start' and 'stop' button. Disable the settings
+dialog whilst the server is running (to avoid inconsistent state).
+Note: the Swing component you will make for the settings dialog can be reused
+in the client and the server.
+
+Settings should be persisted in suncertify.properties (see DatabaseFileLocator)
+
+swing gui uit elkaar halen:
+SwingGui: Frame, file menu (+settings)
+  Output: JTable + tablemodel + Statusbar (=Comment)
+  Navigation: Prev, index buttons, Next
+  Search: textfields + button
+  Book: textfield + button
+  
+Logging consistent maken, naam van klasse en regelnummer loggen via configuratie  
+==> regelnummer uitprinten nog niet
+
 Keeping the screen up to date:
-* If a room is already booked, update that room in the TableModel.
 * poll the database cookie( every minute for example); if it is changed re-read the rooms
 (another solution is to add a refresh button)
 
-Packaging ; think about it.
+Design in 'documentatie.txt' verder invullen. Aangeven waarom voor bepaalde
+oplossingen gekozen is.
 
-Show paged data not the complete database.
+ReadWrite locks lezen http://www.javalobby.org/java/forums/t45090.html
 
-Logging consistent maken, naam van klasse en regelnummer loggen via configuratie  ==> regelnummer uitprinten nog niet
-Overal dezelfde conventie voor logger namen gebruiken (0dus of allemaal "hotel-application"
-of ieder zijn eigen klasse naam     
-     
-createRecord is not finished (it is not necessary but it is better if it is implemented)
-     
-=============
+Caching:
+- client side of server side (of beide)
+- reden: snellere data access uit geheugen ipv via netwerk/file 
+- probleem: 'stale data' (data is niet meer upt o date)
+- nog een probleem: beperkte hoeveelheid geheugen
 
+toestaan om alle velden te zoeken. 
 
 -> unitTests (begin met de Controller)
 http://martinfowler.com/articles/mocksArentStubs.html
+
+=============
+BONUS
+=============
+
+createRecord is not finished (it is not necessary but it is better if it is implemented)
 
 -> complete implementation of DbFileAccess (locking, updating etc)
                 
@@ -35,7 +65,38 @@ http://martinfowler.com/articles/mocksArentStubs.html
 * SOAP of REST webservice (kan makkelijk met annotaties JAX-WS of JAX-RS) 
 * JMS (ActiveMQ)
  
+============= 
 DONE
+=============
+
+Overal dezelfde conventie voor logger namen gebruiken (dus of allemaal "hotel-application"
+of ieder zijn eigen klasse naam  
+
+Packaging ; think about it.
+
+Keeping the screen up to date:
+* If a room is already booked, update that room in the TableModel.
+
+locking werkt niet . update record controleert niet of the client
+
+->er wordt niets in de databases geschreven
+
+
+
+The mode flag must be either "server", indicating the server program must run, 
+"alone", indicating standalone mode, or left out entirely, in which case the
+network client and gui must run.
+
+Your data access class must be called "Data.java", must be in a package called 
+"suncertify.db", and must implement the following interface
+
+--> Show paged data not the complete database.
+
+Trick for this app: call findByCriteria and then determine which page of data
+to collect with readRecord. Maintain the current page number  (and a constant
+page size) in the SwingGui. Show buttons for previous/next page and dropdown
+to jump straight to a page number.
+
 
 Sleep 5000 in server kan misschien korter of weg
 
