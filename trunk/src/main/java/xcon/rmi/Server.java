@@ -18,7 +18,6 @@ public class Server implements Hello {
             registry.bind("Hello", stub);
         }
         catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

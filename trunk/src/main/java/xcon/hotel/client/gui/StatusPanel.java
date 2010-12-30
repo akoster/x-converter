@@ -1,6 +1,9 @@
 package xcon.hotel.client.gui;
 
+import java.awt.Color;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -15,9 +18,11 @@ public class StatusPanel extends JPanel {
     
     
     private static JLabel commentLabel = new JLabel();
-    public StatusPanel() {
+    public StatusPanel(ResourceBundle messages) {
+        setBorder(BorderFactory.createLoweredBevelBorder());
+        setBackground(Color.cyan);
         add(commentLabel);
-        commentLabel.setText("book or search rooms");
+        commentLabel.setText(messages.getString("info.comment.label.initial"));
         
     }
     

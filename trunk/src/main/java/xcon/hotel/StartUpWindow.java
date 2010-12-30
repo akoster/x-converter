@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -33,17 +35,21 @@ public class StartUpWindow extends JFrame {
 
     private static final long serialVersionUID = 355L;
     private Logger logger = Logger.getLogger(StartUpWindow.class.getName());
-    private static final String CONNECT_BUTTON_TEXT = "Connect";
-    private static final String EXIT_BUTTON_TEXT = "Exit";
-    private static final String EXIT_BUTTON_TOOL_TIP =
-        "Stops the server as soon as it is safe to do so";
-    private static final String INITIAL_STATUS =
-        "Enter configuration parameters and click \"" + CONNECT_BUTTON_TEXT
-            + "\"";
+    
+    private static ResourceBundle messages =
+        ResourceBundle.getBundle("hotel_messages", Locale.getDefault());
+    
+    private static final String CONNECT_BUTTON_TEXT   = messages.getString("startupwindow.button.connect.name");
+    
+    private static final String STOP_BUTTON_TEXT = "stop";
+    private static final String STOP_BUTTON_TOOL_TIP = messages.getString("startupwindow.tooltip.button.stop");
+      
+    private static final String INITIAL_STATUS = messages.getString("startupwindow.label.initial.text");
+       
 
     private ConfigPanel configPanel;
     private JButton connectButton = new JButton(CONNECT_BUTTON_TEXT);
-    private JButton exitButton = new JButton(EXIT_BUTTON_TEXT);
+    private JButton exitButton = new JButton(STOP_BUTTON_TEXT);
     private JLabel status = new JLabel();
 
     private HotelApplication application;
@@ -60,15 +66,14 @@ public class StartUpWindow extends JFrame {
         JPanel statusPanel = new JPanel(new BorderLayout());
 
         statusPanel.add(status, BorderLayout.CENTER);
-        status.setText("hotel application is using:" + application.getMode()
-            + " mode. " + INITIAL_STATUS);
+        status.setText(INITIAL_STATUS + " " + application.getMode());
         status.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
         this.add(statusPanel, BorderLayout.SOUTH);
 
         // Add the menu bar
         JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("File");
-        JMenuItem quitMenuItem = new JMenuItem("Quit");
+        JMenu fileMenu = new JMenu(messages.getString("gui.jmenu.file.name"));
+        JMenuItem quitMenuItem = new JMenuItem(messages.getString("gui.jmenu.item.quit"));
         quitMenuItem.addActionListener(new ActionListener() {
 
             @Override
@@ -106,7 +111,7 @@ public class StartUpWindow extends JFrame {
                 System.exit(0);
             }
         });
-        exitButton.setToolTipText(EXIT_BUTTON_TOOL_TIP);
+        exitButton.setToolTipText(STOP_BUTTON_TOOL_TIP);
         panel.add(exitButton);
         return panel;
     }

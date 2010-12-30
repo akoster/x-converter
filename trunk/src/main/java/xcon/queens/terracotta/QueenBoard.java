@@ -192,7 +192,8 @@ public class QueenBoard {
 				return j;
 			}
 		}
-		return 0;// XXX: throw Exception
+		// XXX: throw Exception
+		return 0;
 	}
 
 	/**

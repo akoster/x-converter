@@ -162,7 +162,6 @@ public class CreeperTest {
 	}
 
 	private boolean recognizedAsPlainText(String decryptAttempt) {
-		// XXX: look for dictionary words
 		return (CreeperApp.analyzeText(decryptAttempt, false) > 0.9);
 	}
 }

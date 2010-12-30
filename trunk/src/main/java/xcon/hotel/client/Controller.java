@@ -3,7 +3,7 @@ package xcon.hotel.client;
 import xcon.hotel.db.ControllerException;
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.model.HotelRoom;
-import xcon.hotel.model.SearchResult;
+import xcon.hotel.model.HotelRoomSearch;
 
 /**
  * Controller with the business logic of the hotel application
@@ -21,17 +21,11 @@ public interface Controller {
 
     /**
      * Searches for a room with the given hotel name and/or location
-     * @param hotelName
-     * @param hotelLocation
-     * @param page
-     * @param pageSize
-     * @return
+     * @param hotelRoomSearch
      * @throws ControllerException
      */
-    public SearchResult search(String hotelName,
-                               String hotelLocation,
-                               int page,
-                               int pageSize) throws ControllerException;
+    public void search(HotelRoomSearch hotelRoomSearch)
+            throws ControllerException;
 
     /**
      * The columnNmaes which are determined in the constructor of the Dbacces

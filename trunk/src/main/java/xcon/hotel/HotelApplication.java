@@ -9,6 +9,7 @@ import xcon.hotel.client.gui.ClientWindow;
 import xcon.hotel.db.ControllerException;
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DbAccesssInitializationException;
+import xcon.hotel.db.SwingGuiException;
 
 /**
  * Startup class for Hotel application
@@ -37,24 +38,42 @@ public class HotelApplication {
         new StartUpWindow(this);
     }
 
+    /*
+     * Callback, called by StartUpWindow after the user has entered startup
+     * parameters
+     */
     public void dbAccessInitialized(DBAccess dbAccess) {
-        try {
-            if (mode == ApplicationMode.SERVER) {
-                new HotelServer(dbAccess);
-            }
-            else {
-                Controller controller = new ControllerImpl(dbAccess);
-                new ClientWindow(controller);
-            }
+
+        if (mode == ApplicationMode.SERVER) {
+            createServerApplication(dbAccess);
         }
-        catch (DbAccesssInitializationException e) {
-            logger.log(Level.SEVERE, "error 1", e);
+        else {
+            createClientApplication(dbAccess);
+        }
+    }
+
+    private void createClientApplication(DBAccess dbAccess) {
+        try {
+            Controller controller = new ControllerImpl(dbAccess);
+            new ClientWindow(controller);
+        }
+        catch (ControllerException e) {
+            logger.log(Level.SEVERE, "Could not initialize controller", e);
+        }
+        catch (SwingGuiException e) {
+            logger.log(Level.SEVERE, "Could not initialize Swing gui", e);
+        }
+    }
+
+    private void createServerApplication(DBAccess dbAccess) {
+        try {
+            new HotelServer(dbAccess);
         }
         catch (RemoteException e) {
             logger.log(Level.SEVERE, "error 2", e);
         }
-        catch (ControllerException e) {
-            logger.log(Level.SEVERE, "error 3", e);
+        catch (DbAccesssInitializationException e) {
+            logger.log(Level.SEVERE, "error 1", e);
         }
     }
 

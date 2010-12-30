@@ -4,27 +4,21 @@ Hotel todo document
 
 TODO 
 
-In either case, the program must allow the user to specify the location of the 
-database, and it must also accept an indication that a local database is to be used
--> so we should be able to specify either hostname + port or local path
-Suggestion: do this in the 'file' menu in the top bar. 
-In networked mode, the
-setting should be a hostname and port, in alone/server mode the setting should
-be a local file path. In stub mode, no setting should be visible.
 
-For the server add a GUI with a 'start' and 'stop' button. Disable the settings
-dialog whilst the server is running (to avoid inconsistent state).
-Note: the Swing component you will make for the settings dialog can be reused
-in the client and the server.
+Add actionhandler to JTable to handle table row select/deselect events
+and set the selectedRoom in the hotelTableModel accordingly
 
-Settings should be persisted in suncertify.properties (see DatabaseFileLocator)
+using hotelproperties file (is it alright)
 
-swing gui uit elkaar halen:
-SwingGui: Frame, file menu (+settings)
-  Output: JTable + tablemodel + Statusbar (=Comment)
-  Navigation: Prev, index buttons, Next
-  Search: textfields + button
-  Book: textfield + button
+ //XXX excepion handling in Search action class
+ 
+when the server stops. all the clients are disconnected. An error should be shown the the client user. 
+    
+    
+                
+
+
+
   
 Logging consistent maken, naam van klasse en regelnummer loggen via configuratie  
 ==> regelnummer uitprinten nog niet
@@ -53,6 +47,7 @@ http://martinfowler.com/articles/mocksArentStubs.html
 BONUS
 =============
 
+
 createRecord is not finished (it is not necessary but it is better if it is implemented)
 
 -> complete implementation of DbFileAccess (locking, updating etc)
@@ -69,6 +64,44 @@ createRecord is not finished (it is not necessary but it is better if it is impl
 DONE
 =============
 
+
+swing gui uit elkaar halen:
+ClientWindow: Frame, file menu 
+  TablePanel: JTable + tablemodel
+      Navigation: Prev , Next
+  ActionPanel
+      Search textfields + button
+      Book: textfield + button
+  StatusPanel (=Comment) 
+  
+In either case, the program must allow the user to specify the location of the 
+database, and it must also accept an indication that a local database is to be used
+-> so we should be able to specify either hostname + port or local path
+Suggestion: do this in the 'file' menu in the top bar. 
+In networked mode, the
+setting should be a hostname and port, in alone/server mode the setting should
+be a local file path. In stub mode, no setting should be visible.
+
+For the server add a GUI with a 'start' and 'stop' button. Disable the settings
+dialog whilst the server is running (to avoid inconsistent state).
+Note: the Swing component you will make for the settings dialog can be reused
+in the client and the server.
+
+
+See new XXX and TODO in code.
+
+// TODO: localize - read from resource bundle , class ConfigPanel
+   
+   
+Settings should be persisted in suncertify.properties (see DatabaseFileLocator)
+
+remove if statement and move config object to hotelConfigWindowPanel 
+-> I have create a methode named saveParameters() in hotel main  window in the 
+saveParameters i have not deleted the if statements
+            
+Refactored the setup of the ConfigPanel into separate methods. Added convenience
+methods to ApplicationMode to clarify the configuration needs for each mode.               
+                
 Overal dezelfde conventie voor logger namen gebruiken (dus of allemaal "hotel-application"
 of ieder zijn eigen klasse naam  
 
