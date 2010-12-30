@@ -6,43 +6,31 @@ import java.io.File;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
+import xcon.hotel.HotelConfiguration;
 
-public class DatabaseFileLocator  implements ActionListener{
+public class DatabaseFileLocator implements ActionListener {
 
     private static final long serialVersionUID = 1L;
     private static Logger logger =
         Logger.getLogger(DatabaseFileLocator.class.getName());
-    private String previousPath;
-    File selectedFile;
-    
-    private JTextField locationField ;
+    private JTextField locationField;
 
     public DatabaseFileLocator(JTextField locationField) {
-
-        this.locationField = locationField ;
-        
-    }
-
-    public File getFileLocationFromUser() {
-        return selectedFile;
+        this.locationField = locationField;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        previousPath = "D:\\hotel.db";
-        
+
         JFileChooser fc = new JFileChooser();
-        fc.setSelectedFile(new File(previousPath));
+        fc.setSelectedFile(new File(HotelConfiguration.BASE_DIRECTORY, ""));
         fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 
-            selectedFile = fc.getSelectedFile();
-            locationField.setText(selectedFile.getAbsolutePath());
-            // TODO: save selected file path to suncertify.properties
+            locationField.setText(fc.getSelectedFile().getAbsolutePath());
         }
         else {
             logger.info("Operation cancelled by user");
-            selectedFile = null;
-        }        
+        }
     }
 }
