@@ -15,7 +15,6 @@ import java.util.logging.Logger;
  */
 public class HotelConfiguration {
 
-    
     private static final String DEFAULT_SERVER_ADDRESS = "localhost";
     private static Logger logger =
         Logger.getLogger(HotelConfiguration.class.getName());
@@ -33,23 +32,20 @@ public class HotelConfiguration {
 
     /**
      * key in Properties indicating that the value will be the port the RMI
-     * Registry  listens on.
+     * Registry listens on.
      */
     public static final String SERVER_PORT = "ServerPort";
 
-   
+    /**
+     * The location where our configuration file will be saved.
+     */
+    public static final String BASE_DIRECTORY = System.getProperty("user.dir");
+
     /**
      * the Properties for this application.
      */
     private Properties parameters = null;
 
-    /**
-     * The location where our configuration file will be saved.
-     */
-    private static final String BASE_DIRECTORY = System.getProperty("user.dir");
-
-    
-    
     /**
      * the name of our properties file.
      */
@@ -61,8 +57,7 @@ public class HotelConfiguration {
     private static File savedOptionsFile =
         new File(BASE_DIRECTORY, OPTIONS_FILENAME);
 
-    
-    private static HotelConfiguration savedConfiguration =
+    private static HotelConfiguration instance =
         new HotelConfiguration();
 
     /**
@@ -70,7 +65,7 @@ public class HotelConfiguration {
      * one instance of this class (a Singleton), so we have made it private.
      */
     private HotelConfiguration() {
-        
+
         logger.info("initializing the HotelConfiguration");
         parameters = loadParametersFromFile();
 
@@ -87,8 +82,8 @@ public class HotelConfiguration {
      * return the single instance of the SavedConfiguration.
      * @return the single instance of the SavedConfiguration.
      */
-    public static HotelConfiguration getSavedConfiguration() {
-        return savedConfiguration;
+    public static HotelConfiguration getInstance() {
+        return instance;
     }
 
     /**
@@ -154,7 +149,7 @@ public class HotelConfiguration {
                 }
                 catch (IOException e) {
                     assert false : "Bad data in parameters file";
-                logger.severe("Unable to load user "
+                    logger.severe("Unable to load user "
                         + "parameters. Default values will be used.\n" + e);
                 }
             }

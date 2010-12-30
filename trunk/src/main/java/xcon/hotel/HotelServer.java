@@ -5,7 +5,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.logging.Logger;
-import javax.swing.JPanel;
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DbAccesssInitializationException;
 import xcon.hotel.db.DuplicateKeyException;
@@ -13,11 +12,10 @@ import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.SecurityException;
 import xcon.hotel.db.network.DbAccessNetwork;
 
-public class HotelServer extends JPanel implements DbAccessNetwork {
+public class HotelServer implements DbAccessNetwork {
 
-    /**
-     * 
-     */
+    private static final String REGISTRY_BIND_NAME = "DbAccessNetwork";
+
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger =
@@ -25,15 +23,19 @@ public class HotelServer extends JPanel implements DbAccessNetwork {
 
     private Registry registry;
     private DbAccessNetwork stub;
-    private DBAccess dataFile;
+    private DBAccess dbAcces;
 
     public HotelServer(DBAccess dataFile)
             throws DbAccesssInitializationException, RemoteException
     {
-        this.dataFile = dataFile;
-
+        logger.info("initialiazing HotelServer");
+        this.dbAcces = dataFile;
+        
+        
+        logger.info("creating a stub");
         stub = (DbAccessNetwork) UnicastRemoteObject.exportObject(this, 0);
 
+        logger.info("creating a registery");
         registry = java.rmi.registry.LocateRegistry.createRegistry(1099);
 
         try {
@@ -43,7 +45,8 @@ public class HotelServer extends JPanel implements DbAccessNetwork {
             // ignore
         }
 
-        registry.rebind("DbAccessNetwork", stub);
+        logger.info("rebindig the stub to REGISTRY_BIND_NAME :"+  REGISTRY_BIND_NAME);
+        registry.rebind(REGISTRY_BIND_NAME, stub);
 
         logger.info("Server started.");
     }
@@ -51,7 +54,7 @@ public class HotelServer extends JPanel implements DbAccessNetwork {
     // TODO this method need to be implemented
     @Override
     public long createRecord(String[] data) throws DuplicateKeyException {
-        dataFile.createRecord(data);
+        dbAcces.createRecord(data);
         return 0;
     }
 
@@ -60,13 +63,13 @@ public class HotelServer extends JPanel implements DbAccessNetwork {
     public void deleteRecord(long recNo, long lockCookie)
             throws RecordNotFoundException, SecurityException
     {
-        dataFile.deleteRecord(recNo, lockCookie);
+        dbAcces.deleteRecord(recNo, lockCookie);
     }
 
     @Override
     public long[] findByCriteria(String[] criteria) {
         long[] roomIds;
-        roomIds = dataFile.findByCriteria(criteria);
+        roomIds = dbAcces.findByCriteria(criteria);
         return roomIds;
     }
 
@@ -75,7 +78,7 @@ public class HotelServer extends JPanel implements DbAccessNetwork {
 
         logger.fine("locking record " + recNo + "on server side");
         long cookie = 0;
-        cookie = dataFile.lockRecord(recNo);
+        cookie = dbAcces.lockRecord(recNo);
         return cookie;
     }
 
@@ -85,7 +88,7 @@ public class HotelServer extends JPanel implements DbAccessNetwork {
         logger.fine(" reading record" + recNo + "on server side");
 
         String[] record = null;
-        record = dataFile.readRecord(recNo);
+        record = dbAcces.readRecord(recNo);
         logger.fine("the record that is  read on server side is:"
             + Arrays.asList(record));
         return record;
@@ -97,7 +100,7 @@ public class HotelServer extends JPanel implements DbAccessNetwork {
 
         logger.fine("unlock record " + recNo + " with cookie" + cookie
             + "on server side ");
-        dataFile.unlock(recNo, cookie);
+        dbAcces.unlock(recNo, cookie);
 
     }
 
@@ -108,7 +111,7 @@ public class HotelServer extends JPanel implements DbAccessNetwork {
         logger.fine("updating " + recNo + "with data: " + Arrays.asList(data)
             + " and magic lockcookie " + lockCookie + " on client side");
 
-        dataFile.updateRecord(recNo, data, lockCookie);
+        dbAcces.updateRecord(recNo, data, lockCookie);
 
     }
 }
