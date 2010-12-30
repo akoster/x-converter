@@ -92,7 +92,6 @@ public class TestDbAccesStub extends TestCase {
 				stub.unlock(1, cookie);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -119,15 +118,12 @@ public class TestDbAccesStub extends TestCase {
 					stub.unlock(1, cookie);
 					succes = true;
 				} catch (RecordNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} catch (InterruptedException e) {
 			}
-			// TODO Auto-generated method stub
 
 		}
 
@@ -151,10 +147,8 @@ public class TestDbAccesStub extends TestCase {
 						"amsterdam", "2", "n", "120", "12-09-2009", null },
 						cookie);
 			} catch (RecordNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -178,20 +172,16 @@ public class TestDbAccesStub extends TestCase {
 							"amterdam", "2", "n", "120", "12-09-2009", null },
 							cookie);
 				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 				succes = true;
 			} catch (RecordNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			// TODO Auto-generated method stub
 
 		}
 

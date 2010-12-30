@@ -109,7 +109,7 @@ public class ATM extends JFrame implements AtmEventHandler {
         workflowStart.setNextStateOnFailure(workflowStart);
         authenticate.setNextStateOnSuccess(choices);
         authenticate.setNextStateOnFailure(endState);
-        // XXX: slight hack
+        // : slight hack
         choices.setNextStateOnSuccess(viewBalance);
         choices.setNextStateTwo(withdrawal);
         choices.setNextStateThree(deposit);

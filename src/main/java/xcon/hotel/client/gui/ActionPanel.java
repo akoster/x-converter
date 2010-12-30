@@ -2,67 +2,82 @@ package xcon.hotel.client.gui;
 
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
-import java.util.Properties;
 import java.util.ResourceBundle;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import xcon.hotel.client.Controller;
+import xcon.hotel.client.HotelTableModel;
 
 public class ActionPanel extends JPanel {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
-    private JTextField nameSearchField = new JTextField(20);
-    private JTextField locationSearchField = new JTextField(20);
 
     public ActionPanel(Controller controller,
                        ResourceBundle messages,
-                       Properties properties, JTable hotelTable, int pageSize)
+                       HotelTableModel hotelTableModel)
     {
-        JButton searchButton =
-            new JButton(messages.getString("gui.button.seach"));
-        searchButton.addActionListener(new SearchAction(controller, hotelTable,
-            nameSearchField, locationSearchField, messages, properties, pageSize));
-        searchButton.setMnemonic(KeyEvent.VK_S);
+        JPanel searchPanel =
+            createSearchPanel(controller, messages, hotelTableModel);
+        add(searchPanel);
 
+        JPanel bookingPanel =
+            createBookingPanel(controller, messages, hotelTableModel);
+        add(bookingPanel);
+
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    }
+
+    private JPanel createBookingPanel(Controller controller,
+                                      ResourceBundle messages,
+                                      HotelTableModel hotelTableModel)
+    {
+        JPanel bookingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel bookingLabel = new JLabel();
+        bookingLabel.setText(messages.getString("gui.label.enter.customerid"));
+        bookingPanel.add(bookingLabel);
+        JTextField ownerIdTextField = new JTextField(8);
+        bookingPanel.add(ownerIdTextField);
+
+        JButton bookButton = new JButton(messages.getString("gui.button.book"));
+        bookButton.setRequestFocusEnabled(false);
+        bookButton.setMnemonic(KeyEvent.VK_B);
+        bookingPanel.add(bookButton);
+
+        BookAction bookAction =
+            new BookAction(controller, messages, hotelTableModel,
+                ownerIdTextField);
+        bookButton.addActionListener(bookAction);
+        return bookingPanel;
+    }
+
+    private JPanel createSearchPanel(Controller controller,
+                                     ResourceBundle messages,
+                                     HotelTableModel hotelTableModel)
+    {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel nameLabel =
             new JLabel(messages.getString("gui.label.hotelname"));
         searchPanel.add(nameLabel);
+        JTextField nameSearchField = new JTextField(20);
         searchPanel.add(nameSearchField);
         JLabel locationLabel =
             new JLabel(messages.getString("gui.label.location"));
         searchPanel.add(locationLabel);
+        JTextField locationSearchField = new JTextField(20);
         searchPanel.add(locationSearchField);
+
+        JButton searchButton =
+            new JButton(messages.getString("gui.button.seach"));
         searchPanel.add(searchButton);
+        searchButton.setMnemonic(KeyEvent.VK_S);
 
-        JLabel bookingLabel = new JLabel();
-        bookingLabel.setText(messages.getString("gui.label.enter.customerid"));
-
-        JTextField ownerIdTextField = new JTextField(8);
-        JButton BookButton = new JButton(messages.getString("gui.button.book"));
-
-        BookButton.addActionListener(new BookAction(ownerIdTextField,
-            hotelTable, messages, controller));
-        BookButton.setRequestFocusEnabled(false);
-        BookButton.setMnemonic(KeyEvent.VK_B);
-
-        JPanel bookingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        bookingPanel.add(BookButton);
-        bookingPanel.add(bookingLabel);
-        bookingPanel.add(ownerIdTextField);
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        add(searchPanel);
-        add(bookingPanel);
-
+        SearchAction searchAction =
+            new SearchAction(controller, messages, hotelTableModel,
+                nameSearchField, locationSearchField);
+        searchButton.addActionListener(searchAction);
+        return searchPanel;
     }
-
 }

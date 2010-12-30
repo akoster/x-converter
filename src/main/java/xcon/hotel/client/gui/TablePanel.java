@@ -1,9 +1,7 @@
 package xcon.hotel.client.gui;
 
 import java.awt.BorderLayout;
-import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -11,59 +9,45 @@ import javax.swing.ListSelectionModel;
 import xcon.hotel.client.Controller;
 import xcon.hotel.client.HotelTableModel;
 import xcon.hotel.db.ControllerException;
-import xcon.hotel.model.SearchResult;
+import xcon.hotel.db.SwingGuiException;
 
 class TablePanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    private Logger logger = Logger.getLogger(TablePanel.class.getName());
-    private JTable mainTable = new JTable();
-    private HotelTableModel hotelTableModel;
+    private JTable hotelRoomTable;
 
-    TablePanel(Controller controller, ResourceBundle messages, Properties properties, int pageSize) {
-
-        hotelTableModel =
-            new HotelTableModel(controller.getColumnNames(), messages);
-
-        
-        mainTable.setModel(hotelTableModel);
-        mainTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        mainTable.setToolTipText(messages.getString("gui.Jtabel.maintable.tooltiptext"));
-
+    public TablePanel(Controller controller,
+                      ResourceBundle messages,
+                      HotelTableModel hotelTableModel) throws SwingGuiException
+    {
         setLayout(new BorderLayout());
-        JScrollPane tableScroll = new JScrollPane(mainTable);
+
+        hotelRoomTable = new JTable();
+        
+        
+        hotelRoomTable.setModel(hotelTableModel);
+        hotelRoomTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        hotelRoomTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        hotelRoomTable.setToolTipText(messages.getString("gui.Jtabel.maintable.tooltiptext"));
+        JScrollPane tableScroll = new JScrollPane(hotelRoomTable);
         tableScroll.setSize(500, 250);
         add(tableScroll, BorderLayout.CENTER);
-        NavigationPanel navigationPanel =
-            new NavigationPanel(controller, mainTable, messages, properties,
-                pageSize);
-        add(navigationPanel, BorderLayout.SOUTH);
-        
-        try {
-            String searchHotelName = "";
-            String searchLocation = "";
-            int currentPage = 1;
-            SearchResult result =
-                controller.search(
-                        searchHotelName,
-                        searchLocation,
-                        currentPage,
-                        pageSize);
-            hotelTableModel.setHotelrooms(result.getRooms());
 
+        NavigationPanel navigationPanel =
+            new NavigationPanel(controller, messages, hotelTableModel);
+        add(navigationPanel, BorderLayout.SOUTH);
+
+        try {
+            controller.search(hotelTableModel.getHotelRoomSearch());
         }
         catch (ControllerException e) {
-            logger.warning("A Controller Exception has occuerd"
-                + e.getStackTrace());
-            //commentLabel.setText(messages.getString(e.getMessageKey()));
-            return;
+            throw new SwingGuiException("Could not initialize Table panel", e);
         }
     }
 
     public JTable getHotelTable() {
-        return mainTable ;
-        
+        return hotelRoomTable;
+
     }
 
 }

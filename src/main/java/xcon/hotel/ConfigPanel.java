@@ -34,11 +34,14 @@ public class ConfigPanel extends JPanel {
     private static final String SERVER_PORT_LABEL = messages.getString("startupwindow.label.server.port");
     private static final String SERVER_LOCATION_LABEL = messages.getString("startupwindow.label.server.location");
     private static final String SERVER_PORT_TOOL_TIP = messages.getString("startupwindow.tooltip.port");
+    private static final String DB_LOCATION_TOOL_TIP=messages.getString("startupwindow.tooltip.database.location");
     private static final String SERVER_LOCATION_TOOL_TIP =messages.getString("startupwindow.tooltip.server.address");
-      
+    private static final String BROWSE_DATABASE_BOTTON_NAME=messages.getString("startupwindow.button.browse.name");
+    private static final String BROWSE_DATABASE_BOTTON_TOOL_TIP=messages.getString("startupwindow.tooltip.browsebutton");
+                
 
     private JTextField dataBaseFilePath = new JTextField(40);
-    private JButton browseButton = new JButton("...");
+    private JButton browseButton = new JButton(BROWSE_DATABASE_BOTTON_NAME);
     private JTextField portNumber = new JTextField(5);
     private JTextField hostName = new JTextField(25);
 
@@ -120,6 +123,7 @@ public class ConfigPanel extends JPanel {
     private void createDatabaseFileLocatorRow() {
         logger.info("creationg a dabases location row");
         JLabel dbLocationLabel = new JLabel(DB_LOCATION_LABEL);
+        dbLocationLabel.setToolTipText(DB_LOCATION_TOOL_TIP);
         gridbag.setConstraints(dbLocationLabel, constraints);
         this.add(dbLocationLabel);
         // next-to-last in row
@@ -129,6 +133,7 @@ public class ConfigPanel extends JPanel {
 
         databaseFileLocator = new DatabaseFileLocator(dataBaseFilePath);
         browseButton.addActionListener(databaseFileLocator);
+        browseButton.setToolTipText(BROWSE_DATABASE_BOTTON_TOOL_TIP);
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(browseButton, constraints);
         this.add(browseButton);

@@ -1,11 +1,7 @@
 package xcon.hotel.db;
 
-
 public class SwingGuiException extends Exception {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     public SwingGuiException() {

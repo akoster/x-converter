@@ -26,6 +26,7 @@ public class SlotPanel extends JPanel implements ActionListener {
     JButton moneySlotButton;
     JButton cardSlotButton;
     AtmEventHandler atmEventHandler ;
+    
     public SlotPanel() { // XXX add parent variable
         
         setLayout(new GridLayout(2, 4));

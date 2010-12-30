@@ -32,7 +32,6 @@ public class BankDatabase {
                             atm.getString("DB_PASSWORD"));
             }
             catch (SQLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -59,7 +58,6 @@ public class BankDatabase {
             }
         }
         catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return account;
@@ -74,7 +72,6 @@ public class BankDatabase {
             account.setAccountNumber(rs.getLong("accountNumber"));
         }
         catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -99,7 +96,6 @@ public class BankDatabase {
 
         }
         catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return balance;
@@ -124,7 +120,6 @@ public class BankDatabase {
                         statement.executeUpdate();
                     }
                     catch (SQLException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                     // simulate communication with backend server

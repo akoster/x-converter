@@ -8,7 +8,7 @@ import xcon.hotel.db.HotelNetworkException;
 import xcon.hotel.db.RecordNotFoundException;
 import xcon.hotel.db.SecurityException;
 import xcon.hotel.model.HotelRoom;
-import xcon.hotel.model.SearchResult;
+import xcon.hotel.model.HotelRoomSearch;
 
 public class ControllerImpl implements Controller {
 
@@ -42,11 +42,12 @@ public class ControllerImpl implements Controller {
         logger.info("booking room with customerId: " + customerId);
         long id = hotelRoom.getId();
         Long lockCookie = null;
-        
+
         try {
             // begin 'transaction'
-             lockCookie = dbAccess.lockRecord(id);
-             logger.info("lockCookie: " + lockCookie + "has been returned by dbAcces" );
+            lockCookie = dbAccess.lockRecord(id);
+            logger.info("lockCookie: " + lockCookie
+                + "has been returned by dbAcces");
             // read the room again to be certain it's available
             HotelRoom currentRoom = new HotelRoom(id, dbAccess.readRecord(id));
             if (currentRoom.getOwner() != null) {
@@ -58,14 +59,14 @@ public class ControllerImpl implements Controller {
             }
             hotelRoom.setOwner(customerId);
             dbAccess.updateRecord(id, hotelRoom.convertToArray(), lockCookie);
-            
+
         }
         catch (RecordNotFoundException e) {
             throw new ControllerException(e, "validation.room.not.found");
         }
         catch (SecurityException e) {
             logger.warning(e.getMessage());
-            throw new ControllerException(e,"error.internal");
+            throw new ControllerException(e, "error.internal");
         }
         catch (HotelNetworkException e) {
             throw new ControllerException("error.network", e);
@@ -84,53 +85,47 @@ public class ControllerImpl implements Controller {
         }
     }
 
-    public SearchResult search(String hotelName,
-                               String hotelLocation,
-                               int page,
-                               int pageSize) throws ControllerException
+    public void search(HotelRoomSearch hotelRoomSearch) throws ControllerException
     {
-        if (hotelName == null || hotelLocation == null) {
+        if (hotelRoomSearch.getHotelName() == null || hotelRoomSearch.getHotelLocation() == null) {
             throw new IllegalArgumentException("arguments must not be null");
         }
-        try {
-            SearchResult result = new SearchResult();
-
+        try {            
             String[] criteria = new String[] {
-                    hotelName, hotelLocation
+                    hotelRoomSearch.getHotelName(), hotelRoomSearch.getHotelLocation()
             };
             long[] roomIds = dbAccess.findByCriteria(criteria);
-            result.setTotalRooms(roomIds.length);
+            hotelRoomSearch.setTotalRooms(roomIds.length);
             // TODO:caching approach
             // compare first value (magic cookie) to our last received magic
             // cookie
             // if cookies match, then do not read records again
             // when reading rooms skip first value
-            logger.info("rooms of page: " + page + " pagesize: " + pageSize);
-            int startDisplayindex = pageSize * page - pageSize;
+            logger.info("rooms of page: " + hotelRoomSearch.getPage() + " pagesize: " + hotelRoomSearch.getPageSize());
+            int startDisplayindex = hotelRoomSearch.getPageSize() * hotelRoomSearch.getPage() - hotelRoomSearch.getPageSize();
             logger.info("startDisplayIndex: " + startDisplayindex);
 
-            int endDisplayIndex = page * pageSize - 1;
-
+            int endDisplayIndex = hotelRoomSearch.getPage() * hotelRoomSearch.getPageSize() - 1;
             if (endDisplayIndex >= roomIds.length) {
                 endDisplayIndex = roomIds.length - 1;
             }
             logger.info("endDisplayIndex: " + endDisplayIndex);
 
+            //XXX add to design doc
+            hotelRoomSearch.getRooms().clear();
             for (int i = startDisplayindex; i <= endDisplayIndex; i++) {
 
                 long id = roomIds[i];
                 try {
                     String[] roomFields = dbAccess.readRecord(id);
-
                     logger.fine("roomFields are:" + Arrays.asList(roomFields));
                     HotelRoom hotelRoom = new HotelRoom(id, roomFields);
-                    result.getRooms().add(hotelRoom);
+                    hotelRoomSearch.getRooms().add(hotelRoom);
                 }
                 catch (RecordNotFoundException e) {
                     logger.severe("room " + id + " mysteriously disappeared");
                 }
             }
-            return result;
         }
         catch (HotelNetworkException e) {
             throw new ControllerException("error.network", e);
