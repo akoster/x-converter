@@ -1,4 +1,4 @@
-package xcon.hotel.client.gui.screen;
+package xcon.hotel.client.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
