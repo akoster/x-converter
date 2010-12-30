@@ -1,14 +1,14 @@
 package xcon.hotel;
 
 import java.rmi.RemoteException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import xcon.hotel.client.Controller;
 import xcon.hotel.client.ControllerImpl;
-import xcon.hotel.client.gui.SwingGui;
+import xcon.hotel.client.gui.ClientWindow;
 import xcon.hotel.db.ControllerException;
 import xcon.hotel.db.DBAccess;
 import xcon.hotel.db.DbAccesssInitializationException;
-import xcon.hotel.db.stub.DbAccessStub;
 
 /**
  * Startup class for Hotel application
@@ -34,20 +34,7 @@ public class HotelApplication {
     public HotelApplication(ApplicationMode mode) {
         logger.info("Started the hotel application in mode " + mode);
         this.mode = mode;
-
-        switch (mode) {
-        case SERVER:
-            new HotelServerWindow(this);
-            break;
-        case STUB:
-            // XXX: fix DbAccessStub
-            this.dbAccessInitialized(new DbAccessStub());
-            break;
-
-        default:
-            new HotelMainWindow(this);
-            break;
-        }
+        new StartUpWindow(this);
     }
 
     public void dbAccessInitialized(DBAccess dbAccess) {
@@ -57,20 +44,24 @@ public class HotelApplication {
             }
             else {
                 Controller controller = new ControllerImpl(dbAccess);
-                new SwingGui(controller);
+                new ClientWindow(controller);
             }
         }
         catch (DbAccesssInitializationException e) {
-            logger.severe(e.getMessage());
+            logger.log(Level.SEVERE, "error 1", e);
         }
         catch (RemoteException e) {
-            logger.severe(e.getMessage());
+            logger.log(Level.SEVERE, "error 2", e);
         }
         catch (ControllerException e) {
-            logger.severe(e.getMessage());
+            logger.log(Level.SEVERE, "error 3", e);
         }
     }
 
+    /**
+     * Accessor for the startup mode of this application
+     * @return
+     */
     public ApplicationMode getMode() {
         return mode;
     }

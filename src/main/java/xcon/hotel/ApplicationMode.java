@@ -2,6 +2,7 @@ package xcon.hotel;
 
 /** Specifies the modes the application can run in. */
 public enum ApplicationMode {
+
     /**
      * Standalone mode. The data file will be accessed directly without network
      * access
@@ -24,6 +25,19 @@ public enum ApplicationMode {
      * implementation
      */
     STUB;
+
+    public boolean needsLocalDatabaseFile() {
+        return this == ApplicationMode.ALONE || this == ApplicationMode.SERVER;
+    }
+
+    public boolean needsPortNumber() {
+        return this == ApplicationMode.NETWORKED
+            || this == ApplicationMode.SERVER;
+    }
+
+    public boolean needsHostName() {
+        return this == ApplicationMode.NETWORKED;
+    }
 
     public static ApplicationMode parseArguments(String[] args) {
 
