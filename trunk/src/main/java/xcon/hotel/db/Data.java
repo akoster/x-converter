@@ -5,9 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -166,9 +163,8 @@ public class Data implements DBAccess {
         }
 
         RecordFieldReader readRecord = new RecordFieldReader();
-        // XXX: contradicting names
-        String validOrDeleted = readRecord.read(1);
-        boolean isInvalidOrDeletedRecord = parseDeletedFlag(validOrDeleted);
+        String invalidOrDeleted = readRecord.read(1);
+        boolean isInvalidOrDeletedRecord = parseDeletedFlag(invalidOrDeleted);
 
         if (isInvalidOrDeletedRecord) {
             throw new RecordNotFoundException("Record is invalid or deleted: "
@@ -308,7 +304,6 @@ public class Data implements DBAccess {
         return returnValues;
     }
 
-    // XXX: check synchronization code
     @Override
     public long lockRecord(long recNo) throws RecordNotFoundException {
 
@@ -345,7 +340,6 @@ public class Data implements DBAccess {
         return magicCookie;
     }
 
-    // XXX: check synchronization code
     @Override
     public void unlock(long recNo, long cookie) throws SecurityException {
 

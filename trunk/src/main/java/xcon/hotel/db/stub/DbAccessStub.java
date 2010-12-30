@@ -32,7 +32,6 @@ public class DbAccessStub implements DBAccess {
     public DbAccessStub() {
 
         hotelRooms = new HashMap<Long, String[]>();
-        // TODO insert here some test data.
 
         hotelRooms.put(new Long(1), new String[] {
                 "x", "best resort", "rotterdam", "2", "y", "129", "12-12-2008",
@@ -61,7 +60,6 @@ public class DbAccessStub implements DBAccess {
     @Override
     public long createRecord(String[] data) throws DuplicateKeyException {
 
-        // XXX to be implemented
         long id = getNextId();
         return id;
     }
