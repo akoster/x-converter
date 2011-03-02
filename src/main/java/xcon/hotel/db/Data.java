@@ -390,7 +390,7 @@ public class Data implements DBAccess {
 
         if (lockCookie != locks.get(recNo)) {
             throw new SecurityException("failed updating record: " + recNo
-                + "wrong lockCookie");
+                + " wrong lockCookie");
         }
         logger.info("updating the record with data" + Arrays.asList(data)
             + "and lockCookie: " + lockCookie);
