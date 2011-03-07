@@ -1,6 +1,8 @@
 README x-converter
 15 July 2010
 --
+Installation 
+
 First install maven 2
   * set system evnrionment variables MAVEN_HOME and JAVA_HOME
   * add MAVEN_HOME/bin to your system path

@@ -20,6 +20,11 @@ import xcon.hotel.db.SwingGuiException;
  */
 public class HotelApplication {
 
+    // initialize our configuration first
+    static {
+        HotelConfiguration.getInstance();
+    }
+
     private static Logger logger =
         Logger.getLogger(HotelApplication.class.getName());
 

@@ -3,3 +3,11 @@ java -classpath . xcon/hotel/HotelApplication server
 
 jar cfm ..\myapp.jar ..\META.INF\MANIFEST.MF *
 \Java_oefenen\xcon-jar>java  -jar myapp.jar local -Djava.util.logging.config.file=src/main/resources/hotel_log.properties  > out.txt
+
+
+to add all the necessary files to one jar file (suncertify.jar) use the following command
+jar -cvf suncertify.jar suncertify.properties  code version.txt docs hotel.db hotel_log.properties runme.jar instructions.html
+
+genertate javadoc for hotelapplication
+cd D:\development\workspace\Java_oefenen\xconverter>
+javadoc -quiet -link http://download.oracle.com/javase/6/docs/api/ -d docs\javadoc -sourcepath src\main\java\  xcon.hotel xcon.hotel.client xcon.hotel.client.gui xcon.hotel.client.db  xcon.hotel.db.network  xcon.hotel.model

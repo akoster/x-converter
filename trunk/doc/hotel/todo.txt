@@ -5,32 +5,21 @@ Hotel todo document
 TODO 
 
 
-Add actionhandler to JTable to handle table row select/deselect events
-and set the selectedRoom in the hotelTableModel accordingly
-
-using hotelproperties file (is it alright)
-
- //XXX excepion handling in Search action class
- 
-when the server stops. all the clients are disconnected. An error should be shown the the client user. 
-    
-    
-                
-
-
-
-  
-Logging consistent maken, naam van klasse en regelnummer loggen via configuratie  
-==> regelnummer uitprinten nog niet
-
-Keeping the screen up to date:
-* poll the database cookie( every minute for example); if it is changed re-read the rooms
-(another solution is to add a refresh button)
-
 Design in 'documentatie.txt' verder invullen. Aangeven waarom voor bepaalde
 oplossingen gekozen is.
 
-ReadWrite locks lezen http://www.javalobby.org/java/forums/t45090.html
+==> sequence diagram for two clients who book different room.
+
+-> unitTests (begin met de Controller)
+
+
+
+
+
+=============
+BONUS
+=============
+
 
 Caching:
 - client side of server side (of beide)
@@ -38,16 +27,22 @@ Caching:
 - probleem: 'stale data' (data is niet meer upt o date)
 - nog een probleem: beperkte hoeveelheid geheugen
 
+Keeping the screen up to date:
+* poll the database cookie( every minute for example); if it is changed re-read the rooms
+(another solution is to add a refresh button)
+
+when the server stops. all the clients are disconnected. An error should be shown to the client user. 
+
 toestaan om alle velden te zoeken. 
 
--> unitTests (begin met de Controller)
-http://martinfowler.com/articles/mocksArentStubs.html
+read property java.util.logging.config.file from suncertify.properties too
+set it as a System.property after reading     
+ 
+ ReadWrite locks lezen http://www.javalobby.org/java/forums/t45090.html
 
-=============
-BONUS
-=============
+Deployment uitwerken volgens opdracht (zie hotel/DEPLOY.txt)
 
-
+ 
 createRecord is not finished (it is not necessary but it is better if it is implemented)
 
 -> complete implementation of DbFileAccess (locking, updating etc)
@@ -64,6 +59,17 @@ createRecord is not finished (it is not necessary but it is better if it is impl
 DONE
 =============
 
+Logging consistent maken, naam van klasse en regelnummer loggen via configuratie  
+==> regelnummer uitprinten nog niet
+http://javablog.co.uk/2008/07/12/logging-with-javautillogging/
+
+Exception handling in Search action class
+
+Add actionhandler to JTable to handle table row select/deselect events
+and set the selectedRoom in the hotelTableModel accordingly
+
+using hotelproperties file (is it alright)
+HotelRoomSearch has been extended. so hotelRoom properties is not needed anymore
 
 swing gui uit elkaar halen:
 ClientWindow: Frame, file menu 

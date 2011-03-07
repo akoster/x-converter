@@ -1,0 +1,65 @@
+Deployment
+--
+Packaging of Submissions
+All elements of your submission must be packaged in a single JAR file.
+ The JAR file must have the following layout and contents in its root:
+
+    * The executable JAR containing the programs. 
+      This must be called runme.jar.
+    * The original, unchanged database file that was supplied to you.
+     Note that you must keep a copy of the original database file 
+     supplied to you, and this must be the file you submit. 
+     The marking process will expect the exact same data without 
+     any changes.
+    * A directory called code, containing all the source code and 
+    related parts of your project.
+     You must create subdirectories within this to reflect your package
+      structure and distribute your source files within those directories.
+    * A file called version.txt.
+     This must contain pure ASCII (not a word processor format) 
+     indicating the exact version of JDK you used, and the host
+      platform you worked on.
+    * A directory called docs, containing the following items at the top level:
+          o This html file.
+          o A subdirectory called javadoc,
+           containing HTML/Javadoc documentation for all classes
+            and interfaces you are submitting.
+          o A file called choices.txt that containing pure ASCII 
+          (not a word processor format) text describing the significant
+           design choices you made. Detail the problems you perceived,
+            the issues surrounding them, your value judgments, 
+            and the decisions that you made. 
+            This document should also describe any uncertainties
+             you had regarding the project, and the decisions you made 
+             when resolving them.
+          o User documentation for the database server and the gui client. If your user documentation is online then you may omit this file. However, if the documentation is not online, you must provide either a single plain ASCII (not word processor format) text document, which must be called userguide.txt, or multiple HTML files which must all be accessible from a starting point document that must be called userguide.html.
+--
+To package the hotel application we create a jarfile called suncertify.jar
+
+Within the main jarfile are the following items:
+
+/code, /version.txt, /docs (see above)
+
+/suncertify.properties
+/hotel.db
+/hotel_log.properties
+an executable jar file called runme.jar with    
+  back.gif
+  next.gif  
+  hotel_messages_xxx.properties
+  and all needed classfiles
+  
+to make the runnable jarfile:  
+  cd target\classes    
+  jar cvfe ..\..\runme.jar xcon.hotel.HotelApplication hotel_me*.properties *.gif xcon\hotel\
+
+
+To start it:  
+  java -jar runme.jar [alone | server]
+  
+-> you can do this with a dos batch file
+ but better is to use maven assembly plugin
+ this needs to be worked out, especially how to make an executable jarfile using
+ maven:assembly
+ 
+ 

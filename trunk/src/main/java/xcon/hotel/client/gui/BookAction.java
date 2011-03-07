@@ -31,7 +31,7 @@ public class BookAction implements ActionListener {
 
     public void actionPerformed(ActionEvent ae) {
 
-        HotelRoom room = hotelTableModel.getHotelRoomSearch().getSelectedRoom();
+        HotelRoom room = hotelTableModel.getSelectedHotelRoom();
         if (room == null) {
             StatusPanel.setCommentLabel(messages.getString("gui.jlabel.info.room.not.selected"));
             return;
