@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 import xcon.hotel.model.HotelRoom;
 
@@ -34,10 +36,6 @@ public class Data implements DBAccess {
     private int record_length;
     private RandomAccessFile database;
     private Map<Long, Long> locks;
-
-    // XXX I have chosen for 1000 as a start value and the increment it by one
-    // to get the magiccookie
-    private long magicCookie = 1000;
 
     public Data(File hotelDBFile) throws DbAccesssInitializationException {
 
@@ -304,16 +302,32 @@ public class Data implements DBAccess {
         return returnValues;
     }
 
+    private Long getLockRecordNo(long recNo) {
+
+        Long key;
+        if (locks.keySet().contains(recNo)) {
+            for (Entry<Long, Long> entry : locks.entrySet()) {
+                if (entry.getKey().equals(recNo)) {
+                    return entry.getKey();
+                }
+            }
+            throw new RuntimeException(
+                "Inconsistent state: contains recNo but key not found?");
+        }
+        else {
+            key = new Long(recNo);
+            locks.put(key, null);
+        }
+        return key;
+    }
+
     @Override
     public long lockRecord(long recNo) throws RecordNotFoundException {
 
-        logger.info("locking record " + recNo);
-        Long cookie = locks.get(recNo);
-        logger.info("cookie:" + cookie + "will be used");
-        if (cookie != null) {
-
-            // synchronize on a record.
-            synchronized (cookie) {
+        Long key = getLockRecordNo(recNo);
+        synchronized (key) {
+            Long cookie = locks.get(recNo);
+            if (cookie != null) {
 
                 while (locks.get(recNo) != null) {
                     try {
@@ -323,40 +337,40 @@ public class Data implements DBAccess {
                     catch (InterruptedException e) {}
                 }
             }
+            // post conditie: cookie == null
+            cookie = getNewMagicCookie();
+            logger.info("record :" + recNo + "has been locked with cookie"
+                + cookie);
+            locks.put(recNo, cookie);
+            return cookie;
         }
-        // post conditie: cookie == null
-        cookie = getNewMagicCookie();
-        logger.info("record :" + recNo + "has been locked with cookie" + cookie);
-        locks.put(recNo, cookie);
-        return cookie;
-    }
-
-    private synchronized long getNewMagicCookie() {
-
-        return magicCookie++;
-    }
-
-    public long getMagicCookie() {
-        return magicCookie;
     }
 
     @Override
     public void unlock(long recNo, long cookie) throws SecurityException {
-
-        Long existingCookie = locks.get(recNo);
-        if (existingCookie == null) {
-            // do nothing, record is already unlocked
-        }
-        else if (!existingCookie.equals(cookie)) {
-            throw new SecurityException("record is locked with other cookie");
-        }
-        else {
-            synchronized (existingCookie) {
+        
+        Long key = getLockRecordNo(recNo);
+        synchronized (key) {
+            Long existingCookie = locks.get(recNo);
+            if (existingCookie == null) {
+                // do nothing, record is already unlocked
+            }
+            else if (!existingCookie.equals(cookie)) {
+                throw new SecurityException(
+                    "record is locked with other cookie");
+            }
+            else {
                 locks.remove(recNo);
                 // notify all threads. there is now no lock for this
                 existingCookie.notifyAll();
             }
         }
+    }
+
+    // synchronized on 'this' to avoid thread interference whilst generating
+    // UUIDs
+    private synchronized long getNewMagicCookie() {
+        return UUID.randomUUID().toString().hashCode();
     }
 
     @Override
