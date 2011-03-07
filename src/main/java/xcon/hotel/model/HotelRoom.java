@@ -2,16 +2,16 @@ package xcon.hotel.model;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
-import xcon.hotel.db.RecordNotFoundException;
 
 /**
+ * Representation of a hotel room 
+ * 
  * @author loudiyimo
  */
 public class HotelRoom implements Serializable {
 
     private static final long serialVersionUID = 5165L;
 
-    
     private Logger logger = Logger.getLogger(HotelRoom.class.getName());
 
     private long id;
@@ -19,7 +19,6 @@ public class HotelRoom implements Serializable {
     /**
      * The name of the hotel
      */
-
     private String name;
 
     /**
@@ -55,6 +54,10 @@ public class HotelRoom implements Serializable {
 
     public HotelRoom(long recNo, String[] fields) {
 
+        if (fields == null) {
+            throw new IllegalArgumentException(
+                "Argument 'fields' may not be null");
+        }
         this.id = recNo;
         this.name = fields[0];
         this.location = fields[1];
@@ -62,11 +65,11 @@ public class HotelRoom implements Serializable {
         this.isSmokingAllowed = fields[3];
         this.rate = fields[4];
         this.date = fields[5];
-        try {
-            this.owner = Long.valueOf(fields[6]);
-        }
-        catch (NumberFormatException e) {
+        if (fields[6] == null || fields[6].equals("")) {
             this.owner = null;
+        }
+        else {
+            this.owner = Long.valueOf(fields[6]);
         }
     }
 

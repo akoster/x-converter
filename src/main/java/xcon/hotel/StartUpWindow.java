@@ -35,17 +35,19 @@ public class StartUpWindow extends JFrame {
 
     private static final long serialVersionUID = 355L;
     private Logger logger = Logger.getLogger(StartUpWindow.class.getName());
-    
+
     private static ResourceBundle messages =
         ResourceBundle.getBundle("hotel_messages", Locale.getDefault());
-    
-    private static final String CONNECT_BUTTON_TEXT   = messages.getString("startupwindow.button.connect.name");
-    
+
+    private static final String CONNECT_BUTTON_TEXT =
+        messages.getString("startupwindow.button.connect.name");
+
     private static final String STOP_BUTTON_TEXT = "stop";
-    private static final String STOP_BUTTON_TOOL_TIP = messages.getString("startupwindow.tooltip.button.stop");
-      
-    private static final String INITIAL_STATUS = messages.getString("startupwindow.label.initial.text");
-       
+    private static final String STOP_BUTTON_TOOL_TIP =
+        messages.getString("startupwindow.tooltip.button.stop");
+
+    private static final String INITIAL_STATUS =
+        messages.getString("startupwindow.label.initial.text");
 
     private ConfigPanel configPanel;
     private JButton connectButton = new JButton(CONNECT_BUTTON_TEXT);
@@ -73,7 +75,8 @@ public class StartUpWindow extends JFrame {
         // Add the menu bar
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu(messages.getString("gui.jmenu.file.name"));
-        JMenuItem quitMenuItem = new JMenuItem(messages.getString("gui.jmenu.item.quit"));
+        JMenuItem quitMenuItem =
+            new JMenuItem(messages.getString("gui.jmenu.item.quit"));
         quitMenuItem.addActionListener(new ActionListener() {
 
             @Override
@@ -130,7 +133,9 @@ public class StartUpWindow extends JFrame {
                     status.setText("Please specify the database file");
                     return;
                 }
-                File hotelDBFile = new File(databaseFilePathText);
+                File hotelDBFile =
+                    new File(HotelConfiguration.BASE_DIRECTORY,
+                        databaseFilePathText);
                 if (!hotelDBFile.exists()) {
                     status.setText("Please specify an EXISTING database file");
                     return;

@@ -29,6 +29,13 @@ class TablePanel extends JPanel {
         hotelRoomTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         hotelRoomTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         hotelRoomTable.setToolTipText(messages.getString("gui.Jtabel.maintable.tooltiptext"));
+        
+        
+        SelectionListener listener = new SelectionListener(hotelRoomTable);
+        hotelRoomTable.getSelectionModel().addListSelectionListener(listener);
+        hotelRoomTable.getColumnModel().getSelectionModel()
+            .addListSelectionListener(listener);
+
         JScrollPane tableScroll = new JScrollPane(hotelRoomTable);
         tableScroll.setSize(500, 250);
         add(tableScroll, BorderLayout.CENTER);

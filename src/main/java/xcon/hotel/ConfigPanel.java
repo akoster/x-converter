@@ -25,20 +25,25 @@ public class ConfigPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-
-    
     private static ResourceBundle messages =
         ResourceBundle.getBundle("hotel_messages", Locale.getDefault());
-    
-    private static final String DB_LOCATION_LABEL = messages.getString("startupwindow.label.database.location");
-    private static final String SERVER_PORT_LABEL = messages.getString("startupwindow.label.server.port");
-    private static final String SERVER_LOCATION_LABEL = messages.getString("startupwindow.label.server.location");
-    private static final String SERVER_PORT_TOOL_TIP = messages.getString("startupwindow.tooltip.port");
-    private static final String DB_LOCATION_TOOL_TIP=messages.getString("startupwindow.tooltip.database.location");
-    private static final String SERVER_LOCATION_TOOL_TIP =messages.getString("startupwindow.tooltip.server.address");
-    private static final String BROWSE_DATABASE_BOTTON_NAME=messages.getString("startupwindow.button.browse.name");
-    private static final String BROWSE_DATABASE_BOTTON_TOOL_TIP=messages.getString("startupwindow.tooltip.browsebutton");
-                
+
+    private static final String DB_LOCATION_LABEL =
+        messages.getString("startupwindow.label.database.location");
+    private static final String SERVER_PORT_LABEL =
+        messages.getString("startupwindow.label.server.port");
+    private static final String SERVER_LOCATION_LABEL =
+        messages.getString("startupwindow.label.server.location");
+    private static final String SERVER_PORT_TOOL_TIP =
+        messages.getString("startupwindow.tooltip.port");
+    private static final String DB_LOCATION_TOOL_TIP =
+        messages.getString("startupwindow.tooltip.database.location");
+    private static final String SERVER_LOCATION_TOOL_TIP =
+        messages.getString("startupwindow.tooltip.server.address");
+    private static final String BROWSE_DATABASE_BOTTON_NAME =
+        messages.getString("startupwindow.button.browse.name");
+    private static final String BROWSE_DATABASE_BOTTON_TOOL_TIP =
+        messages.getString("startupwindow.tooltip.browsebutton");
 
     private JTextField dataBaseFilePath = new JTextField(40);
     private JButton browseButton = new JButton(BROWSE_DATABASE_BOTTON_NAME);
@@ -46,8 +51,7 @@ public class ConfigPanel extends JPanel {
     private JTextField hostName = new JTextField(25);
 
     private DatabaseFileLocator databaseFileLocator;
-    private HotelConfiguration config =
-        HotelConfiguration.getInstance();
+    private HotelConfiguration config = HotelConfiguration.getInstance();
     private GridBagLayout gridbag = new GridBagLayout();
     private GridBagConstraints constraints = new GridBagConstraints();
 

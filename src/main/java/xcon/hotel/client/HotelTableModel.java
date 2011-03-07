@@ -17,6 +17,8 @@ public class HotelTableModel extends AbstractTableModel {
 
     private HotelRoomSearch hotelRoomSearch;
 
+    private int selectedRow;
+
     public HotelTableModel(String[] columnNames, ResourceBundle messages)
             throws SwingGuiException
     {
@@ -39,6 +41,14 @@ public class HotelTableModel extends AbstractTableModel {
             throw new SwingGuiException("Could not parse hotel.table.pagesize "
                 + pageSizePropertyValue, e);
         }
+    }
+
+    public HotelRoom getSelectedHotelRoom() {
+        return getHotelRoom(selectedRow);
+    }
+
+    public void setSelectedrow(int selectedRow) {
+        this.selectedRow = selectedRow;
     }
 
     public HotelRoomSearch getHotelRoomSearch() {

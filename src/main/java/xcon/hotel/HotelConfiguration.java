@@ -16,8 +16,8 @@ import java.util.logging.Logger;
 public class HotelConfiguration {
 
     private static final String DEFAULT_SERVER_ADDRESS = "localhost";
-    private static Logger logger =
-        Logger.getLogger(HotelConfiguration.class.getName());
+    private Logger logger;
+
     /**
      * key in Properties indicating that the value will be the database
      * location.
@@ -42,6 +42,12 @@ public class HotelConfiguration {
     public static final String BASE_DIRECTORY = System.getProperty("user.dir");
 
     /**
+     * The java util logging config file
+     */
+    public static final String JAVA_LOGGING_CONFIG_FILE =
+        "java.util.logging.config.file";
+    
+    /**
      * the Properties for this application.
      */
     private Properties parameters = null;
@@ -57,8 +63,7 @@ public class HotelConfiguration {
     private static File savedOptionsFile =
         new File(BASE_DIRECTORY, OPTIONS_FILENAME);
 
-    private static HotelConfiguration instance =
-        new HotelConfiguration();
+    private static HotelConfiguration instance = new HotelConfiguration();
 
     /**
      * Creates a new instance of HotelConfiguration. There should only ever be
@@ -66,7 +71,6 @@ public class HotelConfiguration {
      */
     private HotelConfiguration() {
 
-        logger.info("initializing the HotelConfiguration");
         parameters = loadParametersFromFile();
 
         if (parameters == null) {
@@ -76,6 +80,15 @@ public class HotelConfiguration {
             parameters.setProperty(SERVER_PORT, ""
                 + java.rmi.registry.Registry.REGISTRY_PORT);
         }
+
+        // TODO: read value from file
+
+        System.setProperty(
+                JAVA_LOGGING_CONFIG_FILE,
+                getParameter(JAVA_LOGGING_CONFIG_FILE));
+
+        // initialize logger after the config file location has been read
+        logger = Logger.getLogger(HotelConfiguration.class.getName());
     }
 
     /**
