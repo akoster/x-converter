@@ -1,41 +1,35 @@
 package xcon.webcrawler;
 
-public class Worker implements Runnable {
+/**
+ * A Worker proactively gets a Job, executes it and notifies its manager that
+ * the Job is completed.
+ * 
+ * @author Adriaan
+ */
+public class Worker extends Thread {
 
-	public enum State {
-		IDLE, BUSY, DONE;
-	}
-
-	private final WebCrawler crawler;
+	private final Manager manager;
 	private Job job = null;
-	private State state = State.IDLE;
+	private boolean isWorking;
 
-	public Worker(WebCrawler crawler) {
-		this.crawler = crawler;
+	public Worker(Manager manager) {
+		this.manager = manager;
+		isWorking = true;
+		start();
 	}
 
 	@Override
 	public void run() {
-
 		System.out.println("Worker " + Thread.currentThread().getId()
 				+ " starting ");
-
-		while (true) {
-			job = crawler.getJob();
-			state = State.BUSY;
+		while (isWorking) {
+			job = manager.getNewJob();
 			job.execute();
-			state = State.DONE;
+			manager.jobCompleted(job);
 		}
 	}
 
-	public State getState() {
-		return state;
-	}
-
-	public Job reset() {
-		Job result = job;
-		job = null;
-		state = State.IDLE;
-		return result;
+	public void terminate() {
+		isWorking = false;
 	}
 }
