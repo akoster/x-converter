@@ -4,7 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A Job is a unit of work
+ * A Job is a unit of work defined by a String (the description). During
+ * execution the job can obtain results and new job descriptions.
  * 
  * @author Adriaan
  */
