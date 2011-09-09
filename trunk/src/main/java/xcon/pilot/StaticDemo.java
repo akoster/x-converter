@@ -28,6 +28,10 @@ public class StaticDemo {
 		System.out.println("instanceCounter=" + instanceCounter);
 	}
 
+	public StaticDemo() {
+		System.out.println("Constructor call " + instanceCounter);
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("Starting StaticDemo");
 		new StaticDemo();
