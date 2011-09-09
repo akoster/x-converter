@@ -4,17 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
+
 	public static void main(String[] args) throws InterruptedException {
+
 		Matrix matrix = createMatrix();
 		System.out.println(matrix);
-		List<Operation> operations = new ArrayList<Operation>();
-		for (int row = 0; row < matrix.getRows(); row++) {
-			operations.add(new ReverseOperation(matrix.getRow(row)));
-			operations.add(new IncrementOperation(matrix.getRow(row), 100));
-		}
-		for (Thread operation : operations) {
-			operation.start();
-		}
+
+		List<Operation> operations = createOperations(matrix);
+
+		startOperations(operations);
 		Thread.sleep(100);
 		System.out.println(matrix);
 	}
@@ -32,5 +30,20 @@ public class Main {
 		matrix.setRow(8, 41, 42, 43, 44, 45);
 		matrix.setRow(9, 46, 47, 48, 49, 50);
 		return matrix;
+	}
+
+	private static List<Operation> createOperations(Matrix matrix) {
+		List<Operation> operations = new ArrayList<Operation>();
+		for (int row = 0; row < matrix.getRows(); row++) {
+			operations.add(new ReverseOperation(matrix.getRow(row)));
+			operations.add(new IncrementOperation(matrix.getRow(row), 100));
+		}
+		return operations;
+	}
+
+	private static void startOperations(List<Operation> operations) {
+		for (Thread operation : operations) {
+			operation.start();
+		}
 	}
 }
