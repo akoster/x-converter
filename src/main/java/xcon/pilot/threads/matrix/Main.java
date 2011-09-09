@@ -13,7 +13,7 @@ public class Main {
 		List<Operation> operations = createOperations(matrix);
 
 		startOperations(operations);
-		Thread.sleep(100);
+		Thread.sleep(1000);
 		System.out.println(matrix);
 	}
 

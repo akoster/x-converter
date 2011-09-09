@@ -19,7 +19,7 @@ public class ReverseOperation extends Operation {
 			a.setValue(b.getValue());
 			b.setValue(tmp);
 			try {
-				sleep(10);
+				sleep(30);
 			} catch (InterruptedException e) {
 			}
 		}
