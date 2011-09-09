@@ -19,7 +19,7 @@ public class IncrementOperation extends Operation {
 
 			cells()[i].setValue(cells()[i].getValue() + increment);
 			try {
-				sleep(10);
+				sleep(30);
 			} catch (InterruptedException e) {
 			}
 		}

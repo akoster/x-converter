@@ -5,7 +5,7 @@ public abstract class Operation extends Thread implements Runnable {
 	private final Cell[] cells;
 
 	public Operation(Cell[] cells) {
-		
+
 		if (cells == null) {
 			throw new IllegalArgumentException("Cells may not be null");
 		}
@@ -14,7 +14,7 @@ public abstract class Operation extends Thread implements Runnable {
 
 	@Override
 	public void run() {
-		
+
 		synchronized (cells) {
 			execute();
 		}
