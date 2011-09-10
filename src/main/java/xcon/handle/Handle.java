@@ -23,6 +23,7 @@ public class Handle {
 
 	private static final String HANDLE_PATH = "C:/Program Files/handle/handle.exe";
 	private static final String DEFAULT_TARGET = "C:\\WINDOWS";
+	private static boolean handleFound;
 
 	public static void main(String[] args) throws IOException,
 			InterruptedException {
@@ -32,6 +33,12 @@ public class Handle {
 		Process proc = executeCommand(fileName);
 		readResults(fileName, proc);
 		checkTermination(proc);
+		if (handleFound) {
+			System.out.println("One or more handles found on " + fileName);
+		}
+		else {
+			System.out.println("No handles found on " + fileName);
+		}
 	}
 
 	private static void checkOS() {
@@ -87,6 +94,7 @@ public class Handle {
 					while ((line = br.readLine()) != null) {
 
 						if (line.endsWith(fileName)) {
+							handleFound = true;
 							System.out.println(line);
 						}
 					}
@@ -103,7 +111,7 @@ public class Handle {
 			throws InterruptedException {
 		int exitVal = proc.waitFor();
 		if (exitVal != 0) {
-			throw new IllegalStateException("Exitvalue " + exitVal);
+			System.err.println("Exit value: " + exitVal);
 		}
 	}
 }
