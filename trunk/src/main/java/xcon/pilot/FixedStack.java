@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 public class FixedStack extends LinkedHashMap<Long, String> {
 
+	private static final long serialVersionUID = 1L;
 	private final int capacity;
 
 	public FixedStack(int capacity) {
@@ -31,8 +32,7 @@ public class FixedStack extends LinkedHashMap<Long, String> {
 				added++;
 			}
 		}
-		System.out.println(String.format(">>>>>>>>> %s added",
-				added));
+		System.out.println(String.format(">>>>>>>>> %s added", added));
 		Iterator<Entry<Long, String>> iterator = stack.entrySet().iterator();
 		while (iterator.hasNext()) {
 			System.out.println(iterator.next().getValue());

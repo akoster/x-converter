@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
-import xcon.pilot.MainMatrix;
+import xcon.pilot.matrix.MainMatrix;
 
 /**
  * @see MainMatrix#doMatrixyStuff()

@@ -3,8 +3,6 @@ package xcon.pilot;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 class PieceFactoryExample {
 
 	static enum PieceFactory {
