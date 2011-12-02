@@ -1,6 +1,7 @@
-package xcon.pilot;
+package xcon.pilot.matrix;
 
 import java.util.Arrays;
+
 
 public class MatrixFactory {
 

@@ -6,7 +6,6 @@ import java.util.List;
 
 public class ListCleaner {
 
-	@SuppressWarnings("serial")
 	public static void main(String[] args) {
 
 		final List<Integer> oldList = Arrays.asList(new Integer[] { 23, 4, 5,
@@ -14,6 +13,8 @@ public class ListCleaner {
 		System.out.println(oldList);
 
 		List<Integer> newList = new ArrayList<Integer>() {
+			private static final long serialVersionUID = 1L;
+
 			{
 				for (Integer element : oldList) {
 					if (element > 5) {

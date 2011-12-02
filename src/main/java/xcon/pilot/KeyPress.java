@@ -4,9 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class KeyPress extends Frame {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	Label label;
 	TextField txtField;
