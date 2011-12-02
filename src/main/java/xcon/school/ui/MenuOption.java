@@ -1,6 +1,3 @@
-/**
- * 
- */
 package xcon.school.ui;
 
 import xcon.school.ui.command.CommandExecutor;
@@ -11,7 +8,7 @@ import xcon.school.ui.command.ListAllModulesForStudent;
 import xcon.school.ui.command.ListAllStudents;
 import xcon.school.ui.command.ListAllStudentsForModule;
 
-public enum MenuCommand {
+public enum MenuOption {
 
 	LIST_ALL_STUDENTS(1, "List all students", ListAllStudents.class),
 
@@ -28,28 +25,28 @@ public enum MenuCommand {
 
 	EXIT(6, "Exit", Exit.class);
 
-	private int menuIndex;
+	private int index;
 	private String description;
 	private Class<? extends CommandExecutor> executorClass;
 
-	MenuCommand(int menuIndex, String description,
+	MenuOption(int index, String description,
 			Class<? extends CommandExecutor> executorClass) {
-		this.menuIndex = menuIndex;
+		this.index = index;
 		this.description = description;
 		this.executorClass = executorClass;
 	}
 
-	public static MenuCommand forMenuIndex(int menuIndex) {
-		for (MenuCommand command : values()) {
-			if (command.menuIndex == menuIndex) {
+	public static MenuOption forIndex(int index) {
+		for (MenuOption command : values()) {
+			if (command.index == index) {
 				return command;
 			}
 		}
 		return null;
 	}
 
-	public int getMenuIndex() {
-		return menuIndex;
+	public int getIndex() {
+		return index;
 	}
 
 	public String getDescription() {

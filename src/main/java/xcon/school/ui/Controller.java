@@ -40,10 +40,10 @@ public class Controller {
 		System.out.println("Welcome to the Student Record System!");
 		showUsage();
 
-		MenuCommand command = null;
-		while (command != MenuCommand.EXIT) {
+		MenuOption command = null;
+		while (command != MenuOption.EXIT) {
 
-			command = getMenuCommand(command);
+			command = getMenuCommand();
 			if (command != null) {
 				System.out.println(command.getDescription());
 				executeCommand(command);
@@ -57,23 +57,24 @@ public class Controller {
 
 	private void showUsage() {
 		System.out.println("Usage:");
-		for (MenuCommand menuCommand : MenuCommand.values()) {
+		for (MenuOption menuCommand : MenuOption.values()) {
 			System.out.println(String.format("%s - %s", menuCommand
-					.getMenuIndex(), menuCommand.getDescription()));
+					.getIndex(), menuCommand.getDescription()));
 		}
 	}
 
-	private MenuCommand getMenuCommand(MenuCommand selection) {
+	private MenuOption getMenuCommand() {
+		MenuOption menuCommand;
 		try {
-			selection = MenuCommand.forMenuIndex(Integer.parseInt(scan
+			menuCommand = MenuOption.forIndex(Integer.parseInt(scan
 					.nextLine().trim()));
 		} catch (NumberFormatException e) {
-			selection = null;
+			menuCommand = null;
 		}
-		return selection;
+		return menuCommand;
 	}
 
-	private void executeCommand(MenuCommand command) {
+	private void executeCommand(MenuOption command) {
 		try {
 			command.getExecutorClass().newInstance().execute(enrollmentService,
 					scan);
