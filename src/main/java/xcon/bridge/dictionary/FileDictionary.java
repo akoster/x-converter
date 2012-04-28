@@ -1,5 +1,6 @@
 package xcon.bridge.dictionary;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,17 +11,19 @@ import java.util.Scanner;
 public class FileDictionary implements Dictionary {
 
     private List<String> words;
-    private final static Map<String, String> dictionaries = new HashMap<String, String>();
+    private final static Map<Language, String> dictionaries = new HashMap<Language, String>();
 
     static {
-        dictionaries.put("DUTCH", "dictionary_nl.txt");
-        dictionaries.put("ENGLISH", "dictionary_en.txt");
+        dictionaries.put(Language.DUTCH, "/dictionary_nl.txt");
+        dictionaries.put(Language.ENGLISH, "/dictionary_en.txt");
     }
 
     public FileDictionary(Language language) {
 
         words = new ArrayList<String>();
-        Scanner scanner = new Scanner(getClass().getResourceAsStream(getDictionary(language)));
+        String dictionary = getDictionary(language);
+		InputStream ras = FileDictionary.class.getResourceAsStream(dictionary);
+		Scanner scanner = new Scanner(ras);
         while (scanner.hasNextLine()) {
             String word = scanner.nextLine().trim();
             if (word != null && word.length() > 0) {
@@ -31,7 +34,7 @@ public class FileDictionary implements Dictionary {
     }
 
     private static String getDictionary(Language language) {
-        String dictionary = dictionaries.get(language.name());
+        String dictionary = dictionaries.get(language);
         if (dictionary == null) {
             throw new IllegalArgumentException(String.format("Language %s not known", language));
         }
