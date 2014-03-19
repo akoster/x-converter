@@ -147,12 +147,12 @@
 			<url>http://nexus.codehaus.org/snapshots</url>
 		</repository>
 		<repository>
-			<id>http://ftp.cica.es/mirrors/maven2</id>
+			<id>ftp.cica.es-mirrors-maven2</id>
 			<name>http://ftp.cica.es/mirrors/maven2</name>
 			<url>http://ftp.cica.es/mirrors/maven2</url>
 		</repository>
 		<repository>
-			<id>http://slick.cokeandcode.com/mavenrepo</id>
+			<id>slick.cokeandcode.com-mavenrepo</id>
 			<name>http://slick.cokeandcode.com/mavenrepo</name>
 			<url>http://slick.cokeandcode.com/mavenrepo</url>
 		</repository>
