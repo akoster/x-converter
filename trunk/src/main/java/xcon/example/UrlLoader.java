@@ -1,4 +1,4 @@
-package xcon.pilot;
+package xcon.example;
 
 import java.io.IOException;
 import java.io.InputStream;
