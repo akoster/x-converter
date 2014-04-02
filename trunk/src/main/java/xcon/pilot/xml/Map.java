@@ -1,4 +1,4 @@
-package xcon.xml;
+package xcon.pilot.xml;
 
 import java.util.ArrayList;
 import java.util.List;

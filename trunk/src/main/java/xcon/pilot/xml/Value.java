@@ -1,4 +1,4 @@
-package xcon.xml;
+package xcon.pilot.xml;
 
 public class Value {
 

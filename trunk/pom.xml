@@ -27,13 +27,13 @@
 			<version>1.8.5</version>
 			<scope>test</scope>
 		</dependency>
-
+<!--
 		<dependency>
 			<groupId>slick</groupId>
 			<artifactId>slick</artifactId>
 			<version>274</version>
 		</dependency>
-
+-->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -127,7 +127,7 @@
 			</plugin>
 		</plugins>
 	</build>
-
+<!--
 	<repositories>
 		<repository>
 			<id>maven-repository.dev.java.net</id>
@@ -158,5 +158,5 @@
 		</repository>
 
 	</repositories>
-
+-->
 </project>
