@@ -1,7 +1,7 @@
 package xcon.config;
 
-import xcon.datastore.Storage;
-import xcon.datastore.impl.NullStorage;
+import xcon.project.datastore.Storage;
+import xcon.project.datastore.impl.NullStorage;
 
 import com.google.inject.AbstractModule;
 

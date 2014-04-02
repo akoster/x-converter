@@ -1,0 +1,33 @@
+<tc:tc-config xmlns:tc="http://www.terracotta.org/config"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.terracotta.org/schema/terracotta-4.xsd">
+	<application>
+		<dso>
+			<roots>
+				<root>
+					<field-name>
+                        xcon.project.queens.teracotta.QueenWork.tasks
+                    </field-name>
+				</root>
+				<root>
+					<field-name>
+                        xcon.project.queens.teracotta.QueenWork.results
+                    </field-name>
+				</root>
+			</roots>
+			<instrumented-classes>
+				<include>
+					<class-expression>
+                        xcon.project.queens.teracotta.QueenTask
+                    </class-expression>
+				</include>
+
+				<include>
+					<class-expression>
+                        xcon.project.queens.teracotta.QueenResult
+                    </class-expression>
+				</include>
+			</instrumented-classes>
+		</dso>
+	</application>
+</tc:tc-config>
