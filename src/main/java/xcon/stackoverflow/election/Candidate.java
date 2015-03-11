@@ -1,4 +1,4 @@
-package xcon.example.election;
+package xcon.stackoverflow.election;
 
 public class Candidate {
 	protected String name;

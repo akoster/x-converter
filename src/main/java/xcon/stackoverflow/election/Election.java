@@ -1,4 +1,4 @@
-package xcon.example.election;
+package xcon.stackoverflow.election;
 
 import java.util.ArrayList;
 import java.util.Collections;
