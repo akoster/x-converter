@@ -1,0 +1,34 @@
+Java 5 API:
+http://java.sun.com/j2se/1.5.0/docs/api/
+
+How to use enums:
+http://java.sun.com/j2se/1.5.0/docs/guide/language/enums.html
+
+Object serialization: http://java.sun.com/developer/technicalArticles/Programming/serialization/
+
+Reading from commandline:
+http://www.devdaily.com/java/edu/pj/pj010005/pj010005.shtml
+
+Command pattern:
+http://en.wikipedia.org/wiki/Command_pattern
+
+Bridge pattern:
+http://www.netobjectives.com/files/dpexplained/download/ch09.pdf
+
+Class diagram:
+http://www.ibm.com/developerworks/rational/library/content/RationalEdge/sep04/bell/
+
+Rotonyms:
+http://www.willmcgugan.com/2008/01/22/rotonym-what-the-heck-is-a-rotonym
+
+Anagrams:
+http://www.anagrammer.com/
+
+Palindromes:
+http://www.rinkworks.com/words/palindromes.shtml
+
+Unit testing
+http://martinfowler.com/articles/mocksArentStubs.html#TheDifferenceBetweenMocksAndStubs
+
+N-Queens
+http://en.wikipedia.org/wiki/Eight_queens_puzzle
