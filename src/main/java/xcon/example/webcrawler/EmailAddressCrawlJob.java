@@ -82,10 +82,9 @@ public class EmailAddressCrawlJob extends Job {
 			URL urlLink;
 			try {
 				urlLink = new URL(url, strLink);
-				strLink = urlLink.toString();
 			} catch (MalformedURLException e) {
 				// System.err.println("Could not create url: " + target
-				// + " + " + strLink);
+				// + " + " + urlLink.toString());
 				continue;
 			}
 			// only look at http links
