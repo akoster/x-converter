@@ -10,17 +10,17 @@ public class ReverseOperation extends Operation {
 
 	@Override
 	void execute() {
-
-		for (int i = 0; i < (cells().length / 2); i++) {
-
-			Cell a = cells()[i];
-			Cell b = cells()[cells().length - i - 1];
+		Cell[] cells = cells();
+		for (int i = 0; i < (cells.length / 2); i++) {
+			Cell a = cells[i];
+			Cell b = cells[cells.length - i - 1];
 			int tmp = a.getValue();
 			a.setValue(b.getValue());
 			b.setValue(tmp);
 			try {
 				sleep(30);
 			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
 			}
 		}
 		System.out.println("Reversed " + Arrays.toString(cells()));
