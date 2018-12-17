@@ -1,4 +1,4 @@
-package xcon.stackoverflow.caclulator;
+package xcon.stackoverflow.calculator;
 
 public enum Calculator {
 
